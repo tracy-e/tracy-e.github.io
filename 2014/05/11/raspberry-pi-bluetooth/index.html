@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Raspberry Pi蓝牙应用及iBeacon基站搭建 · Esoft Mobile</title><meta name="description" content="Raspberry Pi蓝牙应用及iBeacon基站搭建 - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Raspberry Pi蓝牙应用及iBeacon基站搭建</h1><div class="post-info">May 11, 2014</div><div class="post-content"><p>##一、基础应用</p>
+<h3 id="安装蓝牙驱动"><a href="#安装蓝牙驱动" class="headerlink" title="安装蓝牙驱动"></a>安装蓝牙驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install bluetooth bluez-utils blueman</div></pre></td></tr></table></figure>
+<h3 id="查看蓝牙适配器"><a href="#查看蓝牙适配器" class="headerlink" title="查看蓝牙适配器"></a>查看蓝牙适配器</h3><a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ lsusb</div><div class="line">Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp.</div><div class="line">Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub</div><div class="line">Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp.</div><div class="line">Bus 001 Device 004: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)</div><div class="line">Bus 001 Device 005: ID 148f:5370 Ralink Technology, Corp. RT5370 Wireless Adapter</div></pre></td></tr></table></figure>
+<p>其中 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Bus 001 Device 004: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)</div></pre></td></tr></table></figure>
+<p>为USB蓝牙适配器信息。</p>
+<h3 id="查看蓝牙状态"><a href="#查看蓝牙状态" class="headerlink" title="查看蓝牙状态"></a>查看蓝牙状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ /etc/init.d/bluetooth status</div><div class="line">[ ok ] bluetooth is running.</div></pre></td></tr></table></figure>
+<h3 id="扫描周边蓝牙设备"><a href="#扫描周边蓝牙设备" class="headerlink" title="扫描周边蓝牙设备"></a>扫描周边蓝牙设备</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hcitool scan</div><div class="line">Scanning ...</div><div class="line">	28:E1:4C:B0:67:9D	TracyYih的 iPhone</div></pre></td></tr></table></figure>
+<h3 id="查看蓝牙连接情况"><a href="#查看蓝牙连接情况" class="headerlink" title="查看蓝牙连接情况"></a>查看蓝牙连接情况</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo l2ping 28:E1:4C:B0:67:9D</div></pre></td></tr></table></figure>
+<p>可以看到返回结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Ping: 28:E1:4C:B0:67:9D from 00:1A:7D:DA:71:13 (data size 44) ...</div><div class="line">44 bytes from 28:E1:4C:B0:67:9D id 0 time 180.34ms</div><div class="line">44 bytes from 28:E1:4C:B0:67:9D id 1 time 127.61ms</div><div class="line">44 bytes from 28:E1:4C:B0:67:9D id 2 time 203.81ms</div><div class="line">44 bytes from 28:E1:4C:B0:67:9D id 3 time 80.83ms</div><div class="line">44 bytes from 28:E1:4C:B0:67:9D id 4 time 100.71ms</div><div class="line">...</div></pre></td></tr></table></figure>
+<blockquote>
+<p>这时手机上会出现一个配对请求，暂时配对不上，后续再研究。</p>
+</blockquote>
+<p>##二、搭建iBeacon基站</p>
+<blockquote>
+<p>注：Raspberry Pi本身不带蓝牙模块，需另外购买USB蓝牙4.0适配器。</p>
+</blockquote>
+<h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev</div></pre></td></tr></table></figure>
+<h3 id="下载bluez"><a href="#下载bluez" class="headerlink" title="下载bluez"></a>下载bluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo mkdir bluezcd bluezsudo wget www.kernel.org/pub/linux/bluetooth/bluez-5.18.tar.gz</div></pre></td></tr></table></figure>
+<h3 id="解压bluez"><a href="#解压bluez" class="headerlink" title="解压bluez"></a>解压bluez</h3><pre><code>sudo gunzip bluez-5.18.tar.gz
+sudo tar xvf bluez-5.18.tar
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 安装bluez</div></pre></td></tr></table></figure>
+
+cd bluez-5.18
+sudo ./configure --disable-systemd
+sudo make
+sudo make install
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 查看蓝牙配置</div></pre></td></tr></table></figure>
+
+hciconfig
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 开启蓝牙</div></pre></td></tr></table></figure>
+
+sudo hciconfig hci0 up
+sudo hciconfig hci0 leadv
+sudo hciconfig hci0 noscan
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 设置beacon广播信息</div></pre></td></tr></table></figure>
+
+#!/bin/bash
+uuid=&quot;38 69 43 AC E6 3D 45 D7 BD 77 4C A6 76 D3 2A 5F&quot;
+major=&quot;00 00&quot;
+minor=&quot;00 00&quot;
+power=&quot;C5&quot;
+sudo hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 $uuid $major $minor $power 00
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">##三、python程序控制</div><div class="line"></div><div class="line">### 安装pybluez</div></pre></td></tr></table></figure>
+
+sudo apt-get install libbluetooth-dev     # 依赖 libbluetooth-dev
+sudo apt-get install python-dev         # 依赖 python-dev
+sudo pip install pybluez
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果没安装pip可以用下面命令安装：</div></pre></td></tr></table></figure>
+
+sudo apt-get install python-pip
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 查找附近的设备</div><div class="line"></div><div class="line">pybluez官方示例`inquiry.py`：</div></pre></td></tr></table></figure>
+
+# file: inquiry.py
+# auth: Albert Huang &lt;albert@csail.mit.edu&gt;
+# desc: performs a simple device inquiry followed by a remote name request of
+#       each discovered device
+# $Id: inquiry.py 401 2006-05-05 19:07:48Z albert $
+#
+
+import bluetooth
+print(&quot;performing inquiry...&quot;)
+nearby_devices = bluetooth.discover_devices(lookup_names = True)
+print(&quot;found %d devices&quot; % len(nearby_devices))
+for addr, name in nearby_devices:
+    print(&quot;  %s - %s&quot; % (addr, name))
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">运行</div></pre></td></tr></table></figure>
+
+$ python inquiry.py
+performing inquiry...
+found 1 devices
+  28:E1:4C:B0:67:9D - TracyYih的 iPhone
+</code></pre><hr>
+<p>link:  </p>
+<ol>
+<li><a href="http://www.phodal.com/blog/raspberry-pi-pcduino-bluetooth-configure" target="_blank" rel="external">raspberry pi 蓝牙,pcduino蓝牙</a>  </li>
+<li><a href="https://learn.adafruit.com/pibeacon-ibeacon-with-a-raspberry-pi" target="_blank" rel="external">piBeacon - DIY iBeacon with a Raspberry Pi</a>  </li>
+<li><a href="http://www.phodal.com/blog/raspberry-pi-bluetooth-use-python-and-pybluez" target="_blank" rel="external">用pybluez控制蓝牙</a></li>
+</ol>
+</div></article></div></main><footer><div class="paginator"><a href="/2014/05/11/raspberry-usb-wifi/" class="prev">PREV</a><a href="/2014/04/06/video-app-reverse/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

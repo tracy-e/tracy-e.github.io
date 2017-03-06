@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Web Notification · Esoft Mobile</title><meta name="description" content="Web Notification - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Web Notification</h1><div class="post-info">Aug 22, 2013</div><div class="post-content"><p>在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit <code>Notification</code> 对象发出的，这也是<a href="https://dvcs.w3.org/hg/notifications/raw-file/tip/Overview.html" target="_blank" rel="external">W3C标准</a>实现的一部分。</p>
+<p><img src="/image/notification_on_notificationCenter.png" alt="Notification Center"></p>
+<p>来自Safari的通知可以在系统偏好设置的“通知”面板内进行设置，有些用户可能希望Safari的通知以提示框（alert）的形式在屏幕上停留一会儿然后再消失，有些人可能就不想在屏幕上显示。另外，用户可以在Safari偏好设置的通知面板内对单个网站（域名）的消息进行设定（Allow or Deny）。</p>
+<a id="more"></a>
+<p><img src="/image/system_notification_setting.png" alt="System Notification Setting"></p>
+<p><img src="/image/safari_notification_setting.png" alt="Safari Notification Setting"></p>
+<p>由于用户可以设置将你的通知给屏蔽掉，所以你应该确保提示的通知是提示性的信息而不是非常重要的信息。</p>
+<h1 id="请求允许"><a href="#请求允许" class="headerlink" title="请求允许"></a>请求允许</h1><blockquote>
+<p><strong>提示</strong>：当你要实现带通知功能的插件时，你不需要检查用户许可级别，因为用户主动的安装插件，默认的许可级别就是允许(granted)。</p>
+</blockquote>
+<p>因为网站的访问者可能运行的是其他系统，发通知前你需要先检查他们的浏览器是否支持，可以通过检查<code>window.Notification</code>对象是否定义。</p>
+<p>如果<code>window.Notification</code>对象确实有定义，你可以继续通过<code>permission</code>属性来检查用户对你网站消息的许可级别，一共有三种级别：</p>
+<ul>
+<li>default: 用户还没有设置是否允许来自当前域名的通知。</li>
+<li>granted: 用户允许来自当前域名的通知。</li>
+<li>denied: 用户拒绝来自当前域名的通知。</li>
+</ul>
+<p>如果permission级别是default，说明你的网站还没有请求过让用户允许发送通知，所以你需要调用<code>requestPermission()</code>方法，这时Safari会弹出提示请求用户允许，如果用户允许，会调用你作为参数传入的回调方法。</p>
+<p><img src="/image/notificatoin_requesting_permission.png" alt="Request Permission"></p>
+<h1 id="创建并发送通知"><a href="#创建并发送通知" class="headerlink" title="创建并发送通知"></a>创建并发送通知</h1><p>创建一个消息对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var n = new Notification(in String title, &#123;in Object options&#125;);</div></pre></td></tr></table></figure>
+<p>除了title作为必须参数以外，还可以作为options对象传入有：</p>
+<ul>
+<li>body: 通知的内容</li>
+<li>tag: 通知的唯一标示，避免在通知中心中重复显示通知。</li>
+</ul>
+<p>如果有多个消息会以队列的形式排列，只有当前面没有消息时才会显示。通知的副标题通常是消息来源的域名或者插件名，图标就是Safari应用的图标。</p>
+<p><img src="/image/notification_on_browser.png" alt="Notification"></p>
+<blockquote>
+<p><strong>提示</strong>：通过网站发送通知并没有频率限制，为了不至于打扰用户，确保只在必要的时候才发通知信息。</p>
+</blockquote>
+<p>通知会一直留在通知中心，直到用户在通知中心清除所以来自Safari的通知或者关掉当前网站页面。可以调用<code>close()</code>方法关掉某条消息，或者你愿意的话，可以让用户在点击通知提示框时就将通知清除，你只需要在<code>onclick()</code>事件处理中调用<code>close()</code>方法，除了<code>onclick()</code>，还有其他一些可用事件：</p>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onshow</td>
+<td>当通知在屏幕上显示的时候会被调用。</td>
+</tr>
+<tr>
+<td>onclick</td>
+<td>用户点击通知提示框的时候会被调用，默认情况下点击通知提示框会显示消息来源的界面（网站），即使有另一个程序在前台（显示）。</td>
+</tr>
+<tr>
+<td>onclose</td>
+<td>通知消失的时候会被调用，主动调用close()也会触发onclose()事件。</td>
+</tr>
+<tr>
+<td>onerror</td>
+<td>当通知不能展现给用户的时候会被调用，如当前用户允许级别是denied或default。</td>
+</tr>
+</tbody>
+</table>
+<p>先看效果再看代码：</p>
+<p><script type="text/javascript" src="https://raw.github.com/tracy-e/Notification.js/master/Notification.js"></script></p>
+<p><button onclick="notify("Hello friend", "A greetings from EsoftMobile", function(){ alert("Sorry, your browser is not support Notification!") })"> Send a notification </button><br><a href="https://github.com/tracy-e/Notification.js" target="_blank" rel="external">【Code on Github】</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> notify = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// check for notification compatibility</span></div><div class="line">    <span class="keyword">if</span>(!<span class="built_in">window</span>.Notification) &#123;</div><div class="line">        <span class="comment">// if browser version is unsupported, be silent</span></div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// log current permission level</span></div><div class="line">    <span class="built_in">console</span>.log(Notification.permission);</div><div class="line">    <span class="comment">// if the user has not been asked to grant or deny notifications from this domain</span></div><div class="line">    <span class="keyword">if</span>(Notification.permission === <span class="string">'default'</span>) &#123;</div><div class="line">        Notification.requestPermission(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="comment">// callback this function once a permission level has been set</span></div><div class="line">            notify();</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if the user has granted permission for this domain to send notifications</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(Notification.permission === <span class="string">'granted'</span>) &#123;</div><div class="line">        <span class="keyword">var</span> n = <span class="keyword">new</span> Notification(</div><div class="line">                    <span class="string">'1 new friend request'</span>,</div><div class="line">                    &#123;</div><div class="line">                      <span class="string">'body'</span>: <span class="string">'Jill would like to add you as a friend'</span>,</div><div class="line">                      <span class="comment">// prevent duplicate notifications</span></div><div class="line">                      <span class="string">'tag'</span> : <span class="string">'unique string'</span></div><div class="line">                    &#125;</div><div class="line">                );</div><div class="line">        <span class="comment">// remove the notification from Notification Center when it is clicked</span></div><div class="line">        n.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">this</span>.close();</div><div class="line">        &#125;;</div><div class="line">        <span class="comment">// callback function when the notification is closed</span></div><div class="line">        n.onclose = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">'Notification closed'</span>);</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if the user does not want notifications to come from this domain</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(Notification.permission === <span class="string">'denied'</span>) &#123;</div><div class="line">        <span class="comment">// be silent</span></div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h1 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h1><p>现在通知还不是很普及，W3C和HTML5貌似也在做这方面推广，Google Chrome好像也支持一种通知机制叫做<code>webkitNotification</code>，相信后面会越来越普及。这种原生的通知比起用JQuery各种插件做出来的体验还是要好很多，所以如果能合理利用，一定会为网站增色不少。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2013/08/28/objective-c异步编程/" class="prev">PREV</a><a href="/2013/08/17/effective-objective-c-2/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

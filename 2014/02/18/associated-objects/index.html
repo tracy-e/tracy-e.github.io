@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Associated Objects · Esoft Mobile</title><meta name="description" content="Associated Objects - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Associated Objects</h1><div class="post-info">Feb 18, 2014</div><div class="post-content"><blockquote>
+<p>本文翻译自<a href="http://nshipster.com/" target="_blank" rel="external">NSHipster</a>的文章<a href="http://nshipster.com/associated-objects/" target="_blank" rel="external">Associated Objects</a>。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#import &lt;objc/runtime.h&gt;</div></pre></td></tr></table></figure>
+<p>Objective-C开发者在遇到上面这条“咒语”相关的一些东西时，会不自觉的变的非常谨慎。一个主要原因是：弄乱Objective-C运行时可能会改变整个实现结构，因为所有的代码都是运行在它之上的。</p>
+<p>一方面：<code>&lt;objc/runtime.h&gt;</code>中的函数可以给应用或者框架增加强大的新特性，这是通过其他方式不可能做到的。但另一方面：它会改变代码的正常运行逻辑和所有与之交互的东西（通常伴随着可怕的副作用）。</p>
+<p>因而，这是我们认为进行这种魔鬼交易最大的恐惧点，下面来看一个NSHipster读者问得最多的一个主题：associated objects。<br><a id="more"></a></p>
+<hr>
+<p>Associated Objects（关联对象）或者叫作关联引用（Associative References），是作为Objective-C 2.0 运行时功能被引入到 Mac OS X 10.6 Snow Leopard（及iOS4）系统。与它相关在<code>&lt;objc/runtime.h&gt;</code>中有3个C函数，它们可以让对象在运行时关联任何值：</p>
+<ul>
+<li><code>objc_setAssociatedObject</code></li>
+<li><code>objc_getAssociatedObject</code></li>
+<li><code>objc_removeAssociatedObjects</code></li>
+</ul>
+<p>为什么这几个方法很有用呢？因为开发者可以通过它们<strong>在分类中给已存在的类中添加自定义属性</strong>。</p>
+<h4 id="NSObject-AssociatedObject-h"><a href="#NSObject-AssociatedObject-h" class="headerlink" title="NSObject+AssociatedObject.h"></a>NSObject+AssociatedObject.h</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface NSObject (AssociatedObject)</div><div class="line">@property (nonatomic, strong) id associatedObject;</div><div class="line">@end</div></pre></td></tr></table></figure>
+<h4 id="NSObject-AssociatedObject-m"><a href="#NSObject-AssociatedObject-m" class="headerlink" title="NSObject+AssociatedObject.m"></a>NSObject+AssociatedObject.m</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@implementation NSObject (AssociatedObject)</div><div class="line">@dynamic associatedObject;</div><div class="line"></div><div class="line">- (void)setAssociatedObject:(id)object &#123;</div><div class="line">     objc_setAssociatedObject(self, @selector(associatedObject), object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (id)associatedObject &#123;</div><div class="line">    return objc_getAssociatedObject(self, @selector(associatedObject));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通常推荐key使用<code>static char</code>类型——使用指针或许更好，key值是一个唯一的常量，并只在getters和setters方法内部使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">static char kAssociatedObjectKey;</div><div class="line"></div><div class="line">objc_getAssociatedObject(self, &amp;kAssociatedObjectKey);</div></pre></td></tr></table></figure>
+<p>然而，一个更简单的方案是：直接使用选择器（selector）。</p>
+<blockquote>
+<p>因为SEL生成的时候就是一个唯一的常量，你可以使用 _cmd 作为objc_setAssociatedObject()的key。  </p>
+<p>—— Bill Bumgarner(@bbum) <a href="https://twitter.com/bbum/statuses/3609098005" target="_blank" rel="external">August28, 2009</a></p>
+</blockquote>
+<h2 id="关联对象的特性"><a href="#关联对象的特性" class="headerlink" title="关联对象的特性"></a>关联对象的特性</h2><p>被关联到对象的值根据使用的<code>objc_AssociationPolicy</code>类型不同表现出不同的特性：</p>
+<table>
+<thead>
+<tr>
+<th>Behavior</th>
+<th>对应的@property类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBJC_ASSOCIATION_ASSIGN</td>
+<td>@property (assign) 或 @property(unsafe_unretained)</td>
+<td>给关联对象指定若引用</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN_NONATOMIC</td>
+<td>@property (nonatomic, strong)</td>
+<td>给关联对象指定非原子的强引用</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY_NONATOMIC</td>
+<td>@property (nonatomic, copy)</td>
+<td>给关联对象指定非原子的copy特性</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN</td>
+<td>@property (atomic, strong)</td>
+<td>给关联对象指定原子的强引用</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY</td>
+<td>@property (atomic, copy)</td>
+<td>给关联对象指定原子copy特性</td>
+</tr>
+</tbody>
+</table>
+<p>通过<code>OBJC_ASSOCIATION_ASSIGN</code>分配的弱关联对象并不是完全和<code>weak</code>修饰符引用一样（对象初始化与释放时被置空），反而更像是<code>unsafe_unretained</code>，所以你需要在访问弱关联对象时稍微注意一下。</p>
+<blockquote>
+<p>根据<a href="https://developer.apple.com/videos/wwdc/2011/#322-video" target="_blank" rel="external">WWDC2011,Session322</a>对对象释放时间的描述，associated objects清除在对象生命周期中很晚才执行，通过被<code>NSObject -dealloc</code>方法调用的<code>object_dispose()</code>函数完成。</p>
+</blockquote>
+<h2 id="移除关联对象"><a href="#移除关联对象" class="headerlink" title="移除关联对象"></a>移除关联对象</h2><p>一个的方法是试图在某个时刻调用<code>objc_removeAssociatedObjects()</code>函数来移除关联对象，然而，根据苹果<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html#//apple_ref/c/func/objc_removeAssociatedObjects" target="_blank" rel="external">文档</a>描述，你不大可能有需求要自己去调用：</p>
+<blockquote>
+<p>这个函数的主要目的是很容易的让对象恢复成它“原始状态”，你不应该使用它来移除关联的对象，因为它也会移除掉包括其他地方加入的全部的关联对象。所以一般你只需要通过调用<code>objc_setAssociatedObject</code>并传入nil值来清除关联值。</p>
+</blockquote>
+<h2 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h2><ul>
+<li><p><strong>添加私有变量来帮助实现细节</strong> 。当拓展一个内置类时，可能有必要跟踪一些额外的状态，这是关联对象最普遍的应用场景。例如：AFNetworking中在<code>UIImageView</code>的分类中使用关联对象来存储一个请求操作对象（operation object），用于异步的从远程获取图片。</p>
+</li>
+<li><p><strong>添加公共属性来设置分类的特性</strong> 。有时候，通过添加一个属性让一个分类更加灵活，而不是作为函数参数。这种情况下，使用关联对象作为一个公开的属性是可接受的解决方案。还是拿前面AFNetworking的例子来说，<code>UIImageView</code>的分类中<code>imageResponseSerializer</code>属性允许图片视图随意的使用一个过滤器，或者在图片请求并缓存之前就可以修改它的渲染。</p>
+</li>
+<li><p><strong>为KVO创建一个关联的观察者（observer）</strong>。当在一个分类中使用<a href="http://nshipster.com/key-value-observing/" target="_blank" rel="external">KVO</a>的时候，推荐使用一个自定义的关联对象作为观察者，而不是对象自己观察自己。</p>
+</li>
+</ul>
+<h2 id="反模式"><a href="#反模式" class="headerlink" title="反模式"></a>反模式</h2><ul>
+<li><p><strong>在不必要的时候使用关联对象</strong>。使用视图时一个常见的情况是通过数据模型或一些复合的值来创建一个便利的方法设置填充字段或属性。如果这些值在后面不会再被使用到，最好就不要使用关联对象了。</p>
+</li>
+<li><p><strong>使用关联对象来保存一个可以被推算出来的值</strong>。例如，有人可能想通过关联对象存储<code>UITableViewCell</code>上一个自定义accessoryView的引用，使用<code>tableView:accessoryButtonTappedForRowWithIndexPath:</code> 和 <code>cellForRowAtIndexPath:</code>即可以达到要求。</p>
+</li>
+<li><p><strong>使用关联对象来代替X</strong>。其中X代表下面的一些项：</p>
+<ul>
+<li><a href="https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/CustomizingExistingClasses/CustomizingExistingClasses.html" target="_blank" rel="external">子类化</a>，当使用继承比使用组合更合适的时候。</li>
+<li><a href="https://developer.apple.com/library/ios/documentation/general/conceptual/Devpedia-CocoaApp/TargetAction.html" target="_blank" rel="external">Target-Action</a>给响应者添加交互事件。</li>
+<li><a href="https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/GestureRecognizer_basics/GestureRecognizer_basics.html" target="_blank" rel="external">手势识别</a>，当target-action模式不够用的时候。</li>
+<li><a href="https://developer.apple.com/library/ios/documentation/general/conceptual/DevPedia-CocoaCore/Delegation.html" target="_blank" rel="external">代理</a>，当事件可以委托给其他对象。</li>
+<li><a href="http://nshipster.com/nsnotification-and-nsnotificationcenter/" target="_blank" rel="external">消息 &amp; 消息中心</a>使用低耦合的方式来广播消息。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>关联对象应该被当做最后的手段来使用（不得不用时才用），而不是为了寻求一个解决方案就行（事实上，分类本身就不应该是解决问题优先选择的工具）。</p>
+<p>像一些巧妙的伎俩、hack手段或者是变通的解决方案，人们总是倾向于创造机会来使用他们——特别是刚刚接触他们时。尽可能的在理解并领悟之后再做出正确的方案，避免自己陷入一知半解的尴尬处境。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2014/02/19/method-swizzling/" class="prev">PREV</a><a href="/2014/02/14/ios-security/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

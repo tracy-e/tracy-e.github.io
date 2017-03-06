@@ -1,0 +1,103 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> iOS & OS X 内存管理 · Esoft Mobile</title><meta name="description" content="iOS &amp; OS X 内存管理 - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">iOS & OS X 内存管理</h1><div class="post-info">Dec 16, 2012</div><div class="post-content"><p>内存管理其实就是在需要的时候分配内存、使用、使用完后释放的过程。一个好的程序会尽可能的使用更少的内存资源。在Objective-C中对内存管理的原则是管理好对象的生命周期，在不再需要的时候释放，确保内存中没有多余的对象。</p>
+<p>Objective-C中提供了两种内存管理方式：</p>
+<ol>
+<li>手动内存管理（<strong>MRR</strong>），也就是你需要精确的管理好自己所拥有的对象，这是用过引用计数系统来实现的，而引用计数的实现则是依赖NSObject类和运行时系统；</li>
+<li>自动引用计数（<strong>ARC</strong>），和MRR一样也是依赖引用计数，不同的是编译器会在编译时自动插入合适的内存管理的方法。建议在新的项目组使用ARC，这样不仅可以省掉很多麻烦，也可以提升程序运行效率。</li>
+</ol>
+<a id="more"></a>
+<p>通常我们所说的内存问题基本上分两种：</p>
+<ul>
+<li>释放或覆盖掉了还在使用的数据，通常会导致程序崩溃、数据损坏或其他问题；</li>
+<li>没有释放掉不再需要的数据导致内存泄露，内存泄露是分配的内存没法释放，导致程序占用内存越来越多，会影响系统运行效率，甚至导致程序终止；</li>
+</ul>
+<h2 id="内存管理规则"><a href="#内存管理规则" class="headerlink" title="内存管理规则"></a>内存管理规则</h2><p>虽然Objective-C中内存管理依赖引用计数，但是你在实际使用中不应该将关注点放在对象的Retain Count上，而只需要关注对象的所有权。一个对象可以有一个或多个持有者，只要对象存在持有者它就会一直存在，一但没有持有者，对象就会被运行时系统自动销毁。所以你只需要弄清楚哪些对象是你持有的，哪些不是。</p>
+<ul>
+<li><p><strong>自己创建的对象自己持有</strong><br>  你能通过以<code>alloc</code>、<code>new</code>、<code>copy</code>、<code>mutableCopy</code>开头的方法创建自己持有的对象。</p>
+</li>
+<li><p><strong>不是自己创建的对象，自己也能持有</strong><br>  你可以调用<code>retain</code>方法来持有不是自己创建的对象。</p>
+</li>
+<li><p><strong>不再需要自己持有的对象时释放它</strong><br>  通过调用<code>release</code>或<code>autorelease</code>方法释放对象的所有权。</p>
+</li>
+<li><p><strong>不要释放非自己持有的对象</strong></p>
+</li>
+</ul>
+<h2 id="引用计数实现原理"><a href="#引用计数实现原理" class="headerlink" title="引用计数实现原理"></a>引用计数实现原理</h2><p>NSObject类alloc的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">+alloc</div><div class="line">+allocWithZone:</div><div class="line">class_createInstance</div><div class="line">calloc</div></pre></td></tr></table></figure>
+<p>alloc方法中先调用<code>allocWithZone:</code>类方法，该方法主要是分配对象内存空间并将该内存空间置空。然后调用<code>class_createInstance</code>函数计算对象占用内存大小并创建实例，最后根据计算出的对象大小由<code>calloc</code>来分配内存块。</p>
+<p>retainCount:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-retainCount</div><div class="line">__CFDoExternRefOperation</div><div class="line">CFBasicHashGetCountOfKey</div></pre></td></tr></table></figure>
+<p>retain:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-retain</div><div class="line">__CFDoExternRefOperation</div><div class="line">CFBasicHashAddValue</div></pre></td></tr></table></figure>
+<p>release:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">-release</div><div class="line">__CFDoExternRefOperation</div><div class="line">CFBasicHashRemoveValue</div><div class="line">//CFBasicHashRemoveValue返回0时，-release调用dealloc)</div></pre></td></tr></table></figure>
+<p>其中retainCount, retain, release方法都调用到了<code>__CFDoExternRefOperation</code>函数，而<code>__CFDoExternRefOperation</code>根据三个操作分别调用<code>CFBasicHashGetCountOfKey</code>、<code>CFBasicHashAddValue</code>、<code>CFBasicHashRemoveValue</code>来获取retainCount、给retainCount加1、给retainCount减1（当判断retainCount减到0时调用dealloc）。</p>
+<h2 id="autoreleasepool实现原理"><a href="#autoreleasepool实现原理" class="headerlink" title="autoreleasepool实现原理"></a>autoreleasepool实现原理</h2><p>autorelease自动释放，看起来像ARC，但更像C语言中的自动变量（超过了其作用域就自动废弃）。</p>
+<p>autorelease使用方法：</p>
+<ol>
+<li>生成NSAutoreleasePool对象；</li>
+<li>调用已分配对象的autorelease方法；</li>
+<li>释放NSAutoreleasePool对象</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">NSAutoreleasePool *pool = [[NSAutorelease alloc] init];</div><div class="line">id obj = [[NSObject alloc] init];</div><div class="line">[obj autorelease];</div><div class="line">[pool drain];	//等同于 [pool release];</div></pre></td></tr></table></figure>
+<p>在Cocoa框架中，会自动在程序的NSRunLoop或其他程序可运行的地方对NSAutoreleasePool对象进行管理（生成，持有、废弃）。所以开发者不一定非得显性的使用NSAutoreleasePool。</p>
+<blockquote>
+<p>NSRunLoop每次循环开始时NSAutoreleasePool会自动生成，一个循环结束时NSAutoreleasePool对象被废弃。</p>
+</blockquote>
+<p>只要所在的NSAutoreleasePool对象不被废弃，autorelease对象就不能被释放，所以有时候会出现内存不足的情况，如读取大量图片并进行相应处理的时候，将图片读到NSData对象，再生成UIImage对象，过程中会产生大量的autorelease对象，这时候有必要缩短NSAutorelasePool的周期，让每个循环就生成并废弃一个NSAutoreleasePool:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">for (int i = 0; i &lt; 图片数; i++) &#123;</div><div class="line">	NSAutoreleasePool = [[NSAutoreleasePool alloc] init];</div><div class="line">	/*</div><div class="line">	 * 产生autorelease对象</div><div class="line">	 */</div><div class="line">	[pool drain];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>NSObject的autorelease方法的实现本质上是将当前的对象加入到最近一级的NSAutoreleasePool对象中。</p>
+<p>另外Cocoa框架中也有很多方法返回autorelease对象，比如很多对象的构造器方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSMutableArray *array = [NSMutableArray arrayWithCapacity:1];</div></pre></td></tr></table></figure>
+<p>它等同于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSMutableArray *array = [[[NSMutableArray alloc] initWithCapacity:1] autorelease];</div></pre></td></tr></table></figure>
+<p>Cocoa中autorelease在runtime中通过C++类AutoreleasePoolPage实现了，该类中定义了三个主要方法：</p>
+<ol>
+<li>objc_autoreleasePoolPush(void);</li>
+<li>objc_autoreleasePoolPop(void *);</li>
+<li>objc_autorelease(id obj);</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];</div><div class="line">// 等同于调用 objc_autoreleasePoolPush()</div><div class="line"></div><div class="line">id obj = [[NSObject alloc] init];</div><div class="line"></div><div class="line">[obj autorelease];</div><div class="line">// 等同于调用 objc_autorelease(obj)</div><div class="line"></div><div class="line">[pool drain];</div><div class="line">// 等同于 objc_autoreleasePoolPop(pool)</div></pre></td></tr></table></figure>
+<h2 id="ARC的实现原理"><a href="#ARC的实现原理" class="headerlink" title="ARC的实现原理"></a>ARC的实现原理</h2><p>ARC下内存管理规则发生了一些改变：</p>
+<ul>
+<li>自己生成的对象自己持有</li>
+<li>非自己生成的对象自己也能持有</li>
+<li>自己持有的对象不再需要手动释放</li>
+<li>不要释放非自己持有的对象</li>
+</ul>
+<p>ARC模式下增加了四种修饰符：<code>__strong</code>、<code>__weak</code>、<code>__unsafe_unretained</code>、<code>__autoreleasing</code>。</p>
+<p><code>__strong</code>是ARC模式下对象的默认修饰符，即：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">id obj = [[NSObject alloc] init]</div><div class="line">//等同于：id __strong obj = [[NSObject alloc] init];</div></pre></td></tr></table></figure>
+<p>为了避免两个对象相互强引用对方导致内存泄露，就引入了<code>__weak</code>修饰符，与<code>__strong</code>不同，<code>__weak</code>申明的变量不持有对象（弱引用）。</p>
+<p>在iOS5和OS X Lion以下的系统版本中<code>__weak</code>修饰符是不能使用的，替代的是<code>__unsafe_unretained</code>修饰符，它与<code>__weak</code>修饰符的主要区别是申明对象和对象释放时，不能保证对象的指针为空。</p>
+<p>在实际编码中较少使用到<code>__autoreleasing</code>修饰符，因为ARC对象在超过作用域后会自动被回收。<code>__autorelasing</code>的作用类似非ARC模式的给对象调用<code>autorelease</code>方法，一般可以配合autoreleasePool使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@autoreleasepool &#123;</div><div class="line">	id __autoreleasing obj = [[NSObject alloc] init];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ARC模式下用@autoreleasepool块代替了NSAutoreleasePool对象的创建和销毁。</p>
+<h3 id="ARC实现"><a href="#ARC实现" class="headerlink" title="ARC实现"></a>ARC实现</h3><p>ARC的实现依赖编译器及Objective-C运行时库，并通过新增的修饰符完成。</p>
+<h4 id="strong"><a href="#strong" class="headerlink" title="__strong"></a>__strong</h4><p>__strong对象是在作用域结束时编译器自动插入release代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	id __strong obj = [[NSObject alloc] init];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等价于代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//模拟代码</div><div class="line">id obj = objc_msgSend(NSObject, @selector(alloc));</div><div class="line">objc_msgSend(obj, @selector(init));</div><div class="line">objc_release(obj);</div></pre></td></tr></table></figure>
+<p>在不使用alloc/new/copy/mutableCopy构造对象的时候，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	id __strong obj = [NSMutableArray array];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//模拟代码</div><div class="line">id obj = objc_msgSend(NSMutableArray, @selector(array));</div><div class="line">objc_retainAutoreleaseReturnValue(obj);</div><div class="line">objc_release(obj);</div></pre></td></tr></table></figure>
+<p>其中objc_retainAutoreleaseReturnValue()函数用于持有（retain）注册到autoreleasepool中的对象。与之对应的函数：objc_autoreleaseReturnValue()，它在返回一个注册到autoreleasepool中的对象时使用，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+ (id)array &#123;</div><div class="line">	id obj = objc_msgSend(NSMutableArray, @selector(array));</div><div class="line">	objc_msgSend(obj, @selector(init));</div><div class="line">	return objc_autoreleaseReturnValue(obj);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="weak"><a href="#weak" class="headerlink" title="__weak"></a>__weak</h4><ul>
+<li>带__weak修饰符的变量引用的对象被废弃时会自动被赋值为nil</li>
+<li>使用__weak修饰符的变量是使用注册到autoreleasepool中的对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	id __weak obj1 = obj;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//模拟代码</div><div class="line">id obj1;</div><div class="line">objc_initWeak(&amp;obj1, obj);</div><div class="line">objc_destroyWeak(&amp;obj1);</div></pre></td></tr></table></figure>
+<p>objc_initWeak()函数会先将__weak修饰变量初始化为空，然后再调用objc_storeWeak()将参数对象赋值给变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">obj1 = 0;</div><div class="line">objc_storeWeak(&amp;obj1, obj);</div></pre></td></tr></table></figure>
+<p>objc_destroyWeak()函数是调用objc_storeWeak()函数将空值赋给变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">objc_storeWeak(&amp;obj1, 0);</div></pre></td></tr></table></figure>
+<p>即上面整个过程等同于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">id obj1;</div><div class="line">obj1 = 0;</div><div class="line">objc_storeWeak(&amp;obj1, obj);</div><div class="line">objc_storeWeak(&amp;obj1, 0);</div></pre></td></tr></table></figure>
+<h4 id="autoreleasing"><a href="#autoreleasing" class="headerlink" title="__autoreleasing"></a>__autoreleasing</h4><p>前面说过使用__autoreleasing修饰符等同于非ARC模式下对象调用autorelease方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@autoreleasepool &#123;</div><div class="line">	id __autoreleasing obj = [[NSObject alloc] init];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等同于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//模拟代码</div><div class="line">id pool = objc_autoreleasePoolPush();</div><div class="line">id obj = objc_msgSend(NSObject, @selector(alloc));</div><div class="line">obj = objc_msgSend(obj, @selector(init));</div><div class="line">objc_autorelease(obj);</div><div class="line">objc_autoreleasePoolPop(pool);</div></pre></td></tr></table></figure>
+</div></article></div></main><footer><div class="paginator"><a href="/2013/05/20/基于node.js的apns和passbook服务/" class="prev">PREV</a><a href="/2012/05/20/hello-hexo/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

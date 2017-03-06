@@ -1,0 +1,105 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Logos · Esoft Mobile</title><meta name="description" content="Logos - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Logos</h1><div class="post-info">Mar 16, 2014</div><div class="post-content"><p>Logos作为<a href="http://iphonedevwiki.net/index.php/Theos" target="_blank" rel="external">Theos</a>开发组件的一部分，通过一组特殊的预处理指令，可以让编写函数钩子（hook）代码变得非常简单和清晰。</p>
+<p>Logos提供的语法大大的简化了<a href="http://iphonedevwiki.net/index.php/MobileSubstrate" target="_blank" rel="external">MobileSubstrate</a>拓展程序（tweaks，能够hook系统中其他方法）的开发，这里所说的“Method hooking”是指通过替换或修改的方式改变其他应用中某些类的某些方法。</p>
+<p>Logos是随着Theos发布的，你能够在用Theos创建的项目中直接使用Logos的语法。更多关于Theos的信息，请查看<a href="http://iphonedevwiki.net/index.php/Theos" target="_blank" rel="external">这里</a>。</p>
+<a id="more"></a>
+<p>##使用Logos</p>
+<p>###例子</p>
+<p>下面是由logify.pl（/theos/bin/logify.pl）生成的一个非常简单的Logos tweak的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">%hook AFHTTPRequestOperation</div><div class="line">- (NSHTTPURLResponse *)response &#123; %log; NSHTTPURLResponse * r = %orig; NSLog(@&quot; = %@&quot;, r); return r; &#125;</div><div class="line">- (void)setResponseSerializer:(AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; * )responseSerializer &#123; %log; %orig; &#125;</div><div class="line">- (AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; * )responseSerializer &#123; %log; AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; *  r = %orig; NSLog(@&quot; = 0x%x&quot;, (unsigned int)r); return r; &#125;</div><div class="line">- (id )responseObject &#123; %log; id  r = %orig; NSLog(@&quot; = %@&quot;, r); return r; &#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
+<p>你可以使用logify.pl来创建一个头文件的Logos源文件，用来打印该头文件中所有函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export THEOS=/opt/theos</div><div class="line">$THEOS/bin/logify.pl ./AFHTTPRequestOperation.h</div></pre></td></tr></table></figure>
+<p>###Logos指令表</p>
+<p>####%init</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">%init</div><div class="line">%init([&lt;class&gt;=&lt;expr&gt;, …])</div><div class="line">%init(Group[, [+|-]&lt;class&gt;=&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
+<p>用来初始化一个分组（group）或默认分组，如果不传参数会初始化“_ungrouped”分组，传 <code>class=expr</code> 参数会在指定类初始化的时候替换给定的表达式，<code>+</code>号（作为Objective-C中类方法）在对应的类名中能够优先处理来替换元类的表达式，如果没有特别指定，默认标记是<code>-</code>，只是替换当前类。</p>
+<p>####%hook</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%hook ClassName</div></pre></td></tr></table></figure>
+<p>指定要hook的类，以%end结束。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">%hook SBApplicationController</div><div class="line">-(void)uninstallApplication:(SBApplication *)application &#123;</div><div class="line">    NSLog(@&quot;Hey, we&apos;re hooking uninstallApplication:!&quot;);</div><div class="line">    %orig; // Call the original implementation of this method</div><div class="line">    return;</div><div class="line">&#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
+<p>####%subclass</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">%subclass Classname: Superclass &lt;Protocol, Protocol&gt;</div><div class="line"></div><div class="line">%new</div><div class="line">- (void)someNewAddedMethod</div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
+<p>用于申明在运行时创建的类，支持方法，但暂时不支持成员变量。如果增加父类中不存在的方法，需要给这些方法指定%new标识。对象实例化时，你需要用到%c标识。</p>
+<p>####%group</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%group GroupName</div><div class="line">%end</div></pre></td></tr></table></figure>
+<p>开始一个hook分组，通常用于条件执行或代码组织。所有没有特别指定的%hook都被归为“_grouped”分组。</p>
+<p>####%new</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%new</div><div class="line">%new(signature)</div></pre></td></tr></table></figure>
+<p>为被hook的类或子类增加新的方法，功能与<code>class_addMethod()</code>相同，<code>signature</code>是新方法的类型编码（Objective-C type encoding），如果不指定，会自动生成一个。</p>
+<p>####%ctor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">%ctor </div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>生成一个匿名构造函数(默认的优先级)。如果不指定，Theos会隐式定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%ctor &#123; %init(_ungrouped); &#125;</div></pre></td></tr></table></figure>
+<p>作为tweak程序的入口，可以用于做一些其他初始化处理，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">%ctor </div><div class="line">&#123;</div><div class="line">	%init;</div><div class="line">	if (kCFCoreFoundationVersionNumber &gt;= kCFCoreFoundationVersionNumber_iOS_7_0) &#123;</div><div class="line">		%init(HookGroupForIOS7);</div><div class="line">	&#125; else &#123;</div><div class="line">		%init(HookGroupForIOS6);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>####%end</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%end</div></pre></td></tr></table></figure>
+<p>结束%hook、 %subclass、 %group块。</p>
+<p>####%config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%config(X=Y);</div></pre></td></tr></table></figure>
+<p>设置一个logos配置标记。</p>
+<p>配置标记：</p>
+<ul>
+<li>generator<ul>
+<li><strong>MobileSubstrate</strong><br>生成使用 <a href="http://iphonedevwiki.net/index.php/MobileSubstrate" target="_blank" rel="external">MobileSubstrate</a>来hook的代码。</li>
+<li><strong>internal</strong><br>生成只使用内置的Objective-C运行时函数来hook的代码。</li>
+</ul>
+</li>
+<li>warnings<ul>
+<li><strong>none</strong><br>忽略所有警告。</li>
+<li><strong>default</strong><br>报告非致命的警告。</li>
+<li><strong>error</strong><br>所有警告当做错误处理。</li>
+</ul>
+</li>
+<li>dump<ul>
+<li><strong>yaml</strong><br>以YAML格式导出内部解析树。</li>
+<li><strong>perl</strong><br>以perl源码能处理的格式导出内部解析树。</li>
+</ul>
+</li>
+</ul>
+<p>####%c</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%c([+|-]Class)</div></pre></td></tr></table></figure>
+<p>在运行时获取一个类的定义，作用等同于<code>objc_getClass()</code>，<code>+</code>号获取元类，默认为<code>-</code>号，获取当前类。</p>
+<p>####%orig</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%orig</div><div class="line">%orig(arg1,arg2,arg3)</div></pre></td></tr></table></figure>
+<p>执行被hook函数的原始代码，不要在使用%new申明的方法中使用。奇怪的是能够在subclass中使用，因为MobileSubstrate在hook时会生成一个父调用闭包（supercall closure），如果所hook的函数在当前的类中不存在，就会调用父类的实现。参数会被传递给原始的函数，不用加<code>self</code>和<code>_cmd</code>，Logos已经帮你加了。</p>
+<p>####%log</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%log</div><div class="line">%log([(&lt;type&gt;)&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
+<p>默认将类名、函数名、参数等信息写入syslog，也可以追加其他信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">%hook SpringBoard</div><div class="line">- (void)menuButtonDown:(id)down</div><div class="line">&#123;</div><div class="line">	%log((NSString *)@&quot;hello&quot;, (NSString *)@&quot;MobileSubstrate&quot;);</div><div class="line">	%orig;	//调用原方法</div><div class="line">&#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
+<p>##Logos代码跨文件访问</p>
+<p>默认情况下，Logos的预处理器在Build时只会处理一个 .xm 文件。然而，也可以实现将Logos hook代码分割到多个文件中。首先，主文件（通常为Tweak.xm）需要改为 .xmi 格式；然后可以在它里面使用<code>#include</code>引入其他 .xm 文件。Logos的预处理器会在开始处理之前就将其他文件加到主文件，.xmi 会被优先处理。</p>
+<p>##Logos拓展名</p>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Process order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.x</td>
+<td>先被Logos处理，然后被作为Objective-C预处理和编译</td>
+</tr>
+<tr>
+<td>.xm</td>
+<td>先被Logos处理，然后被当做Objective-C++预处理和编译</td>
+</tr>
+<tr>
+<td>.xi</td>
+<td>首先被当做Objective-C预处理，然后由Logos处理结果，最后被编译</td>
+</tr>
+<tr>
+<td>.xmi</td>
+<td>首先被当做Objective-C++预处理，然后由Logos处理结果，最后被编译</td>
+</tr>
+</tbody>
+</table>
+<p>xi 和 xmi 文件能够使用Logos指令作为 <code>#define</code> 宏进行预处理。</p>
+<hr>
+<p>参考：  </p>
+<ul>
+<li><a href="http://iphonedevwiki.net/index.php/Logos" target="_blank" rel="external">http://iphonedevwiki.net/index.php/Logos</a></li>
+<li><a href="http://www.amazon.cn/iOS应用逆向工程-分析与实战-沙梓社/dp/B00HQW9AA6/ref=sr_1_1?ie=UTF8&amp;qid=1392363628&amp;sr=8-1&amp;keywords=ios逆向工程" target="_blank" rel="external">iOS应用逆向工程-分析与实战</a></li>
+</ul>
+</div></article></div></main><footer><div class="paginator"><a href="/2014/03/22/the-passionate-programmer/" class="prev">PREV</a><a href="/2014/02/19/method-swizzling/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
