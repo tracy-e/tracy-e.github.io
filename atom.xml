@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://esoftmobile.com/"/>
-  <updated>2017-03-07T09:41:31.000Z</updated>
+  <updated>2017-03-08T08:02:32.000Z</updated>
   <id>http://esoftmobile.com/</id>
   
   <author>
@@ -14,6 +14,69 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>flask 源码解析：路由</title>
+    <link href="http://esoftmobile.com/2017/03/08/flask-routing/"/>
+    <id>http://esoftmobile.com/2017/03/08/flask-routing/</id>
+    <published>2017-03-08T07:51:13.000Z</published>
+    <updated>2017-03-08T08:02:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="构建路由规则"><a href="#构建路由规则" class="headerlink" title="构建路由规则"></a>构建路由规则</h2><p>一个 web 应用不同的路径会有不同的处理函数，<strong>路由就是根据请求的 URL 找到对应处理函数的过程</strong>。</p>
+<p>在执行查找之前，需要有一个规则列表，它存储了 url 和处理函数的对应关系。最容易想到的解决方案就是定义一个字典，key 是 url，value 是对应的处理函数。如果 url 都是静态的（url 路径都是实现确定的，没有变量和正则匹配），那么路由的过程就是从字典中通过 url 这个 key ，找到并返回对应的 value；如果没有找到，就报 404 错误。而对于动态路由，还需要更复杂的匹配逻辑。flask 中的路由过程是这样的吗？这篇文章就来分析分析。</p>
+<a id="more"></a>
+<p>在分析路由匹配过程之前，我们先来看看 <code>flask</code> 中，构建这个路由规则的两种方法：</p>
+<ol>
+<li>通过 <code>@app.route()</code> decorator，比如文章开头给出的 hello world 例子</li>
+<li>通过 <code>app.add_url_rule</code>，这个方法的签名为 <code>add_url_rule(self, rule, endpoint=None, view_func=None, **options)</code>，参数的含义如下：<br>◦    <code>rule</code>： url 规则字符串，可以是静态的 /path，也可以包含 /<br>◦    <code>endpoint</code>：要注册规则的 endpoint，默认是 view_func 的名字<br>◦    <code>view_func</code>：对应 url 的处理函数，也被称为视图函数</li>
+</ol>
+<p>这两种方法是等价的，也就是说：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">"hello, world!"</span></div></pre></td></tr></table></figure>
+<p>也可以写成</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">"hello, world!"</span></div><div class="line">    </div><div class="line">app.add_url_rule(<span class="string">'/'</span>, <span class="string">'hello'</span>, hello)</div></pre></td></tr></table></figure>
+<p><em>NOTE: 其实，还有一种方法来构建路由规则——直接操作 <code>app.url_map</code> 这个数据结构。不过这种方法并不是很常用，因此就不展开了。</em></p>
+<p>注册路由规则的时候，flask 内部做了哪些东西呢？我们来看看 <code>route</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">route</span><span class="params">(self, rule, **options)</span>:</span></div><div class="line">    <span class="string">"""A decorator that is used to register a view function for a</span></div><div class="line">    given URL rule.  This does the same thing as :meth:`add_url_rule`</div><div class="line">    but is intended for decorator usage.</div><div class="line">    """</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(f)</span>:</span></div><div class="line">        endpoint = options.pop(<span class="string">'endpoint'</span>, <span class="keyword">None</span>)</div><div class="line">        self.add_url_rule(rule, endpoint, f, **options)</div><div class="line">        <span class="keyword">return</span> f</div><div class="line"></div><div class="line">    <span class="keyword">return</span> decorator</div></pre></td></tr></table></figure>
+<p><code>route</code> 方法内部也是调用 <code>add_url_rule</code>，只不过在外面包了一层装饰器的逻辑，这也验证了上面两种方法等价的说法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_url_rule</span><span class="params">(self, rule, endpoint=None, view_func=None, **options)</span>:</span></div><div class="line">    <span class="string">"""Connects a URL rule.  Works exactly like the :meth:`route`</span></div><div class="line">    decorator.  If a view_func is provided it will be registered with the</div><div class="line">    endpoint.</div><div class="line">    """</div><div class="line"></div><div class="line">    methods = options.pop(<span class="string">'methods'</span>, <span class="keyword">None</span>)</div><div class="line"></div><div class="line">    rule = self.url_rule_class(rule, methods=methods, **options)</div><div class="line">    self.url_map.add(rule)</div><div class="line">    <span class="keyword">if</span> view_func <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        old_func = self.view_functions.get(endpoint)</div><div class="line">        <span class="keyword">if</span> old_func <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> old_func != view_func:</div><div class="line">            <span class="keyword">raise</span> AssertionError(<span class="string">'View function mapping is overwriting an '</span></div><div class="line">                                 <span class="string">'existing endpoint function: %s'</span> % endpoint)</div><div class="line">        self.view_functions[endpoint] = view_func</div></pre></td></tr></table></figure>
+<p>上面这段代码省略了处理 endpoint 和构建 methods 的部分逻辑，可以看到它主要做的事情就是更新 <code>self.url_map</code> 和 <code>self.view_functions</code> 两个变量。找到变量的定义，发现 <code>url_map</code> 是 <code>werkzeug.routeing:Map</code> 类的对象，<code>rule</code> 是 <code>werkzeug.routing:Rule</code> 类的对象，<code>view_functions</code> 就是一个字典。这和我们之前预想的并不一样，这里增加了 Rule 和 Map 的封装，还把 url 和 view_func 保存到了不同的地方。</p>
+<p>需要注意的是：每个视图函数的 endpoint 必须是不同的，否则会报 <code>AssertionError</code>。</p>
+<h2 id="werkzeug-路由逻辑"><a href="#werkzeug-路由逻辑" class="headerlink" title="werkzeug 路由逻辑"></a>werkzeug 路由逻辑</h2><p>事实上，flask 核心的路由逻辑是在 <code>werkzeug</code> 中实现的。所以在继续分析之前，我们先看一下 <code>werkzeug</code> 提供的路由功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>m = Map([</div><div class="line"><span class="meta">... </span>    Rule(<span class="string">'/'</span>, endpoint=<span class="string">'index'</span>),</div><div class="line"><span class="meta">... </span>    Rule(<span class="string">'/downloads/'</span>, endpoint=<span class="string">'downloads/index'</span>),</div><div class="line"><span class="meta">... </span>    Rule(<span class="string">'/downloads/&lt;int:id&gt;'</span>, endpoint=<span class="string">'downloads/show'</span>)</div><div class="line"><span class="meta">... </span>])</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>urls = m.bind(<span class="string">"example.com"</span>, <span class="string">"/"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>urls.match(<span class="string">"/"</span>, <span class="string">"GET"</span>)</div><div class="line">(<span class="string">'index'</span>, &#123;&#125;)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>urls.match(<span class="string">"/downloads/42"</span>)</div><div class="line">(<span class="string">'downloads/show'</span>, &#123;<span class="string">'id'</span>: <span class="number">42</span>&#125;)</div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>urls.match(<span class="string">"/downloads"</span>)</div><div class="line">Traceback (most recent call last):</div><div class="line">  ...</div><div class="line">RequestRedirect: http://example.com/downloads/</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>urls.match(<span class="string">"/missing"</span>)</div><div class="line">Traceback (most recent call last):</div><div class="line">  ...</div><div class="line">NotFound: <span class="number">404</span> Not Found</div></pre></td></tr></table></figure>
+<p>上面的代码演示了 <code>werkzeug</code> 最核心的路由功能：添加路由规则（也可以使用 <code>m.add</code>），把路由表绑定到特定的环境（<code>m.bind</code>），匹配url（<code>urls.match</code>）。正常情况下返回对应的 endpoint 名字和参数字典，可能报重定向或者 404 异常。</p>
+<p>可以发现，endpoint 在路由过程中非常重要。<code>werkzeug</code> 的路由过程，其实是 url 到 endpoint 的转换：通过 url 找到处理该 url 的 endpoint。至于 endpoint 和 view function 之间的匹配关系，<code>werkzeug</code> 是不管的，而上面也看到 flask 是把这个存放到字典中的。</p>
+<h2 id="flask-路由实现"><a href="#flask-路由实现" class="headerlink" title="flask 路由实现"></a>flask 路由实现</h2><p>好，有了这些基础知识，我们回头看 <code>dispatch_request</code>，继续探寻路由匹配的逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Does the request dispatching.  Matches the URL and returns the</span></div><div class="line">    return value of the view or error handler.  This does not have to</div><div class="line">    be a response object.  In order to convert the return value to a</div><div class="line">    proper response object, call :func:`make_response`.</div><div class="line">    """</div><div class="line"></div><div class="line">    req = _request_ctx_stack.top.request</div><div class="line">    <span class="keyword">if</span> req.routing_exception <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        self.raise_routing_exception(req)</div><div class="line">    rule = req.url_rule</div><div class="line"></div><div class="line">    <span class="comment"># dispatch to the handler for that endpoint</span></div><div class="line">    <span class="keyword">return</span> self.view_functions[rule.endpoint](**req.view_args)</div></pre></td></tr></table></figure>
+<p>这个方法做的事情就是找到请求对象 <code>request</code>，获取它的 <code>endpoint</code>，然后从 <code>view_functions</code> 找到对应 <code>endpoint</code> 的 <code>view_func</code> ，把请求参数传递过去，进行处理并返回。<code>view_functions</code> 中的内容，我们已经看到，是在构建路由规则的时候保存进去的；那请求中 req.url_rule 是什么保存进去的呢？它的格式又是什么？</p>
+<p>我们可以先这样理解：<code>_request_ctx_stack.top.request</code> 保存着当前请求的信息，在每次请求过来的时候，flask 会把当前请求的信息保存进去，这样我们就能在整个请求处理过程中使用它。至于怎么做到并发情况下信息不会相互干扰错乱，我们将在下一篇文章介绍。</p>
+<p><code>_request_ctx_stack</code> 中保存的是 <code>RequestContext</code> 对象，它出现在 <code>flask/globals.py</code> 文件中，和路由相关的逻辑如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None)</span>:</span></div><div class="line">        self.app = app</div><div class="line">        self.request = request</div><div class="line">        self.url_adapter = app.create_url_adapter(self.request)</div><div class="line">        self.match_request()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">match_request</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""Can be overridden by a subclass to hook into the matching</span></div><div class="line">        of the request.</div><div class="line">        """</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            url_rule, self.request.view_args = \</div><div class="line">                self.url_adapter.match(return_rule=<span class="keyword">True</span>)</div><div class="line">            self.request.url_rule = url_rule</div><div class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</div><div class="line">            self.request.routing_exception = e</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flask</span><span class="params">(_PackageBoundObject)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create_url_adapter</span><span class="params">(self, request)</span>:</span></div><div class="line">        <span class="string">"""Creates a URL adapter for the given request.  The URL adapter</span></div><div class="line">        is created at a point where the request context is not yet set up</div><div class="line">        so the request is passed explicitly.</div><div class="line">        """</div><div class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> self.url_map.bind_to_environ(request.environ,</div><div class="line">                server_name=self.config[<span class="string">'SERVER_NAME'</span>])</div></pre></td></tr></table></figure>
+<p>在初始化的时候，会调用 <code>app.create_url_adapter</code> 方法，把 <code>app</code> 的 <code>url_map</code> 绑定到 WSGI environ 变量上（<code>bind_to_environ</code> 和之前的 <code>bind</code> 方法作用相同）。最后会调用 <code>match_request</code> 方法，这个方式调用了 <code>url_adapter.match</code> 方法，进行实际的匹配工作，返回匹配的 url rule。而我们之前使用的 <code>url_rule.endpoint</code> 就是匹配的 endpoint 值。</p>
+<p>整个 flask 的路由过程就结束了，总结一下大致的流程：</p>
+<ul>
+<li>通过 @app.route 或者 app.add_url_rule 注册应用 url 对应的处理函数</li>
+<li>每次请求过来的时候，会事先调用路由匹配的逻辑，把路由结果保存起来</li>
+<li>dispatch_request 根据保存的路由结果，调用对应的视图函数</li>
+</ul>
+<h2 id="match-实现"><a href="#match-实现" class="headerlink" title="match 实现"></a>match 实现</h2><p>虽然讲完了 flask 的路由流程，但是还没有讲到最核心的问题：werkzeug 中是怎么实现 match 方法的。Map 保存了 Rule 列表，match 的时候会依次调用其中的 rule.match 方法，如果匹配就找到了 match。Rule.match 方法的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">match</span><span class="params">(self, path)</span>:</span></div><div class="line">        <span class="string">"""Check if the rule matches a given path. Path is a string in the</span></div><div class="line">        form ``"subdomain|/path(method)"`` and is assembled by the map.  If</div><div class="line">        the map is doing host matching the subdomain part will be the host</div><div class="line">        instead.</div><div class="line"></div><div class="line">        If the rule matches a dict with the converted values is returned,</div><div class="line">        otherwise the return value is `None`.</div><div class="line">        """</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.build_only:</div><div class="line">            m = self._regex.search(path)</div><div class="line">            <span class="keyword">if</span> m <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">                groups = m.groupdict()</div><div class="line"></div><div class="line">                result = &#123;&#125;</div><div class="line">                <span class="keyword">for</span> name, value <span class="keyword">in</span> iteritems(groups):</div><div class="line">                    <span class="keyword">try</span>:</div><div class="line">                        value = self._converters[name].to_python(value)</div><div class="line">                    <span class="keyword">except</span> ValidationError:</div><div class="line">                        <span class="keyword">return</span></div><div class="line">                    result[str(name)] = value</div><div class="line">                <span class="keyword">if</span> self.defaults:</div><div class="line">                    result.update(self.defaults)</div><div class="line"></div><div class="line">                <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
+<p>它的逻辑是这样的：用实现 compile 的正则表达式去匹配给出的真实路径信息，把所有的匹配组件转换成对应的值，保存在字典中（这就是传递给视图函数的参数列表）并返回。</p>
+<p><em>本文转自<a href="http://cizixs.com/2017/01/12/flask-insight-routing" target="_blank" rel="external">Cizixs Writes Here</a></em></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;构建路由规则&quot;&gt;&lt;a href=&quot;#构建路由规则&quot; class=&quot;headerlink&quot; title=&quot;构建路由规则&quot;&gt;&lt;/a&gt;构建路由规则&lt;/h2&gt;&lt;p&gt;一个 web 应用不同的路径会有不同的处理函数，&lt;strong&gt;路由就是根据请求的 URL 找到对应处理函数的过程&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在执行查找之前，需要有一个规则列表，它存储了 url 和处理函数的对应关系。最容易想到的解决方案就是定义一个字典，key 是 url，value 是对应的处理函数。如果 url 都是静态的（url 路径都是实现确定的，没有变量和正则匹配），那么路由的过程就是从字典中通过 url 这个 key ，找到并返回对应的 value；如果没有找到，就报 404 错误。而对于动态路由，还需要更复杂的匹配逻辑。flask 中的路由过程是这样的吗？这篇文章就来分析分析。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+  </entry>
   
   <entry>
     <title>flask 源码解析：应用启动流程</title>
@@ -1741,232 +1804,6 @@ found 1 devices
     
     
       <category term="iOS" scheme="http://esoftmobile.com/tags/iOS/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Xcode预置Sinppets知多少</title>
-    <link href="http://esoftmobile.com/2013/09/06/xcode%E9%A2%84%E7%BD%AEsinppets%E7%9F%A5%E5%A4%9A%E5%B0%91/"/>
-    <id>http://esoftmobile.com/2013/09/06/xcode预置sinppets知多少/</id>
-    <published>2013-09-06T06:04:33.000Z</published>
-    <updated>2013-09-17T12:15:58.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="http://nshipster.com" target="_blank" rel="external">NSHipster</a>本周的主题是<a href="http://nshipster.com/xcode-snippets/" target="_blank" rel="external">《Xcode Snippets》</a>，并将他们常用的Snippets放在了<a href="https://github.com/mattt/Xcode-Snippets" target="_blank" rel="external">GitHub</a>，又引来很多粉丝疯狂的Star，我也过去观望了一下，其实内容不多，而且也没有什么太多的亮点，我觉得只要你平时注意积累和整理自己的Snippets，效果一定比从别人那里Fork来用要好得多。什么？你还不知道Snippets是什么？那你弄清楚了再来看！</p>
-<p>其实我平时也不太注意Sinppets的积累和整理，所以决定从现在起开始。在积累自己的Sinppets前，我先大致看了一下Xcode预置的Sinppets，发现不少我曾经千百次敲的代码Sinppets里面都有，所以觉得有比较写成文章记录一下。</p>
-<h1 id="Sinppets"><a href="#Sinppets" class="headerlink" title="Sinppets"></a>Sinppets</h1><p>现在就按顺序将Xcode预置的Sinppets过一遍。</p>
-<a id="more"></a>
-<p>###C Block typedef</p>
-<p>Shortcut: <code>typedefBlock</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">typedef &lt;#return type#&gt;(^&lt;#block name#&gt;)(&lt;#arguments#&gt;);</div></pre></td></tr></table></figure>
-<p>###C Inline Block as Variable</p>
-<p>Shortcut: <code>inlineBlock</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;#Return Type#&gt;(^&lt;#Block Name#&gt;)(&lt;#Parameter Types#&gt;) = ^(&lt;#Parameters#&gt;) &#123;</div><div class="line">    &lt;#Code#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C typedef</p>
-<p>Shortcut: <code>typedef</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">typedef &lt;#existing#&gt; &lt;#new#&gt;;</div></pre></td></tr></table></figure>
-<p>###C++ Class Declaration</p>
-<p>Shortcut: <code>classdef</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">class &lt;#class name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line"></div><div class="line">public:</div><div class="line">  &lt;#member functions#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C++ Class Template</p>
-<p>Shortcut: <code>templateclass</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">template &lt;&lt;#template parameters#&gt;&gt;</div><div class="line">class &lt;#class name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line"></div><div class="line">public:</div><div class="line">  &lt;#member functions#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C++ Function Template</p>
-<p>Shortcut: <code>templatefunction</code></p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template &lt;&lt;#template parameters#&gt;&gt;</div><div class="line">&lt;#return type#&gt; &lt;#function name#&gt;(&lt;#function parameters#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Namespace Definition</p>
-<p>Shortcut: <code>namespace</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">namespace &lt;#namespace name#&gt; &#123;</div><div class="line">  &lt;#declarations#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Try / Catch Block</p>
-<p>Shortcut: <code>try</code></p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125; catch (&lt;#catch parameter#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Using Directive</p>
-<p>Shortcut: <code>using namespace</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">using namespace &lt;#namespace name#&gt;</div></pre></td></tr></table></figure>
-<p>###Core Data Basic Fetch</p>
-<p>Shortcut: </p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot; inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    &lt;#Error handling code#&gt;</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div></pre></td></tr></table></figure>
-<blockquote>
-<p>比较奇怪的是所有Core Data相关的Snippets都没有提供Shortcut，有知道的朋友麻烦留言告诉我。</p>
-</blockquote>
-<p>###Core Data Fetch with a Predicate</p>
-<p>Shortcut: </p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot; inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;&lt;#Predicate string#&gt;&quot;, &lt;#Predicate arguments#&gt;];</div><div class="line">[fetchRequest setPredicate:predicate];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    &lt;#Error handling code#&gt;</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div></pre></td></tr></table></figure>
-<p>###Core Data Fetch with Sorting</p>
-<p>Shortcut:</p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot;</div><div class="line">inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@&quot;&lt;#Sort key#&gt;&quot;</div><div class="line">ascending:YES];</div><div class="line">NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];</div><div class="line">[fetchRequest setSortDescriptors:sortDescriptors];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    // Handle the error</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div><div class="line">[sortDescriptor release];</div><div class="line">[sortDescriptors release];</div></pre></td></tr></table></figure>
-<p>###Core Data Property Accessors</p>
-<p>Shortcut:</p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">- (&lt;#Property type#&gt; *)&lt;#Property name#&gt;</div><div class="line">&#123;</div><div class="line">    [self willAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property type#&gt; *tmpValue = [self primitiveValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self didAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    return tmpValue;</div><div class="line">&#125;</div><div class="line">            </div><div class="line">- (void)set&lt;#Capitalized property name#&gt;:(&lt;#Property type#&gt; *)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self setPrimitiveValue:value forKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data Propery Validation</p>
-<p>Shortcut:</p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- (BOOL)validate&lt;#Capitalized property name#&gt;:(id *)valueRef error:(NSError **)outError</div><div class="line">&#123;</div><div class="line">    BOOL validationResult = YES;</div><div class="line">    &lt;#Validation code#&gt;</div><div class="line">    return validationResult;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data Scalar Property Accessors</p>
-<p>Shortcut:</p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">- (&lt;#Property type#&gt;)&lt;#Property name#&gt;</div><div class="line">&#123;</div><div class="line">    [self willAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property type#&gt; *tmpValue = &lt;#Property name#&gt;;</div><div class="line">    [self didAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    return tmpValue;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)set&lt;#Capitalized property name#&gt;:(&lt;#Property type#&gt;)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property name#&gt; = value;</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data To-Many Relationship Accessors</p>
-<p>Shortcut:</p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">- (void)add&lt;#Capitalized relationship name#&gt;Object:(&lt;#Relationship destination class#&gt; *)value</div><div class="line">&#123;    </div><div class="line">    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&amp;value count:1];</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] addObject:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];</div><div class="line">    [changedObjects release];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)remove&lt;#Capitalized relationship name#&gt;Object:(&lt;#Relationship destination class#&gt; *)value</div><div class="line">&#123;</div><div class="line">    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&amp;value count:1];</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] removeObject:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];</div><div class="line">    [changedObjects release];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)add&lt;#Capitalized relationship name#&gt;:(NSSet *)value</div><div class="line">&#123;    </div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] unionSet:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)remove&lt;#Capitalized relationship name#&gt;:(NSSet *)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] minusSet:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Do-While Statement</p>
-<p>Shortcut: <code>dowhile</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">do &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125; while (&lt;#condition#&gt;);</div></pre></td></tr></table></figure>
-<p>###Enumerate Index Set</p>
-<p>Shortcut:</p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">NSUInteger index = [&lt;#index set#&gt; firstIndex];</div><div class="line"></div><div class="line">while (index != NSNotFound) &#123;</div><div class="line">    // Do something with index</div><div class="line">    index = [&lt;#index set#&gt;  indexGreaterThanIndex:index];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Enumerate Index Set In Reverse</p>
-<p>Shortcut: </p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">NSUInteger index = [&lt;#index set#&gt; lastIndex];</div><div class="line"></div><div class="line">while (index != NSNotFound) &#123;</div><div class="line">    // Do something with index.</div><div class="line">    index = [&lt;#index set#&gt; indexLessThanIndex:index];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>同样，已上两个也没有提供Shortcut。</p>
-</blockquote>
-<p>###Enumeration Declaration</p>
-<p>Shortcut: <code>enumdef</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">enum &lt;#enumeration name#&gt; &#123;</div><div class="line">  &lt;#enumerator1#&gt; = &lt;#value1#&gt;,</div><div class="line">  &lt;#enumerator2#&gt; = &lt;#value2#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###For Statement</p>
-<p>Shortcut: <code>for</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for (&lt;#initialization#&gt;; &lt;#condition#&gt;; &lt;#increment#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###GCD: Dispatch After</p>
-<p>Shortcut: <code>dispatch_after</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">double delayInSeconds = 2.0;</div><div class="line">dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));</div><div class="line">dispatch_after(popTime, dispatch_get_main_queue(), ^(void)&#123;</div><div class="line">    &lt;#code to be executed on the main queue after delay#&gt;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>###GCD: Dispatch Once</p>
-<p>Shortcut: <code>dispatch_once</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t onceToken;</div><div class="line">dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">    &lt;#code to be executed once#&gt;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>###If Statement</p>
-<p>Shortcut: <code>if</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###If-Else Statement</p>
-<p>Shortcut: <code>ifelse</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements-if-true#&gt;</div><div class="line">&#125; else &#123;</div><div class="line">  &lt;#statements-if-false#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Autoreleasing Block</p>
-<p>Shortcut: <code>@autoreleasepool</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@autoreleasepool &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Catch Block</p>
-<p>Shortcut: <code>@catch</code></p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@catch (&lt;#exception#&gt;) &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Category</p>
-<p>Shortcut: <code>@interface-category</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; (&lt;#category name#&gt;)</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Category Implementation</p>
-<p>Shortcut: <code>@implementation-category</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@implementation &lt;#class#&gt; (&lt;#category name#&gt;)</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Declaration</p>
-<p>Shortcut: <code>@interface</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; : &lt;#superclass#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Extension</p>
-<p>Shortcut: <code>@interface-extension</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; ()</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Implementation</p>
-<p>Shortcut: <code>@implementation</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@implementation &lt;#class#&gt;</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C dealloc Method</p>
-<p>Shortcut: <code>dealloc</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">- (void)dealloc</div><div class="line">&#123;</div><div class="line">    &lt;#deallocations#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Fast Enumeration</p>
-<p>Shortcut: <code>forin</code></p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for (&lt;#type *object#&gt; in &lt;#collection#&gt;) &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Finally Block</p>
-<p>Shortcut: <code>@finally</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@finally &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C init Method</p>
-<p>Shortcut: <code>init</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)init</div><div class="line">&#123;</div><div class="line">    self = [super init];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C KVO: Observe Value For Keypath</p>
-<p>Shortcut: <code>observeValueForKeyPath</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context</div><div class="line">&#123;</div><div class="line">    if (context == &lt;#context#&gt;) &#123;</div><div class="line">        &lt;#code to be executed upon observing keypath#&gt;</div><div class="line">    &#125; else &#123;</div><div class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C KVO: Values affecting Key</p>
-<p>Shortcut: <code>keyPathsForValuesAffecting</code></p>
-<p>Code: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">+ (NSSet *)keyPathsForValuesAffecting&lt;#Dependent Key#&gt;</div><div class="line">&#123;</div><div class="line">    return [NSSet setWithObjects:@&quot;&lt;#key1#&gt;&quot;, nil];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Protocol Definition</p>
-<p>Shortcut: <code>@protocol</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@protocol &lt;#protocol name#&gt; &lt;NSObject&gt;</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Try / Catch Block</p>
-<p>Shortcut: <code>@try</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@try &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div><div class="line">@catch (NSException *exception) &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div><div class="line">@finally &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Struct Declaration</p>
-<p>Shortcut: <code>structdef</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">struct &lt;#struct name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###Switch Statement</p>
-<p>Shortcut: <code>switch</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">switch (&lt;#expression#&gt;) &#123;</div><div class="line">  case &lt;#constant#&gt;:</div><div class="line">    &lt;#statements#&gt;</div><div class="line">    break;</div><div class="line"></div><div class="line">  default:</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Test Method</p>
-<p>Shortcut: <code>test</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (void) test&lt;#Name#&gt; &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Union Declaration</p>
-<p>Shortcut: <code>uniondef</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">union &lt;#union name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###While Statement</p>
-<p>Shortcut: <code>while</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">while (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C NSCoding initWithCoder Method</p>
-<p>Shortcut: <code>initWithCoder</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)initWithCoder:(NSCoder *)coder</div><div class="line">&#123;</div><div class="line">    self = [super initWithCoder:coder];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C NSView initWithFrame Method</p>
-<p>Shortcut: <code>initWithFrame</code></p>
-<p>Code:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)initWithFrame:(NSRect)frame</div><div class="line">&#123;</div><div class="line">    self = [super initWithFrame:frame];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>复制粘贴真累，上面贴出来这么长，其实很多根本就不用记，比如：<code>for</code>， <code>typedef</code>等，可以当成Xcode代码补齐功能 ， 但有的使用可能需要注意一些条件，如：<code>init</code>，<code>dealloc</code>，如果你习惯于一写方法就先写<code>-(id)</code>或<code>-(void)</code>，那么再打<code>init</code>，<code>dealloc</code>就千呼万唤使不出来了，我就躺枪了，你呢？ 还有像 <code>observeValueForKeyPath</code> 和 <code>keyPathsForValuesAffecting</code> 确实不知道，不知道有没有常用KVO的将这两个方法自己又加一遍Snippets？</p>
-<p>当然Snippets在添加时可以设置如支持的平台（OS X or iOS），语言环境以及使用的位置（Completion Scopes）,用系统预置的Snippets就不用管那么多了，反正苹果会将这些设置为最合理的就是了，我们自己添加Snippets时就得多考虑一下这些设置的参数了。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://nshipster.com&quot;&gt;NSHipster&lt;/a&gt;本周的主题是&lt;a href=&quot;http://nshipster.com/xcode-snippets/&quot;&gt;《Xcode Snippets》&lt;/a&gt;，并将他们常用的Snippets放在了&lt;a href=&quot;https://github.com/mattt/Xcode-Snippets&quot;&gt;GitHub&lt;/a&gt;，又引来很多粉丝疯狂的Star，我也过去观望了一下，其实内容不多，而且也没有什么太多的亮点，我觉得只要你平时注意积累和整理自己的Snippets，效果一定比从别人那里Fork来用要好得多。什么？你还不知道Snippets是什么？那你弄清楚了再来看！&lt;/p&gt;
-&lt;p&gt;其实我平时也不太注意Sinppets的积累和整理，所以决定从现在起开始。在积累自己的Sinppets前，我先大致看了一下Xcode预置的Sinppets，发现不少我曾经千百次敲的代码Sinppets里面都有，所以觉得有比较写成文章记录一下。&lt;/p&gt;
-&lt;h1 id=&quot;Sinppets&quot;&gt;&lt;a href=&quot;#Sinppets&quot; class=&quot;headerlink&quot; title=&quot;Sinppets&quot;&gt;&lt;/a&gt;Sinppets&lt;/h1&gt;&lt;p&gt;现在就按顺序将Xcode预置的Sinppets过一遍。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="Objective-C" scheme="http://esoftmobile.com/tags/Objective-C/"/>
-    
-      <category term="Xcode" scheme="http://esoftmobile.com/tags/Xcode/"/>
-    
-      <category term="Sinppets" scheme="http://esoftmobile.com/tags/Sinppets/"/>
     
   </entry>
   

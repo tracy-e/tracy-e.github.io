@@ -1,201 +1,156 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Xcode预置Sinppets知多少 · Esoft Mobile</title><meta name="description" content="Xcode预置Sinppets知多少 - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="https://shop461430871.taobao.com" target="_blank" class="nav-list-link">TAOBAO</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Xcode预置Sinppets知多少</h1><div class="post-info">Sep 6, 2013</div><div class="post-content"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="http://nshipster.com" target="_blank" rel="external">NSHipster</a>本周的主题是<a href="http://nshipster.com/xcode-snippets/" target="_blank" rel="external">《Xcode Snippets》</a>，并将他们常用的Snippets放在了<a href="https://github.com/mattt/Xcode-Snippets" target="_blank" rel="external">GitHub</a>，又引来很多粉丝疯狂的Star，我也过去观望了一下，其实内容不多，而且也没有什么太多的亮点，我觉得只要你平时注意积累和整理自己的Snippets，效果一定比从别人那里Fork来用要好得多。什么？你还不知道Snippets是什么？那你弄清楚了再来看！</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Xcode预置Sinppets知多少 · Esoft Mobile</title><meta name="description" content="Xcode预置Sinppets知多少 - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Xcode预置Sinppets知多少</h1><div class="post-info">Sep 6, 2013</div><div class="post-content"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="http://nshipster.com" target="_blank" rel="external">NSHipster</a>本周的主题是<a href="http://nshipster.com/xcode-snippets/" target="_blank" rel="external">《Xcode Snippets》</a>，并将他们常用的Snippets放在了<a href="https://github.com/mattt/Xcode-Snippets" target="_blank" rel="external">GitHub</a>，又引来很多粉丝疯狂的Star，我也过去观望了一下，其实内容不多，而且也没有什么太多的亮点，我觉得只要你平时注意积累和整理自己的Snippets，效果一定比从别人那里Fork来用要好得多。什么？你还不知道Snippets是什么？那你弄清楚了再来看！</p>
 <p>其实我平时也不太注意Sinppets的积累和整理，所以决定从现在起开始。在积累自己的Sinppets前，我先大致看了一下Xcode预置的Sinppets，发现不少我曾经千百次敲的代码Sinppets里面都有，所以觉得有比较写成文章记录一下。</p>
 <h1 id="Sinppets"><a href="#Sinppets" class="headerlink" title="Sinppets"></a>Sinppets</h1><p>现在就按顺序将Xcode预置的Sinppets过一遍。</p>
 <a id="more"></a>
-<p>###C Block typedef</p>
-<p>Shortcut: <code>typedefBlock</code></p>
+<h3 id="C-Block-typedef"><a href="#C-Block-typedef" class="headerlink" title="C Block typedef"></a>C Block typedef</h3><p>Shortcut: <code>typedefBlock</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">typedef &lt;#return type#&gt;(^&lt;#block name#&gt;)(&lt;#arguments#&gt;);</div></pre></td></tr></table></figure>
-<p>###C Inline Block as Variable</p>
-<p>Shortcut: <code>inlineBlock</code></p>
+<h3 id="C-Inline-Block-as-Variable"><a href="#C-Inline-Block-as-Variable" class="headerlink" title="C Inline Block as Variable"></a>C Inline Block as Variable</h3><p>Shortcut: <code>inlineBlock</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;#Return Type#&gt;(^&lt;#Block Name#&gt;)(&lt;#Parameter Types#&gt;) = ^(&lt;#Parameters#&gt;) &#123;</div><div class="line">    &lt;#Code#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C typedef</p>
-<p>Shortcut: <code>typedef</code></p>
+<h3 id="C-typedef"><a href="#C-typedef" class="headerlink" title="C typedef"></a>C typedef</h3><p>Shortcut: <code>typedef</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">typedef &lt;#existing#&gt; &lt;#new#&gt;;</div></pre></td></tr></table></figure>
-<p>###C++ Class Declaration</p>
-<p>Shortcut: <code>classdef</code></p>
+<h3 id="C-Class-Declaration"><a href="#C-Class-Declaration" class="headerlink" title="C++ Class Declaration"></a>C++ Class Declaration</h3><p>Shortcut: <code>classdef</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">class &lt;#class name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line"></div><div class="line">public:</div><div class="line">  &lt;#member functions#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C++ Class Template</p>
-<p>Shortcut: <code>templateclass</code></p>
+<h3 id="C-Class-Template"><a href="#C-Class-Template" class="headerlink" title="C++ Class Template"></a>C++ Class Template</h3><p>Shortcut: <code>templateclass</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">template &lt;&lt;#template parameters#&gt;&gt;</div><div class="line">class &lt;#class name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line"></div><div class="line">public:</div><div class="line">  &lt;#member functions#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###C++ Function Template</p>
-<p>Shortcut: <code>templatefunction</code></p>
+<h3 id="C-Function-Template"><a href="#C-Function-Template" class="headerlink" title="C++ Function Template"></a>C++ Function Template</h3><p>Shortcut: <code>templatefunction</code></p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template &lt;&lt;#template parameters#&gt;&gt;</div><div class="line">&lt;#return type#&gt; &lt;#function name#&gt;(&lt;#function parameters#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Namespace Definition</p>
-<p>Shortcut: <code>namespace</code></p>
+<h3 id="C-Namespace-Definition"><a href="#C-Namespace-Definition" class="headerlink" title="C++ Namespace Definition"></a>C++ Namespace Definition</h3><p>Shortcut: <code>namespace</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">namespace &lt;#namespace name#&gt; &#123;</div><div class="line">  &lt;#declarations#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Try / Catch Block</p>
-<p>Shortcut: <code>try</code></p>
+<h3 id="C-Try-Catch-Block"><a href="#C-Try-Catch-Block" class="headerlink" title="C++ Try / Catch Block"></a>C++ Try / Catch Block</h3><p>Shortcut: <code>try</code></p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125; catch (&lt;#catch parameter#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###C++ Using Directive</p>
-<p>Shortcut: <code>using namespace</code></p>
+<h3 id="C-Using-Directive"><a href="#C-Using-Directive" class="headerlink" title="C++ Using Directive"></a>C++ Using Directive</h3><p>Shortcut: <code>using namespace</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">using namespace &lt;#namespace name#&gt;</div></pre></td></tr></table></figure>
-<p>###Core Data Basic Fetch</p>
-<p>Shortcut: </p>
+<h3 id="Core-Data-Basic-Fetch"><a href="#Core-Data-Basic-Fetch" class="headerlink" title="Core Data Basic Fetch"></a>Core Data Basic Fetch</h3><p>Shortcut: </p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot; inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    &lt;#Error handling code#&gt;</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div></pre></td></tr></table></figure>
 <blockquote>
 <p>比较奇怪的是所有Core Data相关的Snippets都没有提供Shortcut，有知道的朋友麻烦留言告诉我。</p>
 </blockquote>
-<p>###Core Data Fetch with a Predicate</p>
-<p>Shortcut: </p>
+<h3 id="Core-Data-Fetch-with-a-Predicate"><a href="#Core-Data-Fetch-with-a-Predicate" class="headerlink" title="Core Data Fetch with a Predicate"></a>Core Data Fetch with a Predicate</h3><p>Shortcut: </p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot; inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;&lt;#Predicate string#&gt;&quot;, &lt;#Predicate arguments#&gt;];</div><div class="line">[fetchRequest setPredicate:predicate];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    &lt;#Error handling code#&gt;</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div></pre></td></tr></table></figure>
-<p>###Core Data Fetch with Sorting</p>
-<p>Shortcut:</p>
+<h3 id="Core-Data-Fetch-with-Sorting"><a href="#Core-Data-Fetch-with-Sorting" class="headerlink" title="Core Data Fetch with Sorting"></a>Core Data Fetch with Sorting</h3><p>Shortcut:</p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];</div><div class="line">NSEntityDescription *entity = [NSEntityDescription entityForName:@&quot;&lt;#Entity name#&gt;&quot;</div><div class="line">inManagedObjectContext:&lt;#context#&gt;];</div><div class="line">[fetchRequest setEntity:entity];</div><div class="line"></div><div class="line">NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@&quot;&lt;#Sort key#&gt;&quot;</div><div class="line">ascending:YES];</div><div class="line">NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];</div><div class="line">[fetchRequest setSortDescriptors:sortDescriptors];</div><div class="line"></div><div class="line">NSError *error = nil;</div><div class="line">NSArray *fetchedObjects = [&lt;#context#&gt; executeFetchRequest:fetchRequest error:&amp;error];</div><div class="line">if (fetchedObjects == nil) &#123;</div><div class="line">    // Handle the error</div><div class="line">&#125;</div><div class="line"></div><div class="line">[fetchRequest release];</div><div class="line">[sortDescriptor release];</div><div class="line">[sortDescriptors release];</div></pre></td></tr></table></figure>
-<p>###Core Data Property Accessors</p>
-<p>Shortcut:</p>
+<h3 id="Core-Data-Property-Accessors"><a href="#Core-Data-Property-Accessors" class="headerlink" title="Core Data Property Accessors"></a>Core Data Property Accessors</h3><p>Shortcut:</p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">- (&lt;#Property type#&gt; *)&lt;#Property name#&gt;</div><div class="line">&#123;</div><div class="line">    [self willAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property type#&gt; *tmpValue = [self primitiveValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self didAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    return tmpValue;</div><div class="line">&#125;</div><div class="line">            </div><div class="line">- (void)set&lt;#Capitalized property name#&gt;:(&lt;#Property type#&gt; *)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self setPrimitiveValue:value forKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data Propery Validation</p>
-<p>Shortcut:</p>
+<h3 id="Core-Data-Propery-Validation"><a href="#Core-Data-Propery-Validation" class="headerlink" title="Core Data Propery Validation"></a>Core Data Propery Validation</h3><p>Shortcut:</p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- (BOOL)validate&lt;#Capitalized property name#&gt;:(id *)valueRef error:(NSError **)outError</div><div class="line">&#123;</div><div class="line">    BOOL validationResult = YES;</div><div class="line">    &lt;#Validation code#&gt;</div><div class="line">    return validationResult;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data Scalar Property Accessors</p>
-<p>Shortcut:</p>
+<h3 id="Core-Data-Scalar-Property-Accessors"><a href="#Core-Data-Scalar-Property-Accessors" class="headerlink" title="Core Data Scalar Property Accessors"></a>Core Data Scalar Property Accessors</h3><p>Shortcut:</p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">- (&lt;#Property type#&gt;)&lt;#Property name#&gt;</div><div class="line">&#123;</div><div class="line">    [self willAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property type#&gt; *tmpValue = &lt;#Property name#&gt;;</div><div class="line">    [self didAccessValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    return tmpValue;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)set&lt;#Capitalized property name#&gt;:(&lt;#Property type#&gt;)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">    &lt;#Property name#&gt; = value;</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Property name#&gt;&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Core Data To-Many Relationship Accessors</p>
-<p>Shortcut:</p>
+<h3 id="Core-Data-To-Many-Relationship-Accessors"><a href="#Core-Data-To-Many-Relationship-Accessors" class="headerlink" title="Core Data To-Many Relationship Accessors"></a>Core Data To-Many Relationship Accessors</h3><p>Shortcut:</p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">- (void)add&lt;#Capitalized relationship name#&gt;Object:(&lt;#Relationship destination class#&gt; *)value</div><div class="line">&#123;    </div><div class="line">    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&amp;value count:1];</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] addObject:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];</div><div class="line">    [changedObjects release];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)remove&lt;#Capitalized relationship name#&gt;Object:(&lt;#Relationship destination class#&gt; *)value</div><div class="line">&#123;</div><div class="line">    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&amp;value count:1];</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] removeObject:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];</div><div class="line">    [changedObjects release];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)add&lt;#Capitalized relationship name#&gt;:(NSSet *)value</div><div class="line">&#123;    </div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] unionSet:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)remove&lt;#Capitalized relationship name#&gt;:(NSSet *)value</div><div class="line">&#123;</div><div class="line">    [self willChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];</div><div class="line">    [[self primitiveValueForKey:@&quot;&lt;#Relationship name#&gt;&quot;] minusSet:value];</div><div class="line">    [self didChangeValueForKey:@&quot;&lt;#Relationship name#&gt;&quot; withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Do-While Statement</p>
-<p>Shortcut: <code>dowhile</code></p>
+<h3 id="Do-While-Statement"><a href="#Do-While-Statement" class="headerlink" title="Do-While Statement"></a>Do-While Statement</h3><p>Shortcut: <code>dowhile</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">do &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125; while (&lt;#condition#&gt;);</div></pre></td></tr></table></figure>
-<p>###Enumerate Index Set</p>
-<p>Shortcut:</p>
+<h3 id="Enumerate-Index-Set"><a href="#Enumerate-Index-Set" class="headerlink" title="Enumerate Index Set"></a>Enumerate Index Set</h3><p>Shortcut:</p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">NSUInteger index = [&lt;#index set#&gt; firstIndex];</div><div class="line"></div><div class="line">while (index != NSNotFound) &#123;</div><div class="line">    // Do something with index</div><div class="line">    index = [&lt;#index set#&gt;  indexGreaterThanIndex:index];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Enumerate Index Set In Reverse</p>
-<p>Shortcut: </p>
+<h3 id="Enumerate-Index-Set-In-Reverse"><a href="#Enumerate-Index-Set-In-Reverse" class="headerlink" title="Enumerate Index Set In Reverse"></a>Enumerate Index Set In Reverse</h3><p>Shortcut: </p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">NSUInteger index = [&lt;#index set#&gt; lastIndex];</div><div class="line"></div><div class="line">while (index != NSNotFound) &#123;</div><div class="line">    // Do something with index.</div><div class="line">    index = [&lt;#index set#&gt; indexLessThanIndex:index];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <blockquote>
 <p>同样，已上两个也没有提供Shortcut。</p>
 </blockquote>
-<p>###Enumeration Declaration</p>
-<p>Shortcut: <code>enumdef</code></p>
+<h3 id="Enumeration-Declaration"><a href="#Enumeration-Declaration" class="headerlink" title="Enumeration Declaration"></a>Enumeration Declaration</h3><p>Shortcut: <code>enumdef</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">enum &lt;#enumeration name#&gt; &#123;</div><div class="line">  &lt;#enumerator1#&gt; = &lt;#value1#&gt;,</div><div class="line">  &lt;#enumerator2#&gt; = &lt;#value2#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###For Statement</p>
-<p>Shortcut: <code>for</code></p>
+<h3 id="For-Statement"><a href="#For-Statement" class="headerlink" title="For Statement"></a>For Statement</h3><p>Shortcut: <code>for</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for (&lt;#initialization#&gt;; &lt;#condition#&gt;; &lt;#increment#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###GCD: Dispatch After</p>
-<p>Shortcut: <code>dispatch_after</code></p>
+<h3 id="GCD-Dispatch-After"><a href="#GCD-Dispatch-After" class="headerlink" title="GCD: Dispatch After"></a>GCD: Dispatch After</h3><p>Shortcut: <code>dispatch_after</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">double delayInSeconds = 2.0;</div><div class="line">dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));</div><div class="line">dispatch_after(popTime, dispatch_get_main_queue(), ^(void)&#123;</div><div class="line">    &lt;#code to be executed on the main queue after delay#&gt;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>###GCD: Dispatch Once</p>
-<p>Shortcut: <code>dispatch_once</code></p>
+<h3 id="GCD-Dispatch-Once"><a href="#GCD-Dispatch-Once" class="headerlink" title="GCD: Dispatch Once"></a>GCD: Dispatch Once</h3><p>Shortcut: <code>dispatch_once</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t onceToken;</div><div class="line">dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">    &lt;#code to be executed once#&gt;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>###If Statement</p>
-<p>Shortcut: <code>if</code></p>
+<h3 id="If-Statement"><a href="#If-Statement" class="headerlink" title="If Statement"></a>If Statement</h3><p>Shortcut: <code>if</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###If-Else Statement</p>
-<p>Shortcut: <code>ifelse</code></p>
+<h3 id="If-Else-Statement"><a href="#If-Else-Statement" class="headerlink" title="If-Else Statement"></a>If-Else Statement</h3><p>Shortcut: <code>ifelse</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements-if-true#&gt;</div><div class="line">&#125; else &#123;</div><div class="line">  &lt;#statements-if-false#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Autoreleasing Block</p>
-<p>Shortcut: <code>@autoreleasepool</code></p>
+<h3 id="Objective-C-Autoreleasing-Block"><a href="#Objective-C-Autoreleasing-Block" class="headerlink" title="Objective-C Autoreleasing Block"></a>Objective-C Autoreleasing Block</h3><p>Shortcut: <code>@autoreleasepool</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@autoreleasepool &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Catch Block</p>
-<p>Shortcut: <code>@catch</code></p>
+<h3 id="Objective-C-Catch-Block"><a href="#Objective-C-Catch-Block" class="headerlink" title="Objective-C Catch Block"></a>Objective-C Catch Block</h3><p>Shortcut: <code>@catch</code></p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@catch (&lt;#exception#&gt;) &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Category</p>
-<p>Shortcut: <code>@interface-category</code></p>
+<h3 id="Objective-C-Category"><a href="#Objective-C-Category" class="headerlink" title="Objective-C Category"></a>Objective-C Category</h3><p>Shortcut: <code>@interface-category</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; (&lt;#category name#&gt;)</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Category Implementation</p>
-<p>Shortcut: <code>@implementation-category</code></p>
+<h3 id="Objective-C-Category-Implementation"><a href="#Objective-C-Category-Implementation" class="headerlink" title="Objective-C Category Implementation"></a>Objective-C Category Implementation</h3><p>Shortcut: <code>@implementation-category</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@implementation &lt;#class#&gt; (&lt;#category name#&gt;)</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Declaration</p>
-<p>Shortcut: <code>@interface</code></p>
+<h3 id="Objective-C-Class-Declaration"><a href="#Objective-C-Class-Declaration" class="headerlink" title="Objective-C Class Declaration"></a>Objective-C Class Declaration</h3><p>Shortcut: <code>@interface</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; : &lt;#superclass#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Extension</p>
-<p>Shortcut: <code>@interface-extension</code></p>
+<h3 id="Objective-C-Class-Extension"><a href="#Objective-C-Class-Extension" class="headerlink" title="Objective-C Class Extension"></a>Objective-C Class Extension</h3><p>Shortcut: <code>@interface-extension</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@interface &lt;#class name#&gt; ()</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Class Implementation</p>
-<p>Shortcut: <code>@implementation</code></p>
+<h3 id="Objective-C-Class-Implementation"><a href="#Objective-C-Class-Implementation" class="headerlink" title="Objective-C Class Implementation"></a>Objective-C Class Implementation</h3><p>Shortcut: <code>@implementation</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@implementation &lt;#class#&gt;</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C dealloc Method</p>
-<p>Shortcut: <code>dealloc</code></p>
+<h3 id="Objective-C-dealloc-Method"><a href="#Objective-C-dealloc-Method" class="headerlink" title="Objective-C dealloc Method"></a>Objective-C dealloc Method</h3><p>Shortcut: <code>dealloc</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">- (void)dealloc</div><div class="line">&#123;</div><div class="line">    &lt;#deallocations#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Fast Enumeration</p>
-<p>Shortcut: <code>forin</code></p>
+<h3 id="Objective-C-Fast-Enumeration"><a href="#Objective-C-Fast-Enumeration" class="headerlink" title="Objective-C Fast Enumeration"></a>Objective-C Fast Enumeration</h3><p>Shortcut: <code>forin</code></p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for (&lt;#type *object#&gt; in &lt;#collection#&gt;) &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Finally Block</p>
-<p>Shortcut: <code>@finally</code></p>
+<h3 id="Objective-C-Finally-Block"><a href="#Objective-C-Finally-Block" class="headerlink" title="Objective-C Finally Block"></a>Objective-C Finally Block</h3><p>Shortcut: <code>@finally</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@finally &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C init Method</p>
-<p>Shortcut: <code>init</code></p>
+<h3 id="Objective-C-init-Method"><a href="#Objective-C-init-Method" class="headerlink" title="Objective-C init Method"></a>Objective-C init Method</h3><p>Shortcut: <code>init</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)init</div><div class="line">&#123;</div><div class="line">    self = [super init];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C KVO: Observe Value For Keypath</p>
-<p>Shortcut: <code>observeValueForKeyPath</code></p>
+<h3 id="Objective-C-KVO-Observe-Value-For-Keypath"><a href="#Objective-C-KVO-Observe-Value-For-Keypath" class="headerlink" title="Objective-C KVO: Observe Value For Keypath"></a>Objective-C KVO: Observe Value For Keypath</h3><p>Shortcut: <code>observeValueForKeyPath</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context</div><div class="line">&#123;</div><div class="line">    if (context == &lt;#context#&gt;) &#123;</div><div class="line">        &lt;#code to be executed upon observing keypath#&gt;</div><div class="line">    &#125; else &#123;</div><div class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C KVO: Values affecting Key</p>
-<p>Shortcut: <code>keyPathsForValuesAffecting</code></p>
+<h3 id="Objective-C-KVO-Values-affecting-Key"><a href="#Objective-C-KVO-Values-affecting-Key" class="headerlink" title="Objective-C KVO: Values affecting Key"></a>Objective-C KVO: Values affecting Key</h3><p>Shortcut: <code>keyPathsForValuesAffecting</code></p>
 <p>Code: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">+ (NSSet *)keyPathsForValuesAffecting&lt;#Dependent Key#&gt;</div><div class="line">&#123;</div><div class="line">    return [NSSet setWithObjects:@&quot;&lt;#key1#&gt;&quot;, nil];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C Protocol Definition</p>
-<p>Shortcut: <code>@protocol</code></p>
+<h3 id="Objective-C-Protocol-Definition"><a href="#Objective-C-Protocol-Definition" class="headerlink" title="Objective-C Protocol Definition"></a>Objective-C Protocol Definition</h3><p>Shortcut: <code>@protocol</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@protocol &lt;#protocol name#&gt; &lt;NSObject&gt;</div><div class="line"></div><div class="line">&lt;#methods#&gt;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p>###Objective-C Try / Catch Block</p>
-<p>Shortcut: <code>@try</code></p>
+<h3 id="Objective-C-Try-Catch-Block"><a href="#Objective-C-Try-Catch-Block" class="headerlink" title="Objective-C Try / Catch Block"></a>Objective-C Try / Catch Block</h3><p>Shortcut: <code>@try</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@try &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div><div class="line">@catch (NSException *exception) &#123;</div><div class="line">    &lt;#handler#&gt;</div><div class="line">&#125;</div><div class="line">@finally &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>###Struct Declaration</p>
 <p>Shortcut: <code>structdef</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">struct &lt;#struct name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###Switch Statement</p>
-<p>Shortcut: <code>switch</code></p>
+<h3 id="Switch-Statement"><a href="#Switch-Statement" class="headerlink" title="Switch Statement"></a>Switch Statement</h3><p>Shortcut: <code>switch</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">switch (&lt;#expression#&gt;) &#123;</div><div class="line">  case &lt;#constant#&gt;:</div><div class="line">    &lt;#statements#&gt;</div><div class="line">    break;</div><div class="line"></div><div class="line">  default:</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Test Method</p>
-<p>Shortcut: <code>test</code></p>
+<h3 id="Test-Method"><a href="#Test-Method" class="headerlink" title="Test Method"></a>Test Method</h3><p>Shortcut: <code>test</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (void) test&lt;#Name#&gt; &#123;</div><div class="line">    &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>###Union Declaration</p>
 <p>Shortcut: <code>uniondef</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">union &lt;#union name#&gt; &#123;</div><div class="line">  &lt;#instance variables#&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>###While Statement</p>
-<p>Shortcut: <code>while</code></p>
+<h3 id="While-Statement"><a href="#While-Statement" class="headerlink" title="While Statement"></a>While Statement</h3><p>Shortcut: <code>while</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">while (&lt;#condition#&gt;) &#123;</div><div class="line">  &lt;#statements#&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C NSCoding initWithCoder Method</p>
-<p>Shortcut: <code>initWithCoder</code></p>
+<h3 id="Objective-C-NSCoding-initWithCoder-Method"><a href="#Objective-C-NSCoding-initWithCoder-Method" class="headerlink" title="Objective-C NSCoding initWithCoder Method"></a>Objective-C NSCoding initWithCoder Method</h3><p>Shortcut: <code>initWithCoder</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)initWithCoder:(NSCoder *)coder</div><div class="line">&#123;</div><div class="line">    self = [super initWithCoder:coder];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>###Objective-C NSView initWithFrame Method</p>
-<p>Shortcut: <code>initWithFrame</code></p>
+<h3 id="Objective-C-NSView-initWithFrame-Method"><a href="#Objective-C-NSView-initWithFrame-Method" class="headerlink" title="Objective-C NSView initWithFrame Method"></a>Objective-C NSView initWithFrame Method</h3><p>Shortcut: <code>initWithFrame</code></p>
 <p>Code:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (id)initWithFrame:(NSRect)frame</div><div class="line">&#123;</div><div class="line">    self = [super initWithFrame:frame];</div><div class="line">    if (self) &#123;</div><div class="line">        &lt;#initializations#&gt;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>复制粘贴真累，上面贴出来这么长，其实很多根本就不用记，比如：<code>for</code>， <code>typedef</code>等，可以当成Xcode代码补齐功能 ， 但有的使用可能需要注意一些条件，如：<code>init</code>，<code>dealloc</code>，如果你习惯于一写方法就先写<code>-(id)</code>或<code>-(void)</code>，那么再打<code>init</code>，<code>dealloc</code>就千呼万唤使不出来了，我就躺枪了，你呢？ 还有像 <code>observeValueForKeyPath</code> 和 <code>keyPathsForValuesAffecting</code> 确实不知道，不知道有没有常用KVO的将这两个方法自己又加一遍Snippets？</p>
 <p>当然Snippets在添加时可以设置如支持的平台（OS X or iOS），语言环境以及使用的位置（Completion Scopes）,用系统预置的Snippets就不用管那么多了，反正苹果会将这些设置为最合理的就是了，我们自己添加Snippets时就得多考虑一下这些设置的参数了。</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2013/10/17/text-kit入门/" class="prev">PREV</a><a href="/2013/08/28/objective-c异步编程/" class="next">NEXT</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+</div></article></div></main><footer><div class="paginator"><a href="/2013/10/17/text-kit入门/" class="prev">上一篇</a><a href="/2013/08/28/objective-c异步编程/" class="next">下一篇</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
