@@ -118,7 +118,7 @@ body,
 body {
   color: #565a5f;
   background: #f5f8f9;
-  font: 15px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font: 14px "微软雅黑", "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-text-size-adjust: 100%;
 }
 a {
@@ -227,7 +227,6 @@ code {
 .timeline-row .content h1 a:visited:hover {
   color: #38b7ea;
 }
-.article-meta,
 .archive-year,
 .widget-title {
   line-height: 1em;
@@ -464,9 +463,9 @@ code {
 }
 .nav-icon {
   text-align: center;
-  font-size: 15px;
-  width: 15px;
-  height: 15px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
   position: relative;
   cursor: pointer;
   height: 40px !important;
@@ -566,7 +565,7 @@ code {
   line-height: 1.6em;
   outline: none !important;
   background: none !important;
-  font: 15px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font: 14px "微软雅黑", "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   border: 1px solid #eceff2 !important;
 }
 .search-form-input:focus,
@@ -673,7 +672,7 @@ code {
   font-weight: 600;
 }
 #profile .inner .base-info #location {
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 5px;
   color: #9a9ea3;
 }
@@ -718,11 +717,11 @@ code {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size: 21px;
+  font-size: 20px;
 }
 #profile .inner .article-info .article-info-block span {
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 #profile .inner .article-info .article-info-block:first-child {
@@ -733,7 +732,7 @@ code {
 }
 #profile .inner .social-links > table td {
   text-align: center;
-  font-size: 25px;
+  font-size: 24px;
 }
 #profile .inner .social-links > table td a {
   position: relative;
@@ -820,7 +819,7 @@ code {
   margin-bottom: 14px;
 }
 .article-title {
-  font-size: 2em;
+  font-size: 1.75em;
   color: #565a5f;
   text-decoration: none;
   line-height: 1.3em;
@@ -842,6 +841,7 @@ a.article-title:hover {
   }
 }
 .article-meta {
+  font-size: 0.8em;
   line-height: 1.6em;
 }
 .article-meta:before,
@@ -860,7 +860,7 @@ a.article-title:hover {
   margin-right: 3px;
 }
 .article-meta a {
-  color: #565a5f;
+  color: #999;
 }
 .article-meta a:hover {
   color: #38b7ea;
@@ -868,10 +868,8 @@ a.article-title:hover {
 .article-category .fa-angle-right {
   margin: 0 5px;
 }
-.article-tag .tag-link:before {
-  content: "#";
-}
 .article-entry {
+  font-family: 'Trebuchet MS', Arial, "Microsoft Yahei", serif;
   color: #565a5f;
   padding: 0 20px;
   line-height: 1.6em;
@@ -951,26 +949,20 @@ a.article-title:hover {
 }
 .article-entry blockquote {
   position: static;
-  font-family: Georgia, "Times New Roman", "Microsoft Yahei", serif;
-  margin: 0 -20px;
-  padding: 10px 20px 10px 54px;
+  font-family: 'Trebuchet MS', Arial, "Microsoft Yahei", serif;
+  color: #999;
+  margin: 0;
+  padding: 5px 0 5px 20px;
   background: #fcfcfc;
-  border-left: 4px solid #eee;
+  border-left: 10px solid #eee;
 }
-.article-entry blockquote:before {
-  top: 20px;
-  left: 10px;
-  content: "\f10d";
-  color: #e2e2e2;
-  font-size: 32px;
-  font-family: FontAwesome;
-  text-align: center;
-  position: static;
+.article-entry blockquote p {
+  margin: 0;
 }
 .article-entry blockquote footer {
-  font-size: 15px;
+  font-size: 14px;
   margin: 1.6em 0;
-  font-family: "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font-family: "微软雅黑", "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .article-entry blockquote footer cite:before {
   content: "—";
@@ -1167,7 +1159,7 @@ a.article-title:hover {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font: 14px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font: 14px "微软雅黑", "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 0 10px;
   color: #565a5f;
   outline: none;
@@ -1509,7 +1501,7 @@ ol.toc {
 .layout-wrap-inner.list-categories ul li,
 .layout-wrap-inner.list-categories ul .category-list-child {
   padding: 10px 0;
-  font-size: 15px;
+  font-size: 14px;
   border-bottom: 1px solid border-color;
 }
 .layout-wrap-inner.list-categories ul li a,
@@ -1656,7 +1648,7 @@ ol.toc {
   padding: 10px;
 }
 .timeline-row .content h1 {
-  font-size: 16px;
+  font-size: 1.3em;
 }
 .timeline-row .content .article-meta {
   font-size: 12px;
@@ -1680,7 +1672,7 @@ ol.toc {
   padding: 20px 0;
   border-top: 1px solid #eceff2;
   color: #565a5f;
-  font-size: 17px;
+  font-size: 16px;
   text-align: center;
 }
 #footer .outer {
@@ -1799,7 +1791,7 @@ ol.toc {
 .widget ul .category-list-child,
 .widget ol .category-list-child {
   padding: 10px 0;
-  font-size: 15px;
+  font-size: 14px;
   border-bottom: 1px solid border-color;
 }
 .widget ul li a,
@@ -2103,9 +2095,9 @@ ol.toc {
   display: block;
   overflow-x: auto;
   padding: 15px 20px;
-  font-size: 15px;
+  font-size: 14px;
   font-family: Consolas, Monaco, Menlo, monospace;
-  line-height: 24px;
+  line-height: 22.400000000000002px;
 }
 .highlight table {
   margin: 0;

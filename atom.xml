@@ -9,7 +9,7 @@
   <id>http://esoftmobile.com/</id>
   
   <author>
-    <name>Tracy Yih</name>
+    <name>TracyYih</name>
     
   </author>
   
@@ -225,7 +225,7 @@
     <link href="http://esoftmobile.com/2017/03/06/flask-into/"/>
     <id>http://esoftmobile.com/2017/03/06/flask-into/</id>
     <published>2017-03-06T09:14:12.000Z</published>
-    <updated>2017-03-10T05:26:00.000Z</updated>
+    <updated>2017-03-10T07:45:56.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="Flask-简介"><a href="#Flask-简介" class="headerlink" title="Flask 简介"></a>Flask 简介</h2><p>Flask 官网上对它的定位是一个“微” python web 开发框架。</p>
 <blockquote>
@@ -291,7 +291,7 @@
     
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
-      <category term="Flask" scheme="http://esoftmobile.com/tags/Flask/"/>
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
