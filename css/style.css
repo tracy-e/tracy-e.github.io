@@ -118,7 +118,7 @@ body,
 body {
   color: #565a5f;
   background: #f5f8f9;
-  font: 14px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font: 15px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
   -webkit-text-size-adjust: 100%;
 }
 a {
@@ -132,9 +132,9 @@ code {
   margin: 0 2px;
   color: #e96900;
   padding: 3px 5px;
-  font-size: 0.8em;
+  font-size: 0.85em;
   border-radius: 2px;
-  font-family: "Source Code Pro", Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: Consolas, Monaco, Menlo, monospace;
   background-color: #f8f8f8;
 }
 .outer {
@@ -464,9 +464,9 @@ code {
 }
 .nav-icon {
   text-align: center;
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
   position: relative;
   cursor: pointer;
   height: 40px !important;
@@ -566,7 +566,7 @@ code {
   line-height: 1.6em;
   outline: none !important;
   background: none !important;
-  font: 14px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
+  font: 15px "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
   border: 1px solid #eceff2 !important;
 }
 .search-form-input:focus,
@@ -673,7 +673,7 @@ code {
   font-weight: 600;
 }
 #profile .inner .base-info #location {
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 5px;
   color: #9a9ea3;
 }
@@ -718,11 +718,11 @@ code {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size: 20px;
+  font-size: 21px;
 }
 #profile .inner .article-info .article-info-block span {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   text-transform: uppercase;
 }
 #profile .inner .article-info .article-info-block:first-child {
@@ -733,7 +733,7 @@ code {
 }
 #profile .inner .social-links > table td {
   text-align: center;
-  font-size: 24px;
+  font-size: 25px;
 }
 #profile .inner .social-links > table td a {
   position: relative;
@@ -946,10 +946,12 @@ a.article-title:hover {
   border-bottom: 1px solid #eceff2;
   padding: 10px 0;
 }
+.article-entry pre {
+  font-size: 0.85em;
+}
 .article-entry blockquote {
   position: static;
   font-family: Georgia, "Times New Roman", "Microsoft Yahei", serif;
-  font-size: 1.1em;
   margin: 0 -20px;
   padding: 10px 20px 10px 54px;
   background: #fcfcfc;
@@ -966,7 +968,7 @@ a.article-title:hover {
   position: static;
 }
 .article-entry blockquote footer {
-  font-size: 14px;
+  font-size: 15px;
   margin: 1.6em 0;
   font-family: "open sans", "Helvetica Neue", "Microsoft Yahei", Helvetica, Arial, sans-serif;
 }
@@ -1507,7 +1509,7 @@ ol.toc {
 .layout-wrap-inner.list-categories ul li,
 .layout-wrap-inner.list-categories ul .category-list-child {
   padding: 10px 0;
-  font-size: 14px;
+  font-size: 15px;
   border-bottom: 1px solid border-color;
 }
 .layout-wrap-inner.list-categories ul li a,
@@ -1678,7 +1680,7 @@ ol.toc {
   padding: 20px 0;
   border-top: 1px solid #eceff2;
   color: #565a5f;
-  font-size: 16px;
+  font-size: 17px;
   text-align: center;
 }
 #footer .outer {
@@ -1797,7 +1799,7 @@ ol.toc {
 .widget ul .category-list-child,
 .widget ol .category-list-child {
   padding: 10px 0;
-  font-size: 14px;
+  font-size: 15px;
   border-bottom: 1px solid border-color;
 }
 .widget ul li a,
@@ -2101,9 +2103,9 @@ ol.toc {
   display: block;
   overflow-x: auto;
   padding: 15px 20px;
-  font-size: 14px;
-  font-family: "Source Code Pro", Consolas, Monaco, Menlo, Consolas, monospace;
-  line-height: 22.400000000000002px;
+  font-size: 15px;
+  font-family: Consolas, Monaco, Menlo, monospace;
+  line-height: 24px;
 }
 .highlight table {
   margin: 0;
@@ -2127,72 +2129,57 @@ ol.toc {
   height: 1.6em;
 }
 .highlight {
-  color: #333;
-  background: #f8f8f8;
+  color: #657b83;
+  background: #fdf6e3;
 }
 .highlight .code .comment,
 .highlight .code .quote {
-  color: #998;
-  font-style: italic;
+  color: #93a1a1;
 }
 .highlight .code .keyword,
 .highlight .code .selector-tag,
-.highlight .code .subst {
-  color: #333;
-  font-weight: bold;
+.highlight .code .addition {
+  color: #859900;
 }
 .highlight .code .number,
-.highlight .code .literal,
-.highlight .code .variable,
-.highlight .code .template-variable,
-.highlight .code .tag .attr {
-  color: #008080;
-}
 .highlight .code .string,
-.highlight .code .doctag {
-  color: #d14;
+.highlight .code .meta .meta-string,
+.highlight .code .literal,
+.highlight .code .doctag,
+.highlight .code .regexp {
+  color: #2aa198;
 }
 .highlight .code .title,
 .highlight .code .section,
-.highlight .code .selector-id {
-  color: #900;
-  font-weight: bold;
-}
-.highlight .code .subst {
-  font-weight: normal;
-}
-.highlight .code .type,
-.highlight .code .class .title {
-  color: #458;
-  font-weight: bold;
-}
-.highlight .code .tag,
 .highlight .code .name,
-.highlight .code .attribute {
-  color: #000080;
-  font-weight: normal;
+.highlight .code .selector-id,
+.highlight .code .selector-class {
+  color: #268bd2;
 }
-.highlight .code .regexp,
-.highlight .code .link {
-  color: #009926;
+.highlight .code .attribute,
+.highlight .code .attr,
+.highlight .code .variable,
+.highlight .code .template-variable,
+.highlight .code .class .title,
+.highlight .code .type {
+  color: #b58900;
 }
 .highlight .code .symbol,
-.highlight .code .bullet {
-  color: #990073;
+.highlight .code .bullet,
+.highlight .code .subst,
+.highlight .code .meta,
+.highlight .code .meta .keyword,
+.highlight .code .selector-attr,
+.highlight .code .selector-pseudo,
+.highlight .code .link {
+  color: #cb4b16;
 }
 .highlight .code .built_in,
-.highlight .code .builtin-name {
-  color: #0086b3;
-}
-.highlight .code .meta {
-  color: #999;
-  font-weight: bold;
-}
 .highlight .code .deletion {
-  background: #fdd;
+  color: #dc322f;
 }
-.highlight .code .addition {
-  background: #dfd;
+.highlight .code .formula {
+  background: #eee8d5;
 }
 .highlight .code .emphasis {
   font-style: italic;
