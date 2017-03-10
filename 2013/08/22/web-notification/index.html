@@ -1,4 +1,247 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Web Notification · Esoft Mobile</title><meta name="description" content="Web Notification - Tracy Yih"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://esoftmobile.com/atom.xml" title="Esoft Mobile"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/534072785" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/tracy-e" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Web Notification</h1><div class="post-info">Aug 22, 2013</div><div class="post-content"><p>在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit <code>Notification</code> 对象发出的，这也是<a href="https://dvcs.w3.org/hg/notifications/raw-file/tip/Overview.html" target="_blank" rel="external">W3C标准</a>实现的一部分。</p>
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Web Notification | Esoft Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit Notification 对象发出的，这也是W3C标准实现的一部分。
+
+来自Safari的通知可以在系统偏好设置的“通知”面板内进行设置，有些用户可能希望Safari的通知以提示框（alert）的形式在屏幕上停留一会儿然后再消失，有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web Notification">
+<meta property="og:url" content="http://esoftmobile.com/2013/08/22/web-notification/index.html">
+<meta property="og:site_name" content="Esoft Mobile">
+<meta property="og:description" content="在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit Notification 对象发出的，这也是W3C标准实现的一部分。
+
+来自Safari的通知可以在系统偏好设置的“通知”面板内进行设置，有些用户可能希望Safari的通知以提示框（alert）的形式在屏幕上停留一会儿然后再消失，有">
+<meta property="og:image" content="http://esoftmobile.com/image/notification_on_notificationCenter.png">
+<meta property="og:image" content="http://esoftmobile.com/image/system_notification_setting.png">
+<meta property="og:image" content="http://esoftmobile.com/image/safari_notification_setting.png">
+<meta property="og:image" content="http://esoftmobile.com/image/notificatoin_requesting_permission.png">
+<meta property="og:image" content="http://esoftmobile.com/image/notification_on_browser.png">
+<meta property="og:updated_time" content="2013-08-23T11:41:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Web Notification">
+<meta name="twitter:description" content="在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit Notification 对象发出的，这也是W3C标准实现的一部分。
+
+来自Safari的通知可以在系统偏好设置的“通知”面板内进行设置，有些用户可能希望Safari的通知以提示框（alert）的形式在屏幕上停留一会儿然后再消失，有">
+<meta name="twitter:image" content="http://esoftmobile.com/image/notification_on_notificationCenter.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Esoft Mobile" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Esoft Mobile</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">Tracy Yih</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
+            <a id="follow" target="_blank" href="https://weibo.com/534073785">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                41
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                24
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534073785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-web-notification" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Web Notification
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2013/08/22/web-notification/">
+            <time datetime="2013-08-22T10:56:02.000Z" itemprop="datePublished">2013-08-22</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/HTML5/">HTML5</a>, <a class="tag-link" href="/tags/JavaScript/">JavaScript</a>, <a class="tag-link" href="/tags/Web/">Web</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>在OS X 10.8 Mountain Lion系统上，通过Safari访问的页面能够发送通知到系统右边栏通知中心，通知（Notification）是通过WebKit <code>Notification</code> 对象发出的，这也是<a href="https://dvcs.w3.org/hg/notifications/raw-file/tip/Overview.html" target="_blank" rel="external">W3C标准</a>实现的一部分。</p>
 <p><img src="/image/notification_on_notificationCenter.png" alt="Notification Center"></p>
 <p>来自Safari的通知可以在系统偏好设置的“通知”面板内进行设置，有些用户可能希望Safari的通知以提示框（alert）的形式在屏幕上停留一会儿然后再消失，有些人可能就不想在屏幕上显示。另外，用户可以在Safari偏好设置的通知面板内对单个网站（域名）的消息进行设定（Allow or Deny）。</p>
 <a id="more"></a>
@@ -61,4 +304,280 @@
 <p><button onclick="notify("Hello friend", "A greetings from EsoftMobile", function(){ alert("Sorry, your browser is not support Notification!") })"> Send a notification </button><br><a href="https://github.com/tracy-e/Notification.js" target="_blank" rel="external">【Code on Github】</a></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> notify = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// check for notification compatibility</span></div><div class="line">    <span class="keyword">if</span>(!<span class="built_in">window</span>.Notification) &#123;</div><div class="line">        <span class="comment">// if browser version is unsupported, be silent</span></div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// log current permission level</span></div><div class="line">    <span class="built_in">console</span>.log(Notification.permission);</div><div class="line">    <span class="comment">// if the user has not been asked to grant or deny notifications from this domain</span></div><div class="line">    <span class="keyword">if</span>(Notification.permission === <span class="string">'default'</span>) &#123;</div><div class="line">        Notification.requestPermission(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="comment">// callback this function once a permission level has been set</span></div><div class="line">            notify();</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if the user has granted permission for this domain to send notifications</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(Notification.permission === <span class="string">'granted'</span>) &#123;</div><div class="line">        <span class="keyword">var</span> n = <span class="keyword">new</span> Notification(</div><div class="line">                    <span class="string">'1 new friend request'</span>,</div><div class="line">                    &#123;</div><div class="line">                      <span class="string">'body'</span>: <span class="string">'Jill would like to add you as a friend'</span>,</div><div class="line">                      <span class="comment">// prevent duplicate notifications</span></div><div class="line">                      <span class="string">'tag'</span> : <span class="string">'unique string'</span></div><div class="line">                    &#125;</div><div class="line">                );</div><div class="line">        <span class="comment">// remove the notification from Notification Center when it is clicked</span></div><div class="line">        n.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">this</span>.close();</div><div class="line">        &#125;;</div><div class="line">        <span class="comment">// callback function when the notification is closed</span></div><div class="line">        n.onclose = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">'Notification closed'</span>);</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if the user does not want notifications to come from this domain</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(Notification.permission === <span class="string">'denied'</span>) &#123;</div><div class="line">        <span class="comment">// be silent</span></div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <h1 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h1><p>现在通知还不是很普及，W3C和HTML5貌似也在做这方面推广，Google Chrome好像也支持一种通知机制叫做<code>webkitNotification</code>，相信后面会越来越普及。这种原生的通知比起用JQuery各种插件做出来的体验还是要好很多，所以如果能合理利用，一定会为网站增色不少。</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2013/08/28/objective-c异步编程/" class="prev">上一篇</a><a href="/2013/08/17/effective-objective-c-2/" class="next">下一篇</a></div><div class="copyright"><p>© 2012 - 2017 <a href="http://esoftmobile.com">Tracy Yih</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+
+        
+        </div>
+        <!--
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="http://esoftmobile.com/2013/08/22/web-notification/#comments" class="article-comment-link">评论</a>
+    
+
+        </footer>
+        -->
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2013/08/28/objective-c异步编程/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Objective-C异步编程
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2013/08/17/effective-objective-c-2/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Effective Objective-C [下]</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="uyan_frame"></div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/09/flask-context/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：上下文" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/09/flask-context/" class="title">flask 源码解析：上下文</a></p>
+                            <p class="item-date"><time datetime="2017-03-09T08:50:31.000Z" itemprop="datePublished">2017-03-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/08/flask-routing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：路由" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/08/flask-routing/" class="title">flask 源码解析：路由</a></p>
+                            <p class="item-date"><time datetime="2017-03-08T07:51:13.000Z" itemprop="datePublished">2017-03-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/07/flask-start-process/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：应用启动流程" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/07/flask-start-process/" class="title">flask 源码解析：应用启动流程</a></p>
+                            <p class="item-date"><time datetime="2017-03-07T09:23:44.000Z" itemprop="datePublished">2017-03-07</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/06/flask-into/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="Flask源码解析：简介" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/06/flask-into/" class="title">Flask源码解析：简介</a></p>
+                            <p class="item-date"><time datetime="2017-03-06T09:14:12.000Z" itemprop="datePublished">2017-03-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/03/23/ios-devices-mdm/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2015/03/23/ios-devices-mdm/" class="title">iOS设备MDM开发流程证书相关</a></p>
+                            <p class="item-date"><time datetime="2015-03-23T10:08:34.000Z" itemprop="datePublished">2015-03-23</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Effective-Objective-C/">Effective Objective-C</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Flask/">Flask</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/">HTML5</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hack/">Hack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MDM/">MDM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/">Mac</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/">Node.js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Notes/">Notes</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Objective-C/">Objective-C</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sinppets/">Sinppets</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unix/">Unix</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Xcode/">Xcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/clang/">clang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/">flask</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llvm/">llvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/runtime/">runtime</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/只读经典/">只读经典</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/正则表达式/">正则表达式</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Tracy Yih<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1784645"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
