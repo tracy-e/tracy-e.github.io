@@ -25,7 +25,7 @@
 <meta property="og:image" content="http://esoftmobile.com/image/video-app-ida-isvip-4.png">
 <meta property="og:image" content="http://esoftmobile.com/image/video-app-vip-logo.png">
 <meta property="og:image" content="http://esoftmobile.com/image/video-app-vip-detail.png">
-<meta property="og:updated_time" content="2014-04-07T02:55:32.000Z">
+<meta property="og:updated_time" content="2017-03-10T09:30:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="某视频客户端逆向实践">
 <meta name="twitter:description" content="最近看完了《iOS应用逆向工程分析与实战》，当你手里拿着锤子的时候，整个世界都成了钉子，所以迫不及待的想练练手。正好最近在某视频客户端上跟美剧，有时候想缓存下来离线看，但是由于版权原因，很多视频都不能缓存，所以今天逆向实践的主要目标就是能够缓存有版权的视频。
@@ -161,7 +161,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                41
+                42
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -248,17 +248,15 @@
             <p>最近看完了<a href="http://www.amazon.cn/iOS应用逆向工程-分析与实战-沙梓社/dp/B00HQW9AA6/ref=sr_1_1?ie=UTF8&amp;qid=1396769410&amp;sr=8-1&amp;keywords=ios+逆向工程" target="_blank" rel="external">《iOS应用逆向工程分析与实战》</a>，当你手里拿着锤子的时候，整个世界都成了钉子，所以迫不及待的想练练手。正好最近在某视频客户端上跟美剧，有时候想缓存下来离线看，但是由于版权原因，很多视频都不能缓存，所以今天逆向实践的主要目标就是能够缓存有版权的视频。</p>
 <p>有人可能会问：你怎么就知道一定能够实现这个目标，万一带版权的视频压根儿就没有提供下载地址你怎么缓存啊？问得好，其实在拿到逆向这把锤子之前，我靠着纯体力已经能够下载到追的美剧了。使用Charles抓包工具获取到剧集的信息（关于Charles的使用可以看<a href="http://blog.devtang.com/blog/2013/12/11/network-tool-charles-intr/" target="_blank" rel="external">这里</a>），即使有版权的视频也会有<code>download_url</code>字段，然后将每个下载地址复制到迅雷里面下载。还好有了这段痛苦的经历，让我知道今天逆向的目标是可实现的。</p>
 <a id="more"></a>
-<p>##使用工具</p>
-<p>某助手软件、class-dump、cycript、Charles、IDA、Theos、已越狱iPhone。</p>
-<p>##分析与实践过程</p>
-<p>通过某助手软件下载要进行逆向的视频客户端xxxxVideo.ipa（省去AppStore下载后还需破壳的过程），解压后将二进制文件复制出来，使用class-dump导出头文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ class-dump -H xxxxVideo -o headers</div></pre></td></tr></table></figure>
+<h2 id="使用工具"><a href="#使用工具" class="headerlink" title="使用工具"></a>使用工具</h2><p>某助手软件、class-dump、cycript、Charles、IDA、Theos、已越狱iPhone。</p>
+<h2 id="分析与实践过程"><a href="#分析与实践过程" class="headerlink" title="分析与实践过程"></a>分析与实践过程</h2><p>通过某助手软件下载要进行逆向的视频客户端xxxxVideo.ipa（省去AppStore下载后还需破壳的过程），解压后将二进制文件复制出来，使用class-dump导出头文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ class-dump -H xxxxVideo -o headers</div></pre></td></tr></table></figure>
 <p>用Xcode创建一个新工程，将头文件导入工程：</p>
 <p><img src="/image/video-app-reverse-headers.png" alt="Headers"></p>
 <p>在越狱的手机上安装该视频客户端，进入到视频播放界面，可以看到下面“缓存”按钮为灰色，很自然的会想到以该按钮为出发点开始分析。</p>
 <p><img src="/image/video-app-video-detail-view-controller.png" alt="VideoDetailViewController"></p>
 <p>下面通过cycript开始找到该按钮所在类（如果你安装了Reveal，那下面这个查找步骤就可以直接用Reveal实现了）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ ssh root@192.168.1.118  #通过ssh连接到手机</div><div class="line">~ root# ps -A | grep xxxxVideo  #获取到该视频客户端进程ID</div><div class="line">PID   TT  STAT      TIME COMMAND</div><div class="line">1438   ??  Ss     0:02.19 /var/mobile/Applications/414D20A3-EA72-4AB4-87E4-5A209F648EAB/xxxxVideo.app/xxxxVideo</div><div class="line">~ root# cycript -p 1438</div><div class="line"># var tabBarController = [UIApp keyWindow].rootViewController</div><div class="line"># &quot;&lt;SVTabBarController: 0x23da6a0&gt;&quot;</div><div class="line"># var detailViewController = tabBarController.selectedViewController.visibleViewController</div><div class="line"># &quot;&lt;VideoDetailViewController: 0x23eadc0&gt;&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ ssh root@192.168.1.118  <span class="comment">#通过ssh连接到手机</span></div><div class="line">~ root<span class="comment"># ps -A | grep xxxxVideo  #获取到该视频客户端进程ID</span></div><div class="line">PID   TT  STAT      TIME COMMAND</div><div class="line">1438   ??  Ss     0:02.19 /var/mobile/Applications/414D20A3-EA72-4AB4-87E4-5A209F648EAB/xxxxVideo.app/xxxxVideo</div><div class="line">~ root<span class="comment"># cycript -p 1438</span></div><div class="line"><span class="comment"># var tabBarController = [UIApp keyWindow].rootViewController</span></div><div class="line"><span class="comment"># "&lt;SVTabBarController: 0x23da6a0&gt;"</span></div><div class="line"><span class="comment"># var detailViewController = tabBarController.selectedViewController.visibleViewController</span></div><div class="line"><span class="comment"># "&lt;VideoDetailViewController: 0x23eadc0&gt;"</span></div></pre></td></tr></table></figure>
 <p>所以当前播放界面对应的视图控制器类是<code>VideoDetailViewController</code>，但是在该头文件中并未找到缓存按钮或者下面的bar，不过下面这个属性引起了我的注意：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@property(retain, nonatomic) VideoDetailBarController *videoDetailBarController; // @synthesize videoDetailBarController=_videoDetailBarController;</div></pre></td></tr></table></figure>
 <p>进入到该类对应的头文件，终于找到了下载按钮<code>downloadBtn</code>，并且很明显可以看出点击该按钮调用<code>- (void)downloadWithButton:(id)arg1</code>方法。因为缓存按钮有可以缓存和不能缓存两种状态，所以判断是否能缓存应该是在该方法里面实现的，由于没有其他成员变量或方法标记能否缓存，所以这个判断依据应该存在某个对象里面，这时可以注意到<code>dataManager</code>属性，它是一个数据管理对象，而管理的对象就是<code>videoAlbum</code>。</p>
@@ -268,13 +266,13 @@
 <p>马上验证，创建Theos Tweak工程，配置好其他信息：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">%hook VideoAlbum</div><div class="line"></div><div class="line">- (BOOL)canBeDownLoaded</div><div class="line">&#123;</div><div class="line">    return YES;</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>编译、打包、安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ export THEOS_DEVICE_IP=192.168.1.118</div><div class="line">$ make package install</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">export</span> THEOS_DEVICE_IP=192.168.1.118</div><div class="line">$ make package install</div></pre></td></tr></table></figure>
 <p>再次运行该视频客户端，“缓存”按钮恢复正常了，点击后弹出了缓存界面，选择剧集后可以正常下载。</p>
 <p><img src="/image/video-app-can-be-download.png" alt="Can be downloaded"> <img src="/image/video-app-download-view-controller.png" alt="Download"></p>
 <hr>
 <p>到了这里本文应该就要结束了，嘛，还没玩过瘾？那我们继续折腾吧，看到视频上面<code>登录VIP 30</code>吗？非VIP用户每个视频前面有30秒的广告，而且VIP专区的视频只能看前面的5分钟，浪费时间就是浪费生命，但是我等屌丝又买不起VIP好吗？那下面我们就告别广告，成为VIP。</p>
 <p>因为每次进到“个人资料”时客户端都会进行通讯，应该是获取用户信息，使用Charles抓取到以下信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;attachment&quot;: &#123;</div><div class="line">        &quot;status&quot;: 0, </div><div class="line">        &quot;msg&quot;: &quot;ok&quot;, </div><div class="line">        &quot;jifen&quot;: 0, </div><div class="line">        &quot;dengji&quot;: 0, </div><div class="line">        &quot;uid&quot;: xxxxxxxxx, </div><div class="line">        &quot;passport&quot;: &quot;yyyyyyyyyy@sina.sohu.com&quot;, </div><div class="line">        &quot;nickname&quot;: &quot;TracyYih&quot;, </div><div class="line">        &quot;smallimg&quot;: &quot;http://tp3.sinaimg.cn/1342106870/50/5664617611/1&quot;, </div><div class="line">        &quot;mobile&quot;: &quot;&quot;, </div><div class="line">        &quot;email&quot;: &quot;&quot;, </div><div class="line">        &quot;birthday&quot;: &quot;&quot;, </div><div class="line">        &quot;gender&quot;: 1, </div><div class="line">        &quot;utype&quot;: 31, </div><div class="line">        &quot;token&quot;: &quot;1ee4863ec29030730e624afdb401a3e6&quot;, </div><div class="line">        &quot;isVip&quot;: &quot;0&quot;, </div><div class="line">        &quot;vipexpire&quot;: &quot;&quot;</div><div class="line">    &#125;, </div><div class="line">    &quot;message&quot;: &quot;成功&quot;, </div><div class="line">    &quot;debug&quot;: null, </div><div class="line">    &quot;status&quot;: 200</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"attachment"</span>: &#123;</div><div class="line">        <span class="attr">"status"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"msg"</span>: <span class="string">"ok"</span>, </div><div class="line">        <span class="attr">"jifen"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"dengji"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"uid"</span>: xxxxxxxxx, </div><div class="line">        <span class="attr">"passport"</span>: <span class="string">"yyyyyyyyyy@sina.sohu.com"</span>, </div><div class="line">        <span class="attr">"nickname"</span>: <span class="string">"TracyYih"</span>, </div><div class="line">        <span class="attr">"smallimg"</span>: <span class="string">"http://tp3.sinaimg.cn/1342106870/50/5664617611/1"</span>, </div><div class="line">        <span class="attr">"mobile"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"email"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"birthday"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"gender"</span>: <span class="number">1</span>, </div><div class="line">        <span class="attr">"utype"</span>: <span class="number">31</span>, </div><div class="line">        <span class="attr">"token"</span>: <span class="string">"1ee4863ec29030730e624afdb401a3e6"</span>, </div><div class="line">        <span class="attr">"isVip"</span>: <span class="string">"0"</span>, </div><div class="line">        <span class="attr">"vipexpire"</span>: <span class="string">""</span></div><div class="line">    &#125;, </div><div class="line">    <span class="attr">"message"</span>: <span class="string">"成功"</span>, </div><div class="line">    <span class="attr">"debug"</span>: <span class="literal">null</span>, </div><div class="line">    <span class="attr">"status"</span>: <span class="number">200</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>看到了吗？<code>isVip</code>字段为0，在头文件中搜索“isVip”，找到两个类：<code>UserDataModel</code> 和 <code>UserInterface</code>，将属性与通讯返回的JSON格式对比可以看出，<code>UserDataModel</code> 和 JSON数据一一对应，即为用户信息模型类，而在<code>UserInterface</code>类中有一个<code>UserDataModel</code>实例作为属性，还有一些其他的方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">@interface UserDataModel : NSObject</div><div class="line">&#123;</div><div class="line">    BOOL isVip;</div><div class="line">    NSString *passport;</div><div class="line">    NSString *password;</div><div class="line">    NSString *nickname;</div><div class="line">    NSString *profileImage;</div><div class="line">    NSString *mobile;</div><div class="line">    NSString *email;</div><div class="line">    NSString *birthday;</div><div class="line">    NSString *requestToken;</div><div class="line">    NSString *vipExpire;</div><div class="line">    NSString *score;</div><div class="line">    NSString *grade;</div><div class="line">    NSString *uid;</div><div class="line">    int gender;</div><div class="line">    int loginTpye;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@property int loginTpye; // @synthesize loginTpye;</div><div class="line">@property int gender; // @synthesize gender;</div><div class="line">@property(copy, nonatomic) NSString *uid; // @synthesize uid;</div><div class="line">@property(copy) NSString *grade; // @synthesize grade;</div><div class="line">@property(copy) NSString *score; // @synthesize score;</div><div class="line">@property(copy) NSString *vipExpire; // @synthesize vipExpire;</div><div class="line">@property BOOL isVip; // @synthesize isVip;</div><div class="line">@property(copy) NSString *requestToken; // @synthesize requestToken;</div><div class="line">@property(copy) NSString *birthday; // @synthesize birthday;</div><div class="line">@property(copy) NSString *email; // @synthesize email;</div><div class="line">@property(copy) NSString *mobile; // @synthesize mobile;</div><div class="line">@property(copy) NSString *profileImage; // @synthesize profileImage;</div><div class="line">@property(copy) NSString *nickname; // @synthesize nickname;</div><div class="line">@property(copy) NSString *password; // @synthesize password;</div><div class="line">@property(copy) NSString *passport; // @synthesize passport;</div><div class="line">//...</div><div class="line">@end</div></pre></td></tr></table></figure>
 <p>所以我们应该关注最基础的模型（<code>UserDataModel</code>），不管接口返回的用户信息中是否为VIP，我们统一设置他为VIP:</p>
@@ -300,77 +298,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">#define kYearInterval  31536000.0</div><div class="line"></div><div class="line">%hook UserDataModel</div><div class="line"></div><div class="line">- (BOOL)isVip</div><div class="line">&#123;</div><div class="line">    return YES;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)vipExpire</div><div class="line">&#123;</div><div class="line">    NSDate *date = [[NSDate date] dateByAddingTimeInterval:kYearInterval];</div><div class="line">    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];</div><div class="line">    [dateFormatter setDateFormat:@&quot;yyyy-MM-dd HH:mm:ss&quot;];</div><div class="line">    return [dateFormatter stringFromDate:date];</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>编译、打包、安装，重新运行客户端，高大上的VIP有木有？看视频没有广告了有木有？VIP视频随便看有木有？</p>
 <p><img src="/image/video-app-vip-logo.png" alt="VIP"> <img src="/image/video-app-vip-detail.png" alt="VIP"></p>
-<p>##总结</p>
-<p>至此，整个逆向过程就结束了，授人以鱼不如授人以渔，所以我详细的描述了分析的过程而不是结果。此外，本文内容仅供个人学习交流，所以即使你知道我所逆向的是哪个客户端，也不要将本文内容用于有损该客户端利益的目的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，整个逆向过程就结束了，授人以鱼不如授人以渔，所以我详细的描述了分析的过程而不是结果。此外，本文内容仅供个人学习交流，所以即使你知道我所逆向的是哪个客户端，也不要将本文内容用于有损该客户端利益的目的。</p>
 
         
         </div>
-        <!--
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
-    
-        <a href="http://esoftmobile.com/2014/04/06/video-app-reverse/#comments" class="article-comment-link">评论</a>
-    
-
-        </footer>
-        -->
     </div>
     
         
@@ -416,6 +347,25 @@
         <h3 class="widget-title">最新文章</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/13/flask-request/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：请求" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/13/flask-request/" class="title">flask 源码解析：请求</a></p>
+                            <p class="item-date"><time datetime="2017-03-13T05:01:01.000Z" itemprop="datePublished">2017-03-13</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -493,25 +443,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2015/03/23/ios-devices-mdm/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2015/03/23/ios-devices-mdm/" class="title">iOS设备MDM开发流程证书相关</a></p>
-                            <p class="item-date"><time datetime="2015-03-23T10:08:34.000Z" itemprop="datePublished">2015-03-23</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -523,7 +454,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -532,7 +463,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Effective-Objective-C/" style="font-size: 12px;">Effective Objective-C</a> <a href="/tags/HTML5/" style="font-size: 12px;">HTML5</a> <a href="/tags/Hack/" style="font-size: 12px;">Hack</a> <a href="/tags/JavaScript/" style="font-size: 12px;">JavaScript</a> <a href="/tags/MDM/" style="font-size: 10px;">MDM</a> <a href="/tags/Mac/" style="font-size: 12px;">Mac</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Notes/" style="font-size: 14px;">Notes</a> <a href="/tags/Objective-C/" style="font-size: 18px;">Objective-C</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12px;">Raspberry Pi</a> <a href="/tags/Sinppets/" style="font-size: 10px;">Sinppets</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Web/" style="font-size: 12px;">Web</a> <a href="/tags/Xcode/" style="font-size: 12px;">Xcode</a> <a href="/tags/clang/" style="font-size: 10px;">clang</a> <a href="/tags/flask/" style="font-size: 16px;">flask</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/llvm/" style="font-size: 10px;">llvm</a> <a href="/tags/python/" style="font-size: 16px;">python</a> <a href="/tags/runtime/" style="font-size: 12px;">runtime</a> <a href="/tags/只读经典/" style="font-size: 16px;">只读经典</a> <a href="/tags/正则表达式/" style="font-size: 10px;">正则表达式</a>
+            <a href="/tags/Effective-Objective-C/" style="font-size: 12px;">Effective Objective-C</a> <a href="/tags/HTML5/" style="font-size: 12px;">HTML5</a> <a href="/tags/Hack/" style="font-size: 12px;">Hack</a> <a href="/tags/JavaScript/" style="font-size: 12px;">JavaScript</a> <a href="/tags/MDM/" style="font-size: 10px;">MDM</a> <a href="/tags/Mac/" style="font-size: 12px;">Mac</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Notes/" style="font-size: 14px;">Notes</a> <a href="/tags/Objective-C/" style="font-size: 18px;">Objective-C</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12px;">Raspberry Pi</a> <a href="/tags/Sinppets/" style="font-size: 10px;">Sinppets</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Web/" style="font-size: 12px;">Web</a> <a href="/tags/Xcode/" style="font-size: 12px;">Xcode</a> <a href="/tags/clang/" style="font-size: 10px;">clang</a> <a href="/tags/flask/" style="font-size: 18px;">flask</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/llvm/" style="font-size: 10px;">llvm</a> <a href="/tags/python/" style="font-size: 18px;">python</a> <a href="/tags/runtime/" style="font-size: 12px;">runtime</a> <a href="/tags/只读经典/" style="font-size: 16px;">只读经典</a> <a href="/tags/正则表达式/" style="font-size: 10px;">正则表达式</a>
         </div>
     </div>
 
@@ -544,9 +475,15 @@
         <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2017 TracyYih<br>
-            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+            &copy; 2017 TracyYih 
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>.
         </div>
+        
+            <div class="cnzz">
+                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                </script>
+            </div>
+        
     </div>
 </footer>
         

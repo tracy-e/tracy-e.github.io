@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Esoft Mobile</title>
-  <subtitle>Code &amp; Life</subtitle>
+  
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://esoftmobile.com/"/>
-  <updated>2017-03-10T06:57:22.000Z</updated>
+  <updated>2017-03-13T05:08:15.000Z</updated>
   <id>http://esoftmobile.com/</id>
   
   <author>
@@ -16,11 +16,59 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>flask 源码解析：请求</title>
+    <link href="http://esoftmobile.com/2017/03/13/flask-request/"/>
+    <id>http://esoftmobile.com/2017/03/13/flask-request/</id>
+    <published>2017-03-13T05:01:01.000Z</published>
+    <updated>2017-03-13T05:08:15.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>对于物理链路来说，请求只是不同电压信号，它根本不知道也不需要知道请求格式和内容到底是怎样的； 对于 TCP 层来说，请求就是传输的数据（二进制的数据流），它只要发送给对应的应用程序就行了； 对于 HTTP 层的服务器来说，请求必须是符合 HTTP 协议的内容； 对于 WSGI server 来说，请求又变成了文件流，它要读取其中的内容，把 HTTP 请求包含的各种信息保存到一个字典中，调用 WSGI app； 对于 flask app 来说，请求就是一个对象，当需要某些信息的时候，只需要读取该对象的属性或者方法就行了。</p>
+<p>可以看到，虽然是同样的请求数据，在不同的阶段和不同组件看来，是完全不同的形式。因为每个组件都有它本身的目的和功能，这和生活中的事情一个道理：对于同样的事情，不同的人或者同一个人不同人生阶段的理解是不一样的。</p>
+<a id="more"></a>
+<p>这篇文章呢，我们只考虑最后一个内容，flask 怎么看待请求。</p>
+<h2 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h2><p>我们知道要访问 flask 的请求对象非常简单，只需要 <code>from flask import request</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</div><div class="line"></div><div class="line"><span class="keyword">with</span> app.request_context(environ):</div><div class="line">    <span class="keyword">assert</span> request.method == <span class="string">'POST'</span></div></pre></td></tr></table></figure>
+<p>前面一篇文章 已经介绍了这个神奇的变量是怎么工作的，它最后对应了 <code>flask.wrappers:Request</code> 类的对象。 这个类内部的实现虽然我们还不清楚，但是我们知道它接受 WSGI server 传递过来的 environ 字典变量，并提供了很多常用的属性和方法可以使用，比如请求的 method、path、args 等。 请求还有一个不那么明显的特性——它不能被应用修改，应用只能读取请求的数据。</p>
+<p>这个类的定义很简单，它继承了 <code>werkzeug.wrappers:Request</code>，然后添加了一些属性，这些属性和 flask 的逻辑有关，比如 view_args、blueprint、json 处理等。它的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> werkzeug.wrappers <span class="keyword">import</span> Request <span class="keyword">as</span> RequestBase</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Request</span><span class="params">(RequestBase)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    The request object is a :class:`~werkzeug.wrappers.Request` subclass and</div><div class="line">    provides all of the attributes Werkzeug defines plus a few Flask</div><div class="line">    specific ones.</div><div class="line">    """</div><div class="line"></div><div class="line">    <span class="comment">#: The internal URL rule that matched the request.  This can be</span></div><div class="line">    <span class="comment">#: useful to inspect which methods are allowed for the URL from</span></div><div class="line">    <span class="comment">#: a before/after handler (``request.url_rule.methods``) etc.</span></div><div class="line">    url_rule = <span class="keyword">None</span></div><div class="line"></div><div class="line">    <span class="comment">#: A dict of view arguments that matched the request.  If an exception</span></div><div class="line">    <span class="comment">#: happened when matching, this will be ``None``.</span></div><div class="line">    view_args = <span class="keyword">None</span></div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">max_content_length</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""</span></div><div class="line">        ctx = _request_ctx_stack.top</div><div class="line">        <span class="keyword">if</span> ctx <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> ctx.app.config[<span class="string">'MAX_CONTENT_LENGTH'</span>]</div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">endpoint</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""The endpoint that matched the request.  This in combination with</span></div><div class="line">        :attr:`view_args` can be used to reconstruct the same or a</div><div class="line">        modified URL.  If an exception happened when matching, this will</div><div class="line">        be ``None``.</div><div class="line">        """</div><div class="line">        <span class="keyword">if</span> self.url_rule <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> self.url_rule.endpoint</div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">blueprint</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""The name of the current blueprint"""</span></div><div class="line">        <span class="keyword">if</span> self.url_rule <span class="keyword">and</span> <span class="string">'.'</span> <span class="keyword">in</span> self.url_rule.endpoint:</div><div class="line">            <span class="keyword">return</span> self.url_rule.endpoint.rsplit(<span class="string">'.'</span>, <span class="number">1</span>)[<span class="number">0</span>]</div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">is_json</span><span class="params">(self)</span>:</span></div><div class="line">        mt = self.mimetype</div><div class="line">        <span class="keyword">if</span> mt == <span class="string">'application/json'</span>:</div><div class="line">            <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line">        <span class="keyword">if</span> mt.startswith(<span class="string">'application/'</span>) <span class="keyword">and</span> mt.endswith(<span class="string">'+json'</span>):</div><div class="line">            <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">False</span></div></pre></td></tr></table></figure>
+<p>这段代码没有什难理解的地方，唯一需要说明的就是 @property 装饰符能够把类的方法变成属性，这是 python 中经常见到的用法。<br>接着我们就要看 <code>werkzeug.wrappers:Request</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Request</span><span class="params">(BaseRequest, AcceptMixin, ETagRequestMixin,</span></span></div><div class="line">              UserAgentMixin, AuthorizationMixin,</div><div class="line">              CommonRequestDescriptorsMixin):</div><div class="line"></div><div class="line">    <span class="string">"""Full featured request object implementing the following mixins:</span></div><div class="line"></div><div class="line">    - :class:`AcceptMixin` for accept header parsing</div><div class="line">    - :class:`ETagRequestMixin` for etag and cache control handling</div><div class="line">    - :class:`UserAgentMixin` for user agent introspection</div><div class="line">    - :class:`AuthorizationMixin` for http auth handling</div><div class="line">    - :class:`CommonRequestDescriptorsMixin` for common headers</div><div class="line">    """</div></pre></td></tr></table></figure>
+<p>这个方法有一点比较特殊，它没有任何的 body。但是有多个基类，第一个是 <code>BaseRequest</code>，其他的都是各种 <code>Mixin</code>。 这里要讲一下 <code>Mixin</code> 机制，这是 python 多继承的一种方式，如果你希望某个类可以自行组合它的特性（比如这里的情况），或者希望某个特性用在多个类中，就可以使用 <code>Mixin</code>。 如果我们只需要能处理各种 Accept 头部的请求，可以这样做：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">class Request(BaseRequest, AcceptMixin)</div><div class="line">    pass</div></pre></td></tr></table></figure>
+<p>但是不要滥用 <code>Mixin</code>，在大多数情况下子类继承了父类，然后实现需要的逻辑就能满足需求。</p>
+<p>我们先来看看 <code>BaseRequest</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseRequest</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, environ, populate_request=True, shallow=False)</span>:</span></div><div class="line">        self.environ = environ</div><div class="line">        <span class="keyword">if</span> populate_request <span class="keyword">and</span> <span class="keyword">not</span> shallow:</div><div class="line">            self.environ[<span class="string">'werkzeug.request'</span>] = self</div><div class="line">        self.shallow = shallow</div></pre></td></tr></table></figure>
+<p>能看到实例化需要的唯一变量是 environ，它只是简单地把变量保存下来，并没有做进一步的处理。Request 的内容很多，其中相当一部分是被 @cached_property 装饰的方法，比如下面这种：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@cached_property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">args</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""The parsed URL parameters."""</span></div><div class="line">    <span class="keyword">return</span> url_decode(wsgi_get_bytes(self.environ.get(<span class="string">'QUERY_STRING'</span>, <span class="string">''</span>)),</div><div class="line">                      self.url_charset, errors=self.encoding_errors,</div><div class="line">                      cls=self.parameter_storage_class)</div><div class="line"></div><div class="line"><span class="meta">@cached_property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stream</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""The stream to read incoming data from.  Unlike :attr:`input_stream`</span></div><div class="line">    this stream is properly guarded that you can't accidentally read past</div><div class="line">    the length of the input.  Werkzeug will internally always refer to</div><div class="line">    this stream to read data which makes it possible to wrap this</div><div class="line">    object with a stream that does filtering.</div><div class="line">    """</div><div class="line">    _assert_not_shallow(self)</div><div class="line">    <span class="keyword">return</span> get_input_stream(self.environ)</div><div class="line"></div><div class="line"><span class="meta">@cached_property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">form</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""The form parameters."""</span></div><div class="line">    self._load_form_data()</div><div class="line">    <span class="keyword">return</span> self.form</div><div class="line"></div><div class="line"><span class="meta">@cached_property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cookies</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Read only access to the retrieved cookie values as dictionary."""</span></div><div class="line">    <span class="keyword">return</span> parse_cookie(self.environ, self.charset,</div><div class="line">                        self.encoding_errors,</div><div class="line">                        cls=self.dict_storage_class)</div><div class="line"></div><div class="line"><span class="meta">@cached_property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">headers</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""The headers from the WSGI environ as immutable</span></div><div class="line">    :class:`~werkzeug.datastructures.EnvironHeaders`.</div><div class="line">    """</div><div class="line">    <span class="keyword">return</span> EnvironHeaders(self.environ)</div></pre></td></tr></table></figure>
+<p>@cached_property 从名字就能看出来，它是 @property 的升级版，添加了缓存功能。我们知道 @property 能把某个方法转换成属性，每次访问属性的时候，它都会执行底层的方法作为结果返回。 @cached_property 也一样，区别是只有第一次访问的时候才会调用底层的方法，后续的方法会直接使用之前返回的值。 那么它是如何实现的呢？我们能在 <code>werkzeug.utils</code> 找到它的定义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">cached_property</span><span class="params">(property)</span>:</span></div><div class="line"></div><div class="line">    <span class="string">"""A decorator that converts a function into a lazy property.  The</span></div><div class="line">    function wrapped is called the first time to retrieve the result</div><div class="line">    and then that calculated result is used the next time you access</div><div class="line">    the value.</div><div class="line"></div><div class="line">    The class has to have a `__dict__` in order for this property to</div><div class="line">    work.</div><div class="line">    """</div><div class="line"></div><div class="line">    <span class="comment"># implementation detail: A subclass of python's builtin property</span></div><div class="line">    <span class="comment"># decorator, we override __get__ to check for a cached value. If one</span></div><div class="line">    <span class="comment"># choses to invoke __get__ by hand the property will still work as</span></div><div class="line">    <span class="comment"># expected because the lookup logic is replicated in __get__ for</span></div><div class="line">    <span class="comment"># manual invocation.</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, func, name=None, doc=None)</span>:</span></div><div class="line">        self.__name__ = name <span class="keyword">or</span> func.__name__</div><div class="line">        self.__module__ = func.__module__</div><div class="line">        self.__doc__ = doc <span class="keyword">or</span> func.__doc__</div><div class="line">        self.func = func</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span><span class="params">(self, obj, value)</span>:</span></div><div class="line">        obj.__dict__[self.__name__] = value</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, obj, type=None)</span>:</span></div><div class="line">        <span class="keyword">if</span> obj <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> self</div><div class="line">        value = obj.__dict__.get(self.__name__, _missing)</div><div class="line">        <span class="keyword">if</span> value <span class="keyword">is</span> _missing:</div><div class="line">            value = self.func(obj)</div><div class="line">            obj.__dict__[self.__name__] = value</div><div class="line">        <span class="keyword">return</span> value</div></pre></td></tr></table></figure>
+<p>这个装饰器同时也是实现了 <code>__set__</code> 和 <code>__get__</code> 方法的描述器。 访问它装饰的属性，就会调用 <code>__get__</code> 方法，这个方法先在 <code>obj.__dict__</code> 中寻找是否已经存在对应的值。如果存在，就直接返回；如果不存在，调用底层的函数 <code>self.func</code>，并把得到的值保存起来，再返回。这也是它能实现缓存的原因：因为它会把函数的值作为属性保存到对象中。</p>
+<p>关于 Request 内部各种属性的实现，就不分析了，因为它们每个具体的实现都不太一样，也不复杂，无外乎对 environ 字典中某些字段做一些处理和计算。 接下来回过头来看看 <code>Mixin</code>，这里只用 <code>AcceptMixin</code> 作为例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">AcceptMixin</span><span class="params">(object)</span>:</span></div><div class="line"></div><div class="line"><span class="meta">    @cached_property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">accept_mimetypes</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> parse_accept_header(self.environ.get(<span class="string">'HTTP_ACCEPT'</span>), MIMEAccept)</div><div class="line"></div><div class="line"><span class="meta">    @cached_property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">accept_charsets</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> parse_accept_header(self.environ.get(<span class="string">'HTTP_ACCEPT_CHARSET'</span>),</div><div class="line">                                   CharsetAccept)</div><div class="line"></div><div class="line"><span class="meta">    @cached_property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">accept_encodings</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> parse_accept_header(self.environ.get(<span class="string">'HTTP_ACCEPT_ENCODING'</span>))</div><div class="line"></div><div class="line"><span class="meta">    @cached_property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">accept_languages</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> parse_accept_header(self.environ.get(<span class="string">'HTTP_ACCEPT_LANGUAGE'</span>),</div><div class="line">                                   LanguageAccept)</div></pre></td></tr></table></figure>
+<p><code>AcceptMixin</code> 实现了请求内容协商的部分，比如请求接受的语言、编码格式、相应内容等。 它也是定义了很多 @cached_property 方法，虽然自己没有 <code>__init__</code> 方法，但是也直接使用了 <code>self.environ</code>，因此它并不能直接使用，只能和 <code>BaseRequest</code> 一起出现。</p>
+<p><em>本文转自<a href="http://cizixs.com/2017/01/18/flask-insight-request" target="_blank" rel="external">Cizixs Writes Here</a></em></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;对于物理链路来说，请求只是不同电压信号，它根本不知道也不需要知道请求格式和内容到底是怎样的； 对于 TCP 层来说，请求就是传输的数据（二进制的数据流），它只要发送给对应的应用程序就行了； 对于 HTTP 层的服务器来说，请求必须是符合 HTTP 协议的内容； 对于 WSGI server 来说，请求又变成了文件流，它要读取其中的内容，把 HTTP 请求包含的各种信息保存到一个字典中，调用 WSGI app； 对于 flask app 来说，请求就是一个对象，当需要某些信息的时候，只需要读取该对象的属性或者方法就行了。&lt;/p&gt;
+&lt;p&gt;可以看到，虽然是同样的请求数据，在不同的阶段和不同组件看来，是完全不同的形式。因为每个组件都有它本身的目的和功能，这和生活中的事情一个道理：对于同样的事情，不同的人或者同一个人不同人生阶段的理解是不一样的。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+  </entry>
+  
+  <entry>
     <title>flask 源码解析：上下文</title>
     <link href="http://esoftmobile.com/2017/03/09/flask-context/"/>
     <id>http://esoftmobile.com/2017/03/09/flask-context/</id>
     <published>2017-03-09T08:50:31.000Z</published>
-    <updated>2017-03-10T06:57:22.000Z</updated>
+    <updated>2017-03-13T05:08:56.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="上下文（application-context-和-request-context）"><a href="#上下文（application-context-和-request-context）" class="headerlink" title="上下文（application context 和 request context）"></a>上下文（application context 和 request context）</h2><p>上下文一直是计算机中难理解的概念，在知乎的一个问题下面有个很通俗易懂的回答：</p>
 <blockquote>
@@ -106,7 +154,7 @@
     <link href="http://esoftmobile.com/2017/03/08/flask-routing/"/>
     <id>http://esoftmobile.com/2017/03/08/flask-routing/</id>
     <published>2017-03-08T07:51:13.000Z</published>
-    <updated>2017-03-10T05:25:55.000Z</updated>
+    <updated>2017-03-13T05:08:53.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="构建路由规则"><a href="#构建路由规则" class="headerlink" title="构建路由规则"></a>构建路由规则</h2><p>一个 web 应用不同的路径会有不同的处理函数，<strong>路由就是根据请求的 URL 找到对应处理函数的过程</strong>。</p>
 <p>在执行查找之前，需要有一个规则列表，它存储了 url 和处理函数的对应关系。最容易想到的解决方案就是定义一个字典，key 是 url，value 是对应的处理函数。如果 url 都是静态的（url 路径都是实现确定的，没有变量和正则匹配），那么路由的过程就是从字典中通过 url 这个 key ，找到并返回对应的 value；如果没有找到，就报 404 错误。而对于动态路由，还需要更复杂的匹配逻辑。flask 中的路由过程是这样的吗？这篇文章就来分析分析。</p>
@@ -169,7 +217,7 @@
     <link href="http://esoftmobile.com/2017/03/07/flask-start-process/"/>
     <id>http://esoftmobile.com/2017/03/07/flask-start-process/</id>
     <published>2017-03-07T09:23:44.000Z</published>
-    <updated>2017-03-10T05:25:48.000Z</updated>
+    <updated>2017-03-13T05:08:59.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="WSGI"><a href="#WSGI" class="headerlink" title="WSGI"></a>WSGI</h2><p>所有的 python web 框架都要遵循 WSGI 协议，如果对 WSGI 不清楚，可以查看我之前的<a href="http://cizixs.com/2014/11/08/understand-wsgi" target="_blank" rel="external">介绍文章</a>。</p>
 <p>在这里还是要简单回顾一下 WSGI 的核心概念。</p>
@@ -225,7 +273,7 @@
     <link href="http://esoftmobile.com/2017/03/06/flask-into/"/>
     <id>http://esoftmobile.com/2017/03/06/flask-into/</id>
     <published>2017-03-06T09:14:12.000Z</published>
-    <updated>2017-03-10T07:45:56.000Z</updated>
+    <updated>2017-03-13T05:08:51.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="Flask-简介"><a href="#Flask-简介" class="headerlink" title="Flask 简介"></a>Flask 简介</h2><p>Flask 官网上对它的定位是一个“微” python web 开发框架。</p>
 <blockquote>
@@ -508,22 +556,20 @@ found 1 devices
     <link href="http://esoftmobile.com/2014/04/06/video-app-reverse/"/>
     <id>http://esoftmobile.com/2014/04/06/video-app-reverse/</id>
     <published>2014-04-06T07:28:01.000Z</published>
-    <updated>2014-04-07T02:55:32.000Z</updated>
+    <updated>2017-03-10T09:30:51.000Z</updated>
     
     <content type="html"><![CDATA[<p>最近看完了<a href="http://www.amazon.cn/iOS应用逆向工程-分析与实战-沙梓社/dp/B00HQW9AA6/ref=sr_1_1?ie=UTF8&amp;qid=1396769410&amp;sr=8-1&amp;keywords=ios+逆向工程" target="_blank" rel="external">《iOS应用逆向工程分析与实战》</a>，当你手里拿着锤子的时候，整个世界都成了钉子，所以迫不及待的想练练手。正好最近在某视频客户端上跟美剧，有时候想缓存下来离线看，但是由于版权原因，很多视频都不能缓存，所以今天逆向实践的主要目标就是能够缓存有版权的视频。</p>
 <p>有人可能会问：你怎么就知道一定能够实现这个目标，万一带版权的视频压根儿就没有提供下载地址你怎么缓存啊？问得好，其实在拿到逆向这把锤子之前，我靠着纯体力已经能够下载到追的美剧了。使用Charles抓包工具获取到剧集的信息（关于Charles的使用可以看<a href="http://blog.devtang.com/blog/2013/12/11/network-tool-charles-intr/" target="_blank" rel="external">这里</a>），即使有版权的视频也会有<code>download_url</code>字段，然后将每个下载地址复制到迅雷里面下载。还好有了这段痛苦的经历，让我知道今天逆向的目标是可实现的。</p>
 <a id="more"></a>
-<p>##使用工具</p>
-<p>某助手软件、class-dump、cycript、Charles、IDA、Theos、已越狱iPhone。</p>
-<p>##分析与实践过程</p>
-<p>通过某助手软件下载要进行逆向的视频客户端xxxxVideo.ipa（省去AppStore下载后还需破壳的过程），解压后将二进制文件复制出来，使用class-dump导出头文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ class-dump -H xxxxVideo -o headers</div></pre></td></tr></table></figure>
+<h2 id="使用工具"><a href="#使用工具" class="headerlink" title="使用工具"></a>使用工具</h2><p>某助手软件、class-dump、cycript、Charles、IDA、Theos、已越狱iPhone。</p>
+<h2 id="分析与实践过程"><a href="#分析与实践过程" class="headerlink" title="分析与实践过程"></a>分析与实践过程</h2><p>通过某助手软件下载要进行逆向的视频客户端xxxxVideo.ipa（省去AppStore下载后还需破壳的过程），解压后将二进制文件复制出来，使用class-dump导出头文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ class-dump -H xxxxVideo -o headers</div></pre></td></tr></table></figure>
 <p>用Xcode创建一个新工程，将头文件导入工程：</p>
 <p><img src="/image/video-app-reverse-headers.png" alt="Headers"></p>
 <p>在越狱的手机上安装该视频客户端，进入到视频播放界面，可以看到下面“缓存”按钮为灰色，很自然的会想到以该按钮为出发点开始分析。</p>
 <p><img src="/image/video-app-video-detail-view-controller.png" alt="VideoDetailViewController"></p>
 <p>下面通过cycript开始找到该按钮所在类（如果你安装了Reveal，那下面这个查找步骤就可以直接用Reveal实现了）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ ssh root@192.168.1.118  #通过ssh连接到手机</div><div class="line">~ root# ps -A | grep xxxxVideo  #获取到该视频客户端进程ID</div><div class="line">PID   TT  STAT      TIME COMMAND</div><div class="line">1438   ??  Ss     0:02.19 /var/mobile/Applications/414D20A3-EA72-4AB4-87E4-5A209F648EAB/xxxxVideo.app/xxxxVideo</div><div class="line">~ root# cycript -p 1438</div><div class="line"># var tabBarController = [UIApp keyWindow].rootViewController</div><div class="line"># &quot;&lt;SVTabBarController: 0x23da6a0&gt;&quot;</div><div class="line"># var detailViewController = tabBarController.selectedViewController.visibleViewController</div><div class="line"># &quot;&lt;VideoDetailViewController: 0x23eadc0&gt;&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ ssh root@192.168.1.118  <span class="comment">#通过ssh连接到手机</span></div><div class="line">~ root<span class="comment"># ps -A | grep xxxxVideo  #获取到该视频客户端进程ID</span></div><div class="line">PID   TT  STAT      TIME COMMAND</div><div class="line">1438   ??  Ss     0:02.19 /var/mobile/Applications/414D20A3-EA72-4AB4-87E4-5A209F648EAB/xxxxVideo.app/xxxxVideo</div><div class="line">~ root<span class="comment"># cycript -p 1438</span></div><div class="line"><span class="comment"># var tabBarController = [UIApp keyWindow].rootViewController</span></div><div class="line"><span class="comment"># "&lt;SVTabBarController: 0x23da6a0&gt;"</span></div><div class="line"><span class="comment"># var detailViewController = tabBarController.selectedViewController.visibleViewController</span></div><div class="line"><span class="comment"># "&lt;VideoDetailViewController: 0x23eadc0&gt;"</span></div></pre></td></tr></table></figure>
 <p>所以当前播放界面对应的视图控制器类是<code>VideoDetailViewController</code>，但是在该头文件中并未找到缓存按钮或者下面的bar，不过下面这个属性引起了我的注意：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@property(retain, nonatomic) VideoDetailBarController *videoDetailBarController; // @synthesize videoDetailBarController=_videoDetailBarController;</div></pre></td></tr></table></figure>
 <p>进入到该类对应的头文件，终于找到了下载按钮<code>downloadBtn</code>，并且很明显可以看出点击该按钮调用<code>- (void)downloadWithButton:(id)arg1</code>方法。因为缓存按钮有可以缓存和不能缓存两种状态，所以判断是否能缓存应该是在该方法里面实现的，由于没有其他成员变量或方法标记能否缓存，所以这个判断依据应该存在某个对象里面，这时可以注意到<code>dataManager</code>属性，它是一个数据管理对象，而管理的对象就是<code>videoAlbum</code>。</p>
@@ -533,13 +579,13 @@ found 1 devices
 <p>马上验证，创建Theos Tweak工程，配置好其他信息：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">%hook VideoAlbum</div><div class="line"></div><div class="line">- (BOOL)canBeDownLoaded</div><div class="line">&#123;</div><div class="line">    return YES;</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>编译、打包、安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ export THEOS_DEVICE_IP=192.168.1.118</div><div class="line">$ make package install</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">export</span> THEOS_DEVICE_IP=192.168.1.118</div><div class="line">$ make package install</div></pre></td></tr></table></figure>
 <p>再次运行该视频客户端，“缓存”按钮恢复正常了，点击后弹出了缓存界面，选择剧集后可以正常下载。</p>
 <p><img src="/image/video-app-can-be-download.png" alt="Can be downloaded"> <img src="/image/video-app-download-view-controller.png" alt="Download"></p>
 <hr>
 <p>到了这里本文应该就要结束了，嘛，还没玩过瘾？那我们继续折腾吧，看到视频上面<code>登录VIP 30</code>吗？非VIP用户每个视频前面有30秒的广告，而且VIP专区的视频只能看前面的5分钟，浪费时间就是浪费生命，但是我等屌丝又买不起VIP好吗？那下面我们就告别广告，成为VIP。</p>
 <p>因为每次进到“个人资料”时客户端都会进行通讯，应该是获取用户信息，使用Charles抓取到以下信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;attachment&quot;: &#123;</div><div class="line">        &quot;status&quot;: 0, </div><div class="line">        &quot;msg&quot;: &quot;ok&quot;, </div><div class="line">        &quot;jifen&quot;: 0, </div><div class="line">        &quot;dengji&quot;: 0, </div><div class="line">        &quot;uid&quot;: xxxxxxxxx, </div><div class="line">        &quot;passport&quot;: &quot;yyyyyyyyyy@sina.sohu.com&quot;, </div><div class="line">        &quot;nickname&quot;: &quot;TracyYih&quot;, </div><div class="line">        &quot;smallimg&quot;: &quot;http://tp3.sinaimg.cn/1342106870/50/5664617611/1&quot;, </div><div class="line">        &quot;mobile&quot;: &quot;&quot;, </div><div class="line">        &quot;email&quot;: &quot;&quot;, </div><div class="line">        &quot;birthday&quot;: &quot;&quot;, </div><div class="line">        &quot;gender&quot;: 1, </div><div class="line">        &quot;utype&quot;: 31, </div><div class="line">        &quot;token&quot;: &quot;1ee4863ec29030730e624afdb401a3e6&quot;, </div><div class="line">        &quot;isVip&quot;: &quot;0&quot;, </div><div class="line">        &quot;vipexpire&quot;: &quot;&quot;</div><div class="line">    &#125;, </div><div class="line">    &quot;message&quot;: &quot;成功&quot;, </div><div class="line">    &quot;debug&quot;: null, </div><div class="line">    &quot;status&quot;: 200</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"attachment"</span>: &#123;</div><div class="line">        <span class="attr">"status"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"msg"</span>: <span class="string">"ok"</span>, </div><div class="line">        <span class="attr">"jifen"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"dengji"</span>: <span class="number">0</span>, </div><div class="line">        <span class="attr">"uid"</span>: xxxxxxxxx, </div><div class="line">        <span class="attr">"passport"</span>: <span class="string">"yyyyyyyyyy@sina.sohu.com"</span>, </div><div class="line">        <span class="attr">"nickname"</span>: <span class="string">"TracyYih"</span>, </div><div class="line">        <span class="attr">"smallimg"</span>: <span class="string">"http://tp3.sinaimg.cn/1342106870/50/5664617611/1"</span>, </div><div class="line">        <span class="attr">"mobile"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"email"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"birthday"</span>: <span class="string">""</span>, </div><div class="line">        <span class="attr">"gender"</span>: <span class="number">1</span>, </div><div class="line">        <span class="attr">"utype"</span>: <span class="number">31</span>, </div><div class="line">        <span class="attr">"token"</span>: <span class="string">"1ee4863ec29030730e624afdb401a3e6"</span>, </div><div class="line">        <span class="attr">"isVip"</span>: <span class="string">"0"</span>, </div><div class="line">        <span class="attr">"vipexpire"</span>: <span class="string">""</span></div><div class="line">    &#125;, </div><div class="line">    <span class="attr">"message"</span>: <span class="string">"成功"</span>, </div><div class="line">    <span class="attr">"debug"</span>: <span class="literal">null</span>, </div><div class="line">    <span class="attr">"status"</span>: <span class="number">200</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>看到了吗？<code>isVip</code>字段为0，在头文件中搜索“isVip”，找到两个类：<code>UserDataModel</code> 和 <code>UserInterface</code>，将属性与通讯返回的JSON格式对比可以看出，<code>UserDataModel</code> 和 JSON数据一一对应，即为用户信息模型类，而在<code>UserInterface</code>类中有一个<code>UserDataModel</code>实例作为属性，还有一些其他的方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">@interface UserDataModel : NSObject</div><div class="line">&#123;</div><div class="line">    BOOL isVip;</div><div class="line">    NSString *passport;</div><div class="line">    NSString *password;</div><div class="line">    NSString *nickname;</div><div class="line">    NSString *profileImage;</div><div class="line">    NSString *mobile;</div><div class="line">    NSString *email;</div><div class="line">    NSString *birthday;</div><div class="line">    NSString *requestToken;</div><div class="line">    NSString *vipExpire;</div><div class="line">    NSString *score;</div><div class="line">    NSString *grade;</div><div class="line">    NSString *uid;</div><div class="line">    int gender;</div><div class="line">    int loginTpye;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@property int loginTpye; // @synthesize loginTpye;</div><div class="line">@property int gender; // @synthesize gender;</div><div class="line">@property(copy, nonatomic) NSString *uid; // @synthesize uid;</div><div class="line">@property(copy) NSString *grade; // @synthesize grade;</div><div class="line">@property(copy) NSString *score; // @synthesize score;</div><div class="line">@property(copy) NSString *vipExpire; // @synthesize vipExpire;</div><div class="line">@property BOOL isVip; // @synthesize isVip;</div><div class="line">@property(copy) NSString *requestToken; // @synthesize requestToken;</div><div class="line">@property(copy) NSString *birthday; // @synthesize birthday;</div><div class="line">@property(copy) NSString *email; // @synthesize email;</div><div class="line">@property(copy) NSString *mobile; // @synthesize mobile;</div><div class="line">@property(copy) NSString *profileImage; // @synthesize profileImage;</div><div class="line">@property(copy) NSString *nickname; // @synthesize nickname;</div><div class="line">@property(copy) NSString *password; // @synthesize password;</div><div class="line">@property(copy) NSString *passport; // @synthesize passport;</div><div class="line">//...</div><div class="line">@end</div></pre></td></tr></table></figure>
 <p>所以我们应该关注最基础的模型（<code>UserDataModel</code>），不管接口返回的用户信息中是否为VIP，我们统一设置他为VIP:</p>
@@ -565,8 +611,7 @@ found 1 devices
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">#define kYearInterval  31536000.0</div><div class="line"></div><div class="line">%hook UserDataModel</div><div class="line"></div><div class="line">- (BOOL)isVip</div><div class="line">&#123;</div><div class="line">    return YES;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSString *)vipExpire</div><div class="line">&#123;</div><div class="line">    NSDate *date = [[NSDate date] dateByAddingTimeInterval:kYearInterval];</div><div class="line">    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];</div><div class="line">    [dateFormatter setDateFormat:@&quot;yyyy-MM-dd HH:mm:ss&quot;];</div><div class="line">    return [dateFormatter stringFromDate:date];</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>编译、打包、安装，重新运行客户端，高大上的VIP有木有？看视频没有广告了有木有？VIP视频随便看有木有？</p>
 <p><img src="/image/video-app-vip-logo.png" alt="VIP"> <img src="/image/video-app-vip-detail.png" alt="VIP"></p>
-<p>##总结</p>
-<p>至此，整个逆向过程就结束了，授人以鱼不如授人以渔，所以我详细的描述了分析的过程而不是结果。此外，本文内容仅供个人学习交流，所以即使你知道我所逆向的是哪个客户端，也不要将本文内容用于有损该客户端利益的目的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，整个逆向过程就结束了，授人以鱼不如授人以渔，所以我详细的描述了分析的过程而不是结果。此外，本文内容仅供个人学习交流，所以即使你知道我所逆向的是哪个客户端，也不要将本文内容用于有损该客户端利益的目的。</p>
 ]]></content>
     
     <summary type="html">
@@ -586,127 +631,74 @@ found 1 devices
     <link href="http://esoftmobile.com/2014/03/22/the-passionate-programmer/"/>
     <id>http://esoftmobile.com/2014/03/22/the-passionate-programmer/</id>
     <published>2014-03-22T05:56:35.000Z</published>
-    <updated>2014-03-22T06:16:17.000Z</updated>
+    <updated>2017-03-10T09:28:43.000Z</updated>
     
     <content type="html"><![CDATA[<p><img src="/image/the_passionate_programmer.jpg" alt="The Passionate Programmer"></p>
-<p>###1. 稳定成熟的技术还是未成熟的新技术?</p>
-<p>无论做出哪种选择，最终目的是产生利润。Both ends of the technology adoption curve might prove to be lucrative.</p>
+<h3 id="1-稳定成熟的技术还是未成熟的新技术"><a href="#1-稳定成熟的技术还是未成熟的新技术" class="headerlink" title="1. 稳定成熟的技术还是未成熟的新技术?"></a>1. 稳定成熟的技术还是未成熟的新技术?</h3><p>无论做出哪种选择，最终目的是产生利润。Both ends of the technology adoption curve might prove to be lucrative.</p>
 <a id="more"></a>
-<p>###2. 供应和需求</p>
-<p>不要在价格上竞争，你承受不起。You can’t compete on price. In fact, you can’t afford to compete on price.</p>
+<h3 id="2-供应和需求"><a href="#2-供应和需求" class="headerlink" title="2. 供应和需求"></a>2. 供应和需求</h3><p>不要在价格上竞争，你承受不起。You can’t compete on price. In fact, you can’t afford to compete on price.</p>
 <p>发现市场上的不平衡。Exploit market imbalances.</p>
-<p>###3. 只会编程是不够的</p>
-<p>仔细思考在哪个商业领域投入时间。Now is the time to think about business domains you invest your time in.</p>
-<p>###4. 做团队中最差的</p>
-<p>做乐队中最差的乐手。Be the worst guy in every band you’re in.</p>
+<h3 id="3-只会编程是不够的"><a href="#3-只会编程是不够的" class="headerlink" title="3. 只会编程是不够的"></a>3. 只会编程是不够的</h3><p>仔细思考在哪个商业领域投入时间。Now is the time to think about business domains you invest your time in.</p>
+<h3 id="4-做团队中最差的"><a href="#4-做团队中最差的" class="headerlink" title="4. 做团队中最差的"></a>4. 做团队中最差的</h3><p>做乐队中最差的乐手。Be the worst guy in every band you’re in.</p>
 <p>你身边的人会对你产生很大的影响，明智地选择你的圈子。The people around you affect your own performance. Choose your crowd wisely.</p>
-<p>###5. 在思维上投资</p>
-<p>没人给过我机会……？要学会抓住机遇！I haven’t been given the opportunity…? Seize the opportunity!</p>
-<p>###6. 不要听从父母</p>
-<p>###7. 做一名通才</p>
-<p>通才很少，所以很珍贵。Generalists are rare… and, therefore, precious.</p>
+<h3 id="5-在思维上投资"><a href="#5-在思维上投资" class="headerlink" title="5. 在思维上投资"></a>5. 在思维上投资</h3><p>没人给过我机会……？要学会抓住机遇！I haven’t been given the opportunity…? Seize the opportunity!</p>
+<h3 id="6-不要听从父母"><a href="#6-不要听从父母" class="headerlink" title="6. 不要听从父母"></a>6. 不要听从父母</h3><h3 id="7-做一名通才"><a href="#7-做一名通才" class="headerlink" title="7. 做一名通才"></a>7. 做一名通才</h3><p>通才很少，所以很珍贵。Generalists are rare… and, therefore, precious.</p>
 <p>你的技术水平应该超越技术平台。Your skills should transcend technology platforms.</p>
-<p>###8. 成为一名专家</p>
-<p>很多人认为专攻某种技术就简单地意味着不知道其他技术。Too many of us seem to believe that specializing in something simply means not knowing about other things.</p>
-<p>###9. 切忌孤注一掷</p>
-<p>以特定技术厂商为中心的观点，缺乏远见。Vendor-centric views are typically myopic.</p>
-<p>###10. 热爱它，不然就离开它</p>
-<p>工作，因为你无法停止工作。Work because you couldn’t not work.</p>
-<p>###11. 学习钓鱼</p>
-<p>要主动问，不要等着别人来告诉你！Don’t wait to be told.Ask!</p>
-<p>###12. 学习行业是如何运转的</p>
-<p>只有了解了一个行业后，你才能创造性地有所建树。You can’t creatively help a business until you know how it works.</p>
-<p>###13. 寻找良师</p>
-<p>可以依赖别人，但要确保这个人是靠得住的。It’s OK to depend on someone. Just make sure it’s the right person.</p>
-<p>###14. 做一名良师</p>
-<p>想要弄明白自己是不是真正懂得某一知识，那就把它讲给其他人听。To find out whether you really know something, try teaching it to someone else.</p>
+<h3 id="8-成为一名专家"><a href="#8-成为一名专家" class="headerlink" title="8. 成为一名专家"></a>8. 成为一名专家</h3><p>很多人认为专攻某种技术就简单地意味着不知道其他技术。Too many of us seem to believe that specializing in something simply means not knowing about other things.</p>
+<h3 id="9-切忌孤注一掷"><a href="#9-切忌孤注一掷" class="headerlink" title="9. 切忌孤注一掷"></a>9. 切忌孤注一掷</h3><p>以特定技术厂商为中心的观点，缺乏远见。Vendor-centric views are typically myopic.</p>
+<h3 id="10-热爱它，不然就离开它"><a href="#10-热爱它，不然就离开它" class="headerlink" title="10. 热爱它，不然就离开它"></a>10. 热爱它，不然就离开它</h3><p>工作，因为你无法停止工作。Work because you couldn’t not work.</p>
+<h3 id="11-学习钓鱼"><a href="#11-学习钓鱼" class="headerlink" title="11. 学习钓鱼"></a>11. 学习钓鱼</h3><p>要主动问，不要等着别人来告诉你！Don’t wait to be told.Ask!</p>
+<h3 id="12-学习行业是如何运转的"><a href="#12-学习行业是如何运转的" class="headerlink" title="12. 学习行业是如何运转的"></a>12. 学习行业是如何运转的</h3><p>只有了解了一个行业后，你才能创造性地有所建树。You can’t creatively help a business until you know how it works.</p>
+<h3 id="13-寻找良师"><a href="#13-寻找良师" class="headerlink" title="13. 寻找良师"></a>13. 寻找良师</h3><p>可以依赖别人，但要确保这个人是靠得住的。It’s OK to depend on someone. Just make sure it’s the right person.</p>
+<h3 id="14-做一名良师"><a href="#14-做一名良师" class="headerlink" title="14. 做一名良师"></a>14. 做一名良师</h3><p>想要弄明白自己是不是真正懂得某一知识，那就把它讲给其他人听。To find out whether you really know something, try teaching it to someone else.</p>
 <p>做导师不会下岗。Mentors tend not to get laid off.</p>
-<p>###15. 练习，练习，再练习</p>
-<p>在极限处练习。Practice at your limits.</p>
-<p>###16. 做事的方法</p>
-<p>想要拥有自己的步骤，那就执行它。If you want to feel you own a process, help implement it.</p>
-<p>###17. 站在巨人的肩膀上</p>
-<p>从现有程序中得到领悟。Mine existing code for insights.</p>
+<h3 id="15-练习，练习，再练习"><a href="#15-练习，练习，再练习" class="headerlink" title="15. 练习，练习，再练习"></a>15. 练习，练习，再练习</h3><p>在极限处练习。Practice at your limits.</p>
+<h3 id="16-做事的方法"><a href="#16-做事的方法" class="headerlink" title="16. 做事的方法"></a>16. 做事的方法</h3><p>想要拥有自己的步骤，那就执行它。If you want to feel you own a process, help implement it.</p>
+<h3 id="17-站在巨人的肩膀上"><a href="#17-站在巨人的肩膀上" class="headerlink" title="17. 站在巨人的肩膀上"></a>17. 站在巨人的肩膀上</h3><p>从现有程序中得到领悟。Mine existing code for insights.</p>
 <p>用现有程序来反思自己的程序。Use existing code to reflect on your own capabilities.</p>
-<p>###18. 在工作中，将自己自动化</p>
-<p>###19. 就是现在</p>
-<p>就现在，我们能做些什么？What can we do? Right Now?</p>
-<p>###20. 读心术</p>
-<p>读心术用得好，人们就会信任你。The mind-reading trick, if done well, leads to people depending on you.</p>
-<p>###21. 每日成绩</p>
-<p>每天都有可汇报的成绩。Have an accomplishment to report every day.</p>
-<p>###22. 别忘了你在为谁工作</p>
-<blockquote>
+<h3 id="18-在工作中，将自己自动化"><a href="#18-在工作中，将自己自动化" class="headerlink" title="18. 在工作中，将自己自动化"></a>18. 在工作中，将自己自动化</h3><h3 id="19-就是现在"><a href="#19-就是现在" class="headerlink" title="19. 就是现在"></a>19. 就是现在</h3><p>就现在，我们能做些什么？What can we do? Right Now?</p>
+<h3 id="20-读心术"><a href="#20-读心术" class="headerlink" title="20. 读心术"></a>20. 读心术</h3><p>读心术用得好，人们就会信任你。The mind-reading trick, if done well, leads to people depending on you.</p>
+<h3 id="21-每日成绩"><a href="#21-每日成绩" class="headerlink" title="21. 每日成绩"></a>21. 每日成绩</h3><p>每天都有可汇报的成绩。Have an accomplishment to report every day.</p>
+<h3 id="22-别忘了你在为谁工作"><a href="#22-别忘了你在为谁工作" class="headerlink" title="22. 别忘了你在为谁工作"></a>22. 别忘了你在为谁工作</h3><blockquote>
 <p>好经理的职责不是“做替补”，即了解整个团队的工作应该怎么做，在出现难题的时候就自己上。好经理的职责应该是为团队设定优先级，确保团队具备完成工作的一切需要，保证团队保持干劲和工作效率，并促使团队最终顺利完成工作。整个团队的工作干得出色，就证明这个经理的工作非常优秀。</p>
 </blockquote>
 <p>经理的成功，就是你们的成功。Your managers’ successes are your successes.</p>
-<p>###23. 安分守己</p>
-<p>要有雄心，但不必路人皆知。Be ambitious, but don’t wear it on your sleeve.</p>
-<p>###24. 今天我能把工作做到多好？</p>
-<p>你能为工作增添多少乐趣？How much more fun could you make your job?</p>
-<p>###25. 你的价值是多少</p>
-<p>问自己“今天实现自己的价值了么？”Ask, “Was I worth it today?”</p>
-<p>###26. 一桶水中的鹅卵石</p>
-<p>小心！别让成功冲昏了头脑。Beware of being blinded by your own success.</p>
-<p>###27. 爱上维护</p>
-<p>维护也可以成为自由和创造的沃土。Maintenance can be a place of freedom and creativity.</p>
-<p>###28. 8小时激情燃烧</p>
-<p>做项目像是马拉松，而不是全速短跑。Projects are marathons, not sprints.</p>
-<p>###29. 学习如何失败</p>
-<p>每个错误的音调离正确的音调不过一步之遥。Every wrong note is but one step away from a right one.</p>
+<h3 id="23-安分守己"><a href="#23-安分守己" class="headerlink" title="23. 安分守己"></a>23. 安分守己</h3><p>要有雄心，但不必路人皆知。Be ambitious, but don’t wear it on your sleeve.</p>
+<h3 id="24-今天我能把工作做到多好？"><a href="#24-今天我能把工作做到多好？" class="headerlink" title="24. 今天我能把工作做到多好？"></a>24. 今天我能把工作做到多好？</h3><p>你能为工作增添多少乐趣？How much more fun could you make your job?</p>
+<h3 id="25-你的价值是多少"><a href="#25-你的价值是多少" class="headerlink" title="25. 你的价值是多少"></a>25. 你的价值是多少</h3><p>问自己“今天实现自己的价值了么？”Ask, “Was I worth it today?”</p>
+<h3 id="26-一桶水中的鹅卵石"><a href="#26-一桶水中的鹅卵石" class="headerlink" title="26. 一桶水中的鹅卵石"></a>26. 一桶水中的鹅卵石</h3><p>小心！别让成功冲昏了头脑。Beware of being blinded by your own success.</p>
+<h3 id="27-爱上维护"><a href="#27-爱上维护" class="headerlink" title="27. 爱上维护"></a>27. 爱上维护</h3><p>维护也可以成为自由和创造的沃土。Maintenance can be a place of freedom and creativity.</p>
+<h3 id="28-8小时激情燃烧"><a href="#28-8小时激情燃烧" class="headerlink" title="28. 8小时激情燃烧"></a>28. 8小时激情燃烧</h3><p>做项目像是马拉松，而不是全速短跑。Projects are marathons, not sprints.</p>
+<h3 id="29-学习如何失败"><a href="#29-学习如何失败" class="headerlink" title="29. 学习如何失败"></a>29. 学习如何失败</h3><p>每个错误的音调离正确的音调不过一步之遥。Every wrong note is but one step away from a right one.</p>
 <p>充满压力的时候是赢得忠诚的最好时机。Stressful times offer the best opportunities to build loyalty.</p>
-<p>###30. 说“不”</p>
-<p>为了避免失望而说“是”，就是在说谎。Saying “yes” to avoid disappointment is just lying.</p>
-<p>###31. 不要恐慌</p>
-<p>英雄从不恐慌。Heroes never panic.</p>
-<p>###32. 说出来、行动、展示</p>
-<p>状态报告可以帮助你推销自己。Status reports can help you market yourself.</p>
-<p>###33. 不要忽视感觉</p>
-<p>绩效考核永远都不会是客观的。Performance appraisals are never objective.</p>
-<p>###34. 探险向导</p>
-<p>客户害怕你。Your customers are afraid of you.</p>
-<p>###35. 学会沟通，善于写作</p>
-<p>你自己就是你要解释的内容。You are what you can explain.</p>
-<p>###36. 到场</p>
-<p>了解你的同事。Learn about your colleagues.</p>
-<p>###37. 适当的言语</p>
-<p>请用行业术语推销你的成就。Market your accomplishments in the language of your business.</p>
-<p>###38. 改变世界</p>
-<p>带着任务去上班，并确保别人知道你的任务。Have a mission. Make sure people know it.</p>
-<p>###40. 创建自己的商标</p>
-<p>你的名字就是你的商标。Your name is your brand.</p>
+<h3 id="30-说“不”"><a href="#30-说“不”" class="headerlink" title="30. 说“不”"></a>30. 说“不”</h3><p>为了避免失望而说“是”，就是在说谎。Saying “yes” to avoid disappointment is just lying.</p>
+<h3 id="31-不要恐慌"><a href="#31-不要恐慌" class="headerlink" title="31. 不要恐慌"></a>31. 不要恐慌</h3><p>英雄从不恐慌。Heroes never panic.</p>
+<h3 id="32-说出来、行动、展示"><a href="#32-说出来、行动、展示" class="headerlink" title="32. 说出来、行动、展示"></a>32. 说出来、行动、展示</h3><p>状态报告可以帮助你推销自己。Status reports can help you market yourself.</p>
+<h3 id="33-不要忽视感觉"><a href="#33-不要忽视感觉" class="headerlink" title="33. 不要忽视感觉"></a>33. 不要忽视感觉</h3><p>绩效考核永远都不会是客观的。Performance appraisals are never objective.</p>
+<h3 id="34-探险向导"><a href="#34-探险向导" class="headerlink" title="34. 探险向导"></a>34. 探险向导</h3><p>客户害怕你。Your customers are afraid of you.</p>
+<h3 id="35-学会沟通，善于写作"><a href="#35-学会沟通，善于写作" class="headerlink" title="35. 学会沟通，善于写作"></a>35. 学会沟通，善于写作</h3><p>你自己就是你要解释的内容。You are what you can explain.</p>
+<h3 id="36-到场"><a href="#36-到场" class="headerlink" title="36. 到场"></a>36. 到场</h3><p>了解你的同事。Learn about your colleagues.</p>
+<h3 id="37-适当的言语"><a href="#37-适当的言语" class="headerlink" title="37. 适当的言语"></a>37. 适当的言语</h3><p>请用行业术语推销你的成就。Market your accomplishments in the language of your business.</p>
+<h3 id="38-改变世界"><a href="#38-改变世界" class="headerlink" title="38. 改变世界"></a>38. 改变世界</h3><p>带着任务去上班，并确保别人知道你的任务。Have a mission. Make sure people know it.</p>
+<h3 id="40-创建自己的商标"><a href="#40-创建自己的商标" class="headerlink" title="40. 创建自己的商标"></a>40. 创建自己的商标</h3><p>你的名字就是你的商标。Your name is your brand.</p>
 <p>Google永远不会忘记。Google never forgets.</p>
-<p>###41. 发布你编写的程序</p>
-<p>人人都能使用Rails，但很少有人能开发出Rails。Anyone can use Rails. Few can say Rails contributor.</p>
-<p>###42. 变为卓越的能力</p>
-<p>展示或者让它死亡！Demo or die!</p>
-<p>###43. 建立关系</p>
-<p>恐惧感使我们无法接近专业人士。Fear gets between us and the pros.</p>
-<p>###44. 已经过时的技术</p>
-<p>你引以为傲的新技术已经过时了。Your shiny new skills are already obsolete.</p>
-<p>###45. 你已经失去工作了</p>
-<p>你不是你的工作。You are not your job.</p>
-<p>###46. 没有终点的道路</p>
-<p>不要关注结果，要关注做事情的过程。Focus on doing, not on being done.</p>
-<p>###47. 给自己做一份蓝图</p>
-<p>###48. 要注意观察市场变化</p>
-<p>留意那些技术达人。Watch the alpha geeks.</p>
-<p>###49. 镜子里的胖子</p>
-<p>开发员们，要自我反省。Developer, review thyself.</p>
-<p>###50. 南印度捉猴陷阱</p>
-<p>价值僵固使你脆弱。Rigid values make you fragile.</p>
-<p>###51. 避免瀑布型职业计划</p>
-<p>###52. 每天都有进步</p>
-<p>###53. 独立</p>
-<hr>
+<h3 id="41-发布你编写的程序"><a href="#41-发布你编写的程序" class="headerlink" title="41. 发布你编写的程序"></a>41. 发布你编写的程序</h3><p>人人都能使用Rails，但很少有人能开发出Rails。Anyone can use Rails. Few can say Rails contributor.</p>
+<h3 id="42-变为卓越的能力"><a href="#42-变为卓越的能力" class="headerlink" title="42. 变为卓越的能力"></a>42. 变为卓越的能力</h3><p>展示或者让它死亡！Demo or die!</p>
+<h3 id="43-建立关系"><a href="#43-建立关系" class="headerlink" title="43. 建立关系"></a>43. 建立关系</h3><p>恐惧感使我们无法接近专业人士。Fear gets between us and the pros.</p>
+<h3 id="44-已经过时的技术"><a href="#44-已经过时的技术" class="headerlink" title="44. 已经过时的技术"></a>44. 已经过时的技术</h3><p>你引以为傲的新技术已经过时了。Your shiny new skills are already obsolete.</p>
+<h3 id="45-你已经失去工作了"><a href="#45-你已经失去工作了" class="headerlink" title="45. 你已经失去工作了"></a>45. 你已经失去工作了</h3><p>你不是你的工作。You are not your job.</p>
+<h3 id="46-没有终点的道路"><a href="#46-没有终点的道路" class="headerlink" title="46. 没有终点的道路"></a>46. 没有终点的道路</h3><p>不要关注结果，要关注做事情的过程。Focus on doing, not on being done.</p>
+<h3 id="47-给自己做一份蓝图"><a href="#47-给自己做一份蓝图" class="headerlink" title="47. 给自己做一份蓝图"></a>47. 给自己做一份蓝图</h3><h3 id="48-要注意观察市场变化"><a href="#48-要注意观察市场变化" class="headerlink" title="48. 要注意观察市场变化"></a>48. 要注意观察市场变化</h3><p>留意那些技术达人。Watch the alpha geeks.</p>
+<h3 id="49-镜子里的胖子"><a href="#49-镜子里的胖子" class="headerlink" title="49. 镜子里的胖子"></a>49. 镜子里的胖子</h3><p>开发员们，要自我反省。Developer, review thyself.</p>
+<h3 id="50-南印度捉猴陷阱"><a href="#50-南印度捉猴陷阱" class="headerlink" title="50. 南印度捉猴陷阱"></a>50. 南印度捉猴陷阱</h3><p>价值僵固使你脆弱。Rigid values make you fragile.</p>
+<h3 id="51-避免瀑布型职业计划"><a href="#51-避免瀑布型职业计划" class="headerlink" title="51. 避免瀑布型职业计划"></a>51. 避免瀑布型职业计划</h3><h3 id="52-每天都有进步"><a href="#52-每天都有进步" class="headerlink" title="52. 每天都有进步"></a>52. 每天都有进步</h3><h3 id="53-独立"><a href="#53-独立" class="headerlink" title="53. 独立"></a>53. 独立</h3><hr>
 <p>多看笔记 来自多看阅读 for Kindle</p>
 ]]></content>
     
     <summary type="html">
     
       &lt;p&gt;&lt;img src=&quot;/image/the_passionate_programmer.jpg&quot; alt=&quot;The Passionate Programmer&quot;&gt;&lt;/p&gt;
-&lt;p&gt;###1. 稳定成熟的技术还是未成熟的新技术?&lt;/p&gt;
-&lt;p&gt;无论做出哪种选择，最终目的是产生利润。Both ends of the technology adoption curve might prove to be lucrative.&lt;/p&gt;
+&lt;h3 id=&quot;1-稳定成熟的技术还是未成熟的新技术&quot;&gt;&lt;a href=&quot;#1-稳定成熟的技术还是未成熟的新技术&quot; class=&quot;headerlink&quot; title=&quot;1. 稳定成熟的技术还是未成熟的新技术?&quot;&gt;&lt;/a&gt;1. 稳定成熟的技术还是未成熟的新技术?&lt;/h3&gt;&lt;p&gt;无论做出哪种选择，最终目的是产生利润。Both ends of the technology adoption curve might prove to be lucrative.&lt;/p&gt;
     
     </summary>
     
@@ -1716,144 +1708,6 @@ found 1 devices
     
     
       <category term="Mac" scheme="http://esoftmobile.com/tags/Mac/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Text Kit进阶</title>
-    <link href="http://esoftmobile.com/2013/10/17/text-kit%E8%BF%9B%E9%98%B6/"/>
-    <id>http://esoftmobile.com/2013/10/17/text-kit进阶/</id>
-    <published>2013-10-17T13:59:22.000Z</published>
-    <updated>2013-10-19T02:25:44.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="/image/text_kit_2_architecture.png" alt="Text Rendering Architecture"></p>
-<blockquote>
-<p>在上一篇文章<a href="http://esoftmobile.com/2013/10/17/text-kit入门/">Text Kit入门</a>中我们主要了解了什么是Text Kit及它的一些架构和基本特性，这篇文章中会涉及关于Text Kit的更多具体应用。</p>
-</blockquote>
-<p>Text Kit是建立在Core Text框架上的，我们知道CoreText.framework是一个庞大而复杂的框架，而Text Kit在继承了Core Text强大功能的同时给开发者提供了比较友好的面向对象的API。</p>
-<p>本文主要介绍Text Kit下面四个特性：</p>
-<ul>
-<li>动态字体（Dynamic type）</li>
-<li>凸版印刷体效果（Letterpress effects）</li>
-<li>路径排除（Exclusion paths）</li>
-<li>动态文本格式化和存储（Dynamic text formatting and storage）</li>
-</ul>
-<a id="more"></a>
-<p>##Dynamic type</p>
-<p>动态字体是iOS7中新增加的比较重要的特性之一，程序应该按照用户设定的字体大小和粗细来显示文本内容。</p>
-<p>分别在<code>设置\通用\辅助功能</code>和<code>设置\通用\文字大小</code>中可以设置文本在应用程序中显示的粗细和大小。</p>
-<p><img src="/image/text_kit2_setting_fontweight.png" alt="Font Weight"> <img src="/image/text_kit_2_setting_fontsize.png" alt="Font Size"></p>
-<p>iOS7对系统字体在显示上做了一些优化，让不同大小的字体在屏幕上都能清晰的显示。通常用户设置了自己偏好的字体，他们希望在所有程序中都看到文本显示是根据他们的设定进行调整。为了实现这个，开发者需要在自己的应用中给文本控件设置当前用户设置字体，而不是指定死字体及大小。可以通过<code>UIFont</code>中新增的<code>preferredFontForTextStyle:</code>方法来获取用户偏好的字体。</p>
-<p>iOS7中给出了6中字体样式供选择：</p>
-<ul>
-<li>UIFontTextStyleHeadline</li>
-<li>UIFontTextStyleBody</li>
-<li>UIFontTextStyleSubheadline</li>
-<li>UIFontTextStyleFootnote</li>
-<li>UIFontTextStyleCaption1</li>
-<li>UIFontTextStyleCaption2</li>
-</ul>
-<p><img src="/image/text_kit_2_textstyles.png" alt="Text Style"></p>
-<p>为了让我们的程序支持动态字体，需要按一下方式给文本控件（通常是指<code>UILabel</code>，<code>UITextField</code>，<code>UITextView</code>）设定字体：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];</div></pre></td></tr></table></figure>
-<p>这样设置之后，文本控件就会以用户设定的字体大小及粗细显示，但是如果程序在运行时，用户切换到设置里修改了字体，这是在切回程序，字体并不会自动跟着变。这时就需要我们自己来更新一下控件的字体了。</p>
-<p>在系统字体修改时，系统会给运行中的程序发送<code>UIContentSizeCategoryDidChangeNotification</code>通知，我们只需要监听这个通知，并重新设置一下字体即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[[NSNotificationCenter defaultCenter] addObserver:self</div><div class="line">    selector:@selector(preferredContentSizeChanged:)</div><div class="line">    name:UIContentSizeCategoryDidChangeNotification</div><div class="line">    object:nil];</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (void)preferredContentSizeChanged:(NSNotification *)notification&#123;</div><div class="line">    self.textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>当然，有的时候要适应动态修改的字体并不是这么设置一下就完事了，控件的大小可能也需要进行相应的调整，这时我们程序中的控件大小也不应该写死，而是需要根据字体大小来计算.</p>
-<p>##Letterpress effects</p>
-<p>凸版印刷替效果是给文字加上奇妙阴影和高光，让文字看起有凹凸感，像是被压在屏幕上。当然这种看起来很高端大气上档次的效果实现起来确实相当的简单，只需要给<code>AttributedString</code>加一个<code>NSTextEffectAttributeName</code>属性，并指定该属性值为<code>NSTextEffectLetterpressStyle</code>就可以了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">NSDictionary *attributes = @&#123; </div><div class="line">    NSForegroundColorAttributeName: [UIColor redColor],</div><div class="line">    NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],</div><div class="line">    NSTextEffectAttributeName: NSTextEffectLetterpressStyle</div><div class="line">&#125;;</div><div class="line">self.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:@&quot;Title&quot; attributes:attributes];</div></pre></td></tr></table></figure>
-<p><img src="/image/text_kit_2_letterpress.png" alt="Letterpress"></p>
-<p>在iOS7系统自带的<strong>备忘录</strong>应用中，苹果就使用了这种凸版印刷体效果。</p>
-<p>##Exclusion paths</p>
-<p>在排版中，图文混排是非常常见的需求，但有时候我们的图片并一定都是正常的矩形，这个时候我们如果需要将文本环绕在图片周围，就可以用路径排除（exclusion paths）了。</p>
-<p>Explosion pats基本原理是将需要被文本留出来的形状的路径告诉文本控件的<code>NSTextContainer</code>对象，<code>NSTextContainer</code>在文字排版时就会避开该路径。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">UIBezierPath *floatingPath = [self pathOfImage];</div><div class="line">self.textView.textContainer.exclusionPaths = @[floatingPath];</div></pre></td></tr></table></figure>
-<p><img src="/image/text_kit_2_exclusionpath.png" alt="Exclusion paths"></p>
-<p>所以实现Exclusion paths的主要工作就是获取这个path。</p>
-<p>##Dynamic text formatting and storage</p>
-<p>好了，到现在我们知道了Text Kit可以动态的根据用户设置的字体大小进行调整，但是如果具体某个文本显示控件中的文本样式能够动态调整是不是会更酷一些呢？</p>
-<p>例如，你希望让你的textView中的文本自动支持下面功能：</p>
-<ul>
-<li>让<code>**</code>字符之间的文本加粗显示</li>
-<li>让<code>_</code>字符之间的文本以斜体字显示</li>
-<li>让<code>~~</code>字符之间的文本以被横线穿透样式显示</li>
-<li>让全大写的文本以红色字体显示</li>
-</ul>
-<p><img src="/image/text_kit_2_demo.png" alt="Text Formatting Demo"></p>
-<p>实现这些才是真正体现Text Kit强大之处的时候，在此之前你需要理解Text Kit中的文本存储系统是怎么工作的，下图显示了Text Kit中文本的保存、渲染和现实之间的关系。</p>
-<p><img src="/image/text_kit_2_TextKitStack.png" alt="Text Kit"></p>
-<p>当你使用<code>UITextView</code>、<code>UILabel</code>、<code>UITextField</code>控件的时候，系统会自动创建上面这些类，你可以选择直接使用这么默认的实现或者为你的控件自定义这几个中的任何一个。</p>
-<ul>
-<li><code>NSTextStorage</code>本身继承与<code>NSMutableAttributedString</code>，它是以attributed string的形式保存需要渲染的文本，并在文本内容改变的时候通知到对应的layout manager对象。通常你需要创建<code>NSTextStorage</code>的子类来在文本改变时进行文本显示样式的更新。</li>
-<li><code>NSLayoutManager</code>作为文本控件中的排版引擎接收保存的文本并在屏幕上渲染出来。</li>
-<li><code>NSTextContainer</code>描述了文本在屏幕上显示时的几何区域，每个text container与一个具体的UITextView相关联。如果你需要定义一个很复杂形状的区域来显示文本，你可能需要创建<code>NSTextContainer</code>子类。</li>
-</ul>
-<p>要实现我们上面描述的动态文本格式化功能，我们需要创建<code>NSTextStorage</code>子类以便在用户输入文本的时候动态的增加文本属性。自定义了text storage后，我们需要替换调UITextView默认的text storage。</p>
-<p>###创建NSTextStorage的子类</p>
-<p>我们创建NSTextStorage子类，命名为<code>MarkupTextStorage</code>，在实现文件中添加一个成员变量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#import &quot;MarkupTextStorage.h&quot;</div><div class="line"></div><div class="line">@implementation MarkupTextStorage</div><div class="line">&#123;</div><div class="line">    NSMutableAttributedString *_backingStore;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (id)init</div><div class="line">&#123;</div><div class="line">    self = [super init];</div><div class="line">    if (self) &#123;</div><div class="line">        _backingStore = [[NSMutableAttributedString alloc] init];</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
-<p><code>NSTextStorage</code>的子类需要重载一些方法提供<code>NSMutableAttributedString</code>类型的<code>backing store</code>信息，所以我们继续添加下面代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">- (NSString *)string</div><div class="line">&#123;</div><div class="line">    return [_backingStore string];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSDictionary *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range</div><div class="line">&#123;</div><div class="line">    return [_backingStore attributesAtIndex:location effectiveRange:range];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str</div><div class="line">&#123;</div><div class="line">    [self beginEditing];</div><div class="line">    [_backingStore replaceCharactersInRange:range withString:str];</div><div class="line">    [self edited:NSTextStorageEditedCharacters | NSTextStorageEditedAttributes</div><div class="line">           range:range changeInLength:str.length - range.length];</div><div class="line">    [self endEditing];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range</div><div class="line">&#123;</div><div class="line">    [self beginEditing];</div><div class="line">    [_backingStore setAttributes:attrs range:range];</div><div class="line">    [self edited:NSTextStorageEditedAttributes</div><div class="line">           range:range changeInLength:0];</div><div class="line">    [self endEditing];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>后面两个方法都是代理到backing store，然后需要被<code>beginEditing</code> <code>edited</code> <code>endEditing</code>包围，而且必须在文本编辑时按顺序调用来通知text storage对应的layout manager。</p>
-<p>你可能发现子类化<code>NSTextStorage</code>需要写不少的代码，因为<code>NSTextStorage</code>是一个类集群中的一个开发接口，不能只是继承它然后重载很少的方法来拓展它的功能，而是需要自己实现很多细节。</p>
-<blockquote>
-<p>类集群(Class cluster)是苹果Cocoa(Touch)框架中常用的设计模式之一。</p>
-</blockquote>
-<p>类集群是Objective-C中对抽象工厂模式的简单实现，为创建一些列相关或独立对象提供了统一的接口而不用指定具体的类。常用的像<code>NSArray</code>和<code>NSNumber</code>事实上也是一系列类集群的开放接口。</p>
-<p>苹果使用类集群是为了将一些类具体类隐藏在开放的抽象父类之下，外面通过抽象父类的方法来创建私有子类的实例，并且外界也完全不知道工厂分配到了哪个私有类，因为它们始终只和开放接口交互。</p>
-<p>使用类集群确实简化了接口，让类更容易被使用，但是要知道鱼和熊掌不可兼得，你又想简单又想可拓展性强，哪有那么好的事啊？所以创建一个类集群中的抽象父类就没有那么简单了。</p>
-<p>好了，上面解释了这么多其实主要就说明了为什么子类化<code>NSTextStorage</code>需要写这么多代码，下面要在<code>UITextView</code>使用我们自定义的text storage了。</p>
-<p>###设置UITextView</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">- (void)createMarkupTextView</div><div class="line">&#123;</div><div class="line">    NSDictionary *attributes = @&#123;NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleBody]&#125;;</div><div class="line">    NSString *content = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@&quot;content&quot; ofType:@&quot;txt&quot;]</div><div class="line">                                                  encoding:NSUTF8StringEncoding</div><div class="line">                                                     error:nil];</div><div class="line">    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:content</div><div class="line">                                                                           attributes:attributes];</div><div class="line">    _textStorage = [[MarkupTextStorage alloc] init];</div><div class="line">    [_textStorage setAttributedString:attributedString];</div><div class="line">    </div><div class="line">    CGRect textViewRect = CGRectMake(20, 60, 280, self.view.bounds.size.height - 100);</div><div class="line">    </div><div class="line">    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];</div><div class="line">    </div><div class="line">    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(textViewRect.size.width, CGFLOAT_MAX)];</div><div class="line">    [layoutManager addTextContainer:textContainer];</div><div class="line">    [_textStorage addLayoutManager:layoutManager];</div><div class="line">    </div><div class="line">    _textView = [[UITextView alloc] initWithFrame:textViewRect</div><div class="line">                                    textContainer:textContainer];</div><div class="line">    _textView.delegate = self;</div><div class="line">    [self.view addSubview:_textView];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>很长的代码，下面我们来看看都做了些啥：</p>
-<ol>
-<li>创建了一个自定义的text storage对象，并通过attributed string保存了需要显示的内容；</li>
-<li>创建了一个layout manager对象；</li>
-<li>创建了一个text container对象并将它与layout manager关联，然后该text container再和text storage对象关联；</li>
-<li>通过text container创建了一个text view并显示。</li>
-</ol>
-<p>你可以将代码和前面那对象间的关系图对应着理解一下。</p>
-<p>###动态格式化</p>
-<p>继续在<code>MarkupTextStorage.m</code>文件中添加如下方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">- (void)processEditing</div><div class="line">&#123;</div><div class="line">    [self performReplacementsForRange:[self editedRange]];</div><div class="line">    [super processEditing];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>processEditing</code>在layout manager中文本修改时发送通知，它通常也是处理一些文本修改逻辑的好地方。</p>
-<p>继续添加：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (void)performReplacementsForRange:(NSRange)changedRange</div><div class="line">&#123;</div><div class="line">    NSRange extendedRange = NSUnionRange(changedRange, [[_backingStore string]</div><div class="line">                                                        lineRangeForRange:NSMakeRange(changedRange.location, 0)]);</div><div class="line">    extendedRange = NSUnionRange(changedRange, [[_backingStore string]</div><div class="line">                                                lineRangeForRange:NSMakeRange(NSMaxRange(changedRange), 0)]);</div><div class="line">    [self applyStylesToRange:extendedRange];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这个方法用于扩大文本匹配的范围，因为<code>changedRange</code>只是标识出一个字符，<code>lineRangeForRange</code>会将范围扩大到当前的一整行。</p>
-<p>下面就剩下匹配特定格式的文本来显示对应的样式了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line">- (NSDictionary*)createAttributesForFontStyle:(NSString*)style</div><div class="line">                                    withTrait:(uint32_t)trait &#123;</div><div class="line">    UIFontDescriptor *fontDescriptor = [UIFontDescriptor</div><div class="line">                                        preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];</div><div class="line">    </div><div class="line">    UIFontDescriptor *descriptorWithTrait = [fontDescriptor</div><div class="line">                                             fontDescriptorWithSymbolicTraits:trait];</div><div class="line">    </div><div class="line">    UIFont* font =  [UIFont fontWithDescriptor:descriptorWithTrait size: 0.0];</div><div class="line">    return @&#123; NSFontAttributeName : font &#125;;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)createMarkupStyledPatterns </div><div class="line">&#123;</div><div class="line">    UIFontDescriptor *scriptFontDescriptor =</div><div class="line">    [UIFontDescriptor fontDescriptorWithFontAttributes:</div><div class="line">     @&#123;UIFontDescriptorFamilyAttribute: @&quot;Bradley Hand&quot;&#125;];</div><div class="line">    </div><div class="line">    // 1. base our script font on the preferred body font size</div><div class="line">    UIFontDescriptor* bodyFontDescriptor = [UIFontDescriptor</div><div class="line">                                            preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];</div><div class="line">    NSNumber* bodyFontSize = bodyFontDescriptor.</div><div class="line">    fontAttributes[UIFontDescriptorSizeAttribute];</div><div class="line">    UIFont* scriptFont = [UIFont</div><div class="line">                          fontWithDescriptor:scriptFontDescriptor size:[bodyFontSize floatValue]];</div><div class="line">    </div><div class="line">    // 2. create the attributes</div><div class="line">    NSDictionary* boldAttributes = [self</div><div class="line">                                    createAttributesForFontStyle:UIFontTextStyleBody</div><div class="line">                                    withTrait:UIFontDescriptorTraitBold];</div><div class="line">    NSDictionary* italicAttributes = [self</div><div class="line">                                      createAttributesForFontStyle:UIFontTextStyleBody</div><div class="line">                                      withTrait:UIFontDescriptorTraitItalic];</div><div class="line">    NSDictionary* strikeThroughAttributes = @&#123; NSStrikethroughStyleAttributeName : @1,</div><div class="line">                                               NSForegroundColorAttributeName: [UIColor redColor]&#125;;</div><div class="line">    NSDictionary* scriptAttributes = @&#123; NSFontAttributeName : scriptFont,</div><div class="line">                                        NSForegroundColorAttributeName: [UIColor blueColor]</div><div class="line">                                        &#125;;</div><div class="line">    NSDictionary* redTextAttributes =</div><div class="line">    @&#123; NSForegroundColorAttributeName : [UIColor redColor]&#125;;</div><div class="line">    </div><div class="line">    _replacements = @&#123;</div><div class="line">                      @&quot;(\\*\\*\\w+(\\s\\w+)*\\*\\*)&quot; : boldAttributes,</div><div class="line">                      @&quot;(_\\w+(\\s\\w+)*_)&quot; : italicAttributes,</div><div class="line">                      @&quot;(~~\\w+(\\s\\w+)*~~)&quot; : strikeThroughAttributes,</div><div class="line">                      @&quot;(`\\w+(\\s\\w+)*`)&quot; : scriptAttributes,</div><div class="line">                      @&quot;\\s([A-Z]&#123;2,&#125;)\\s&quot; : redTextAttributes</div><div class="line">                      &#125;;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)applyStylesToRange:(NSRange)searchRange</div><div class="line">&#123;</div><div class="line">    NSDictionary* normalAttrs = @&#123;NSFontAttributeName:</div><div class="line">                                      [UIFont preferredFontForTextStyle:UIFontTextStyleBody]&#125;;</div><div class="line">    </div><div class="line">    // iterate over each replacement</div><div class="line">    for (NSString* key in _replacements) &#123;</div><div class="line">        NSRegularExpression *regex = [NSRegularExpression</div><div class="line">                                      regularExpressionWithPattern:key</div><div class="line">                                      options:0</div><div class="line">                                      error:nil];</div><div class="line">        </div><div class="line">        NSDictionary* attributes = _replacements[key];</div><div class="line">        </div><div class="line">        [regex enumerateMatchesInString:[_backingStore string]</div><div class="line">                                options:0</div><div class="line">                                  range:searchRange</div><div class="line">                             usingBlock:^(NSTextCheckingResult *match,</div><div class="line">                                          NSMatchingFlags flags,</div><div class="line">                                          BOOL *stop)&#123;</div><div class="line">                                 // apply the style</div><div class="line">                                 NSRange matchRange = [match rangeAtIndex:1];</div><div class="line">                                 [self addAttributes:attributes range:matchRange];</div><div class="line">                                 </div><div class="line">                                 // reset the style to the original</div><div class="line">                                 if (NSMaxRange(matchRange)+1 &lt; self.length) &#123;</div><div class="line">                                     [self addAttributes:normalAttrs</div><div class="line">                                                   range:NSMakeRange(NSMaxRange(matchRange)+1, 1)];</div><div class="line">                                 &#125;</div><div class="line">                             &#125;];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在text storage初始化方法中调用<code>createMarkupStyledPatterns</code>，通过正则表达式来给特定格式的字符串设定特定显示样式，形成一个对应的字典。然后在<code>applyStylesToRange:</code>中利用已定义好的样式字典来给匹配的文本端增加样式。</p>
-<hr>
-<p>到这里本篇文章的内容就结束了，其实前面三点都很简单，稍微过一下就能用。最后一个动态文本格式化内容稍微多一点，可以结合我的代码<a href="https://github.com/tracy-e/TextKitDemo" target="_blank" rel="external">TextKitDemo</a>来看。</p>
-<p>参考链接：</p>
-<ul>
-<li><a href="http://www.raywenderlich.com/50151/text-kit-tutorial" target="_blank" rel="external">http://www.raywenderlich.com/50151/text-kit-tutorial</a></li>
-<li><a href="https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Introduction/Introduction.html</a></li>
-<li><a href="http://adcdownload.apple.com/wwdc_2013/wwdc_2013_sample_code/ios_intrototextkit.zip" target="_blank" rel="external">http://adcdownload.apple.com/wwdc_2013/wwdc_2013_sample_code/ios_intrototextkit.zip</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;img src=&quot;/image/text_kit_2_architecture.png&quot; alt=&quot;Text Rendering Architecture&quot;&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;在上一篇文章&lt;a href=&quot;http://esoftmobile.com/2013/10/17/text-kit入门/&quot;&gt;Text Kit入门&lt;/a&gt;中我们主要了解了什么是Text Kit及它的一些架构和基本特性，这篇文章中会涉及关于Text Kit的更多具体应用。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Text Kit是建立在Core Text框架上的，我们知道CoreText.framework是一个庞大而复杂的框架，而Text Kit在继承了Core Text强大功能的同时给开发者提供了比较友好的面向对象的API。&lt;/p&gt;
-&lt;p&gt;本文主要介绍Text Kit下面四个特性：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;动态字体（Dynamic type）&lt;/li&gt;
-&lt;li&gt;凸版印刷体效果（Letterpress effects）&lt;/li&gt;
-&lt;li&gt;路径排除（Exclusion paths）&lt;/li&gt;
-&lt;li&gt;动态文本格式化和存储（Dynamic text formatting and storage）&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-    
-      <category term="iOS" scheme="http://esoftmobile.com/tags/iOS/"/>
     
   </entry>
   

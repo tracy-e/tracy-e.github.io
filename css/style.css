@@ -132,7 +132,7 @@ code {
   margin: 0 2px;
   color: #e96900;
   padding: 3px 5px;
-  font-size: 0.85em;
+  font-size: 0.95em;
   border-radius: 2px;
   font-family: Consolas, Monaco, Menlo, monospace;
   background-color: #f8f8f8;
@@ -169,6 +169,7 @@ code {
 .logo {
   width: 40px;
   height: 40px;
+  border-radius: 40px;
   background-repeat: no-repeat;
   background-image: url("images/logo.png");
   -webkit-background-size: 40px 40px;
@@ -1671,12 +1672,16 @@ ol.toc {
 #footer {
   padding: 20px 0;
   border-top: 1px solid #eceff2;
-  color: #565a5f;
-  font-size: 16px;
+  color: #999;
+  font-size: 0.8em;
   text-align: center;
+  vertical-align: bottom;
 }
-#footer .outer {
-  margin-bottom: 0;
+#footer .outer .inner {
+  display: inline-block;
+}
+#footer .outer .cnzz {
+  display: inline;
 }
 #footer a {
   color: #38b7ea;
@@ -1684,10 +1689,6 @@ ol.toc {
 }
 #footer a:hover {
   text-decoration: underline;
-}
-#footer-info {
-  line-height: 1.6em;
-  font-size: 0.85em;
 }
 @media screen and (min-width: 1200px) {
   #sidebar {
