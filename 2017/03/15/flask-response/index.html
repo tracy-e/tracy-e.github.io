@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>flask 源码解析：响应 | Esoft Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="response 简介在 flask 应用中，我们只需要编写 view 函数，并不需要直接和响应（response）打交道，flask 会自动生成响应返回给客户端。
+
+The return value from a view function is automatically converted into a response object for you. —— Flask docs
+
+我们知道">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask 源码解析：响应">
+<meta property="og:url" content="http://esoftmobile.com/2017/03/15/flask-response/index.html">
+<meta property="og:site_name" content="Esoft Mobile">
+<meta property="og:description" content="response 简介在 flask 应用中，我们只需要编写 view 函数，并不需要直接和响应（response）打交道，flask 会自动生成响应返回给客户端。
+
+The return value from a view function is automatically converted into a response object for you. —— Flask docs
+
+我们知道">
+<meta property="og:image" content="http://esoftmobile.com/image/flask.png">
+<meta property="og:updated_time" content="2017-03-15T07:32:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flask 源码解析：响应">
+<meta name="twitter:description" content="response 简介在 flask 应用中，我们只需要编写 view 函数，并不需要直接和响应（response）打交道，flask 会自动生成响应返回给客户端。
+
+The return value from a view function is automatically converted into a response object for you. —— Flask docs
+
+我们知道">
+<meta name="twitter:image" content="http://esoftmobile.com/image/flask.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Esoft Mobile" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Esoft Mobile</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
+            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                43
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-flask-response" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<img src="/image/flask.png" class="article-banner" />
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            flask 源码解析：响应
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/15/flask-response/">
+            <label>TracyYih 发表于 </label><time datetime="2017-03-15T07:12:47.000Z" itemprop="datePublished">2017-03-15 15:12</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/flask/">flask</a>, <a class="tag-link" href="/tags/python/">python</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="response-简介"><a href="#response-简介" class="headerlink" title="response 简介"></a>response 简介</h2><p>在 flask 应用中，我们只需要编写 view 函数，并不需要直接和响应（response）打交道，flask 会自动生成响应返回给客户端。</p>
+<blockquote>
+<p>The return value from a view function is automatically converted into a response object for you. —— Flask docs</p>
+</blockquote>
+<p>我们知道 HTTP 响应分为三个部分： 状态栏（HTTP 版本、状态码和说明）、头部（以冒号隔开的字符对，用于各种控制和协商）、body（服务端返回的数据）。比如下面访问博客首页的响应：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">HTTP/1.1 200 OK</div><div class="line"></div><div class="line">Access-Control-Allow-Origin: *</div><div class="line">Cache-Control: max-age=600</div><div class="line">Content-Encoding: gzip</div><div class="line">Content-Type: text/html; charset=utf-8</div><div class="line">Date: Wed, 15 Feb 2017 07:50:41 GMT</div><div class="line">Expires: Wed, 15 Feb 2017 08:00:41 GMT</div><div class="line">Last-Modified: Wed, 15 Feb 2017 07:46:56 GMT</div><div class="line">Server: GitHub.com</div><div class="line">Transfer-Encoding: chunked</div><div class="line">X-GitHub-Request-Id: D2A7:7B6B:33C0628:47C44B9:58A40851</div><div class="line"></div><div class="line">&lt;BODY&gt;</div></pre></td></tr></table></figure>
+<p>flask 自然也会提供所有这些数据的操作，视图函数就支持返回三个值：第一个是返回的数据，第二个是状态码，第三个是头部字典。比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">'Hello, World!'</span>, <span class="number">201</span>, &#123;<span class="string">'X-Foo'</span>: <span class="string">'bar'</span>&#125;</div></pre></td></tr></table></figure>
+<p>这篇文章就讲讲这背后的魔法。</p>
+<h2 id="flask-响应（response）"><a href="#flask-响应（response）" class="headerlink" title="flask 响应（response）"></a>flask 响应（response）</h2><p>在 flask 源码解析：应用启动流程 的最后，我们讲到 <code>full_dsipatch_request</code> 在调用路由到视图函数之后，会调用 <code>finalize_request</code> 进行最后的处理，在这个方法里就包含了 response 对象的生成和处理逻辑。</p>
+<p><code>finalize_request</code> 的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">finalize_request</span><span class="params">(self, rv, from_error_handler=False)</span>:</span></div><div class="line">    <span class="string">"""Given the return value from a view function this finalizes</span></div><div class="line">    the request by converting it into a response and invoking the</div><div class="line">    postprocessing functions.  This is invoked for both normal</div><div class="line">    request dispatching as well as error handlers.</div><div class="line">    """</div><div class="line">    response = self.make_response(rv)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        response = self.process_response(response)</div><div class="line">        request_finished.send(self, response=response)</div><div class="line">    <span class="keyword">except</span> Exception:</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> from_error_handler:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        self.logger.exception(<span class="string">'Request finalizing failed with an '</span></div><div class="line">                              <span class="string">'error while handling an error'</span>)</div><div class="line">    <span class="keyword">return</span> response</div></pre></td></tr></table></figure>
+<p>里面有两个方法调用：<code>make_response</code> 根据视图函数的返回值生成 response 对象，<code>process_response</code> 对 response 做一些后续的处理（比如执行 hooks 函数）。我们先来看看 <code>make_response</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_response</span><span class="params">(self, rv)</span>:</span></div><div class="line">    <span class="string">"""Converts the return value from a view function to a real</span></div><div class="line">    response object that is an instance of :attr:`response_class`.</div><div class="line">    """</div><div class="line">    status_or_headers = headers = <span class="keyword">None</span></div><div class="line">    <span class="keyword">if</span> isinstance(rv, tuple):</div><div class="line">        rv, status_or_headers, headers = rv + (<span class="keyword">None</span>,) * (<span class="number">3</span> - len(rv))</div><div class="line"></div><div class="line">    <span class="keyword">if</span> isinstance(status_or_headers, (dict, list)):</div><div class="line">        headers, status_or_headers = status_or_headers, <span class="keyword">None</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(rv, self.response_class):</div><div class="line">        <span class="comment"># When we create a response object directly, we let the constructor</span></div><div class="line">        <span class="comment"># set the headers and status.  We do this because there can be</span></div><div class="line">        <span class="comment"># some extra logic involved when creating these objects with</span></div><div class="line">        <span class="comment"># specific values (like default content type selection).</span></div><div class="line">        <span class="keyword">if</span> isinstance(rv, (text_type, bytes, bytearray)):</div><div class="line">            rv = self.response_class(rv, headers=headers,</div><div class="line">                                     status=status_or_headers)</div><div class="line">            headers = status_or_headers = <span class="keyword">None</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> status_or_headers <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        <span class="keyword">if</span> isinstance(status_or_headers, string_types):</div><div class="line">            rv.status = status_or_headers</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            rv.status_code = status_or_headers</div><div class="line">    <span class="keyword">if</span> headers:</div><div class="line">        rv.headers.extend(headers)</div><div class="line"></div><div class="line">    <span class="keyword">return</span> rv</div></pre></td></tr></table></figure>
+<p><code>make_response</code> 是视图函数能返回多个不同数量和类型值的关键，因为它能处理这些情况，统一把它们转换成 response。 如果返回值本身就是 Response 实例，就直接使用它；如果返回值是字符串类型，就把它作为响应的 body，并自动设置状态码和头部信息； 如果返回值是 tuple，会尝试用 (response, status, headers) 或者 (response, headers) 去解析。</p>
+<p><em>NOTE：因为视图函数可以返回 Response 对象，因此我们可以直接操作 Response。</em></p>
+<p>不管视图函数返回的是什么，最终都会变成 Response 对象，那么我们就来看看 Response 的定义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> werkzeug.wrappers <span class="keyword">import</span> Response <span class="keyword">as</span> ResponseBase</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Response</span><span class="params">(ResponseBase)</span>:</span></div><div class="line">    <span class="string">"""The response object that is used by default in Flask.  Works like the</span></div><div class="line">    response object from Werkzeug but is set to have an HTML mimetype by</div><div class="line">    default.  Quite often you don't have to create this object yourself because</div><div class="line">    :meth:`~flask.Flask.make_response` will take care of that for you.</div><div class="line"></div><div class="line">    If you want to replace the response object used you can subclass this and</div><div class="line">    set :attr:`~flask.Flask.response_class` to your subclass.</div><div class="line">    """</div><div class="line">    default_mimetype = <span class="string">'text/html'</span></div></pre></td></tr></table></figure>
+<p>Flask 的 Response 类非常简单，它只是继承了 <code>werkzeug.wrappers:Response</code>，然后设置默认返回类型为 html。 不过从注释中，我们得到两条很有用的信息：</p>
+<ol>
+<li>一般情况下不要直接操作 Response 对象，而是使用 <code>make_response</code> 方法来生成它</li>
+<li>如果需要使用自定义的响应对象，可以覆盖 flask app 对象的 <code>response_class</code> 属性。</li>
+</ol>
+<p>继续，下面就要分析 werkzeug 对应的代码了。</p>
+<h2 id="werkzeug-response"><a href="#werkzeug-response" class="headerlink" title="werkzeug response"></a>werkzeug response</h2><p>werkzeug 实现的 response 定义在 <code>werkzeug/wrappers.py</code> 文件中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Response</span><span class="params">(BaseResponse, ETagResponseMixin, ResponseStreamMixin,</span></span></div><div class="line">               CommonResponseDescriptorsMixin,</div><div class="line">               WWWAuthenticateMixin):</div><div class="line"></div><div class="line">    <span class="string">"""Full featured response object implementing the following mixins:</span></div><div class="line"></div><div class="line">    - :class:`ETagResponseMixin` for etag and cache control handling</div><div class="line">    - :class:`ResponseStreamMixin` to add support for the `stream` property</div><div class="line">    - :class:`CommonResponseDescriptorsMixin` for various HTTP descriptors</div><div class="line">    - :class:`WWWAuthenticateMixin` for HTTP authentication support</div><div class="line">    """</div></pre></td></tr></table></figure>
+<p>和我们在 flask 请求分析的 Request 类一样，这里使用了 Mixin 机制。BaseResponse 精简后的大概框架如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseResponse</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="string">"""Base response class.  The most important fact about a response object</span></div><div class="line">    is that it's a regular WSGI application.  It's initialized with a couple</div><div class="line">    of response parameters (headers, body, status code etc.) and will start a</div><div class="line">    valid WSGI response when called with the environ and start response</div><div class="line">    callable.</div><div class="line">    """</div><div class="line"></div><div class="line">    charset = <span class="string">'utf-8'</span></div><div class="line">    default_status = <span class="number">200</span></div><div class="line">    default_mimetype = <span class="string">'text/plain'</span></div><div class="line">    automatically_set_content_length = <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, response=None, status=None, headers=None,</span></span></div><div class="line">                 mimetype=None, content_type=None, direct_passthrough=False):</div><div class="line">        <span class="keyword">pass</span></div></pre></td></tr></table></figure>
+<p>BaseResponse 有一些类属性，定义了默认的值，比如默认字符编码是 utf-8，默认状态码是 200 等。实例化的时候接受的参数有：</p>
+<ul>
+<li>response： 字符串或者其他 iterable 对象，作为响应的 body</li>
+<li>status： 状态码，可以是整数，也可以是字符串</li>
+<li>headers： 响应的头部，可以是个列表，也可以是 <code>werkzeug.datastructures.Headers</code> 对象</li>
+<li>mimetype： mimetype 类型，告诉客户端响应 body 的格式，默认是文本格式</li>
+<li>content_type: 响应头部的 Content-Type 内容</li>
+</ul>
+<p>所有这些参数都是可选的，默认情况下会生成一个状态码为 200，没有任何 body 的响应。status、status_code 作为 Response 的属性，可以直接读取和修改。body 数据在内部保存为 iterable 的类型， 但是对外也提供了直接读写的接口 self.data：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_data</span><span class="params">(self, as_text=False)</span>:</span></div><div class="line">    <span class="string">"""The string representation of the request body.  Whenever you call</span></div><div class="line">    this property the request iterable is encoded and flattened.</div><div class="line">    """</div><div class="line">    self._ensure_sequence()</div><div class="line">    rv = <span class="string">b''</span>.join(self.iter_encoded())</div><div class="line">    <span class="keyword">if</span> as_text:</div><div class="line">        rv = rv.decode(self.charset)</div><div class="line">    <span class="keyword">return</span> rv</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_data</span><span class="params">(self, value)</span>:</span></div><div class="line">    <span class="string">"""Sets a new string as response.  The value set must either by a</span></div><div class="line">    unicode or bytestring.</div><div class="line">    """</div><div class="line">    <span class="keyword">if</span> isinstance(value, text_type):</div><div class="line">        value = value.encode(self.charset)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        value = bytes(value)</div><div class="line">    self.response = [value]</div><div class="line">    <span class="keyword">if</span> self.automatically_set_content_length:</div><div class="line">        self.headers[<span class="string">'Content-Length'</span>] = str(len(value))</div><div class="line"></div><div class="line">data = property(get_data, set_data, doc=<span class="string">'''</span></div><div class="line">    A descriptor that calls :meth:`get_data` and :meth:`set_data`.  This</div><div class="line">    should not be used and will eventually get deprecated.</div><div class="line">    ''')</div></pre></td></tr></table></figure>
+<p>body 字符的编码和长度都是自动设置的，用户不需要手动处理。</p>
+<p>至于头部的存储，werkzeug 使用的是类似于字典的 <code>werkzeug.datastructures:Headers</code> 类。在flask 源码解析：请求这篇文章中，我们没有详细 解释头部的存储，那么这篇文章就具体分析一下吧。</p>
+<p>Headers 这个类的提供了很多和字典相同的接口：keys、values、iterms，但是和字典的区别在于它保存的值是有序的，而且允许相同 key 的值存在。 为什么这么设计呢？因为着更符合 HTTP 头部的特性。先来看看有序，在 HTTP 传送的过程中，如果头部各个 key-value 键值对顺序发生变化，有些代理或者客户端等组件会认为请求被篡改而丢弃或者拒绝请求的处理，所以最好把头部设置为有序的，用户按照什么顺序设置的，就按照什么顺序存储；再说说相同 key 的问题，这是因为 HTTP 头部同一个 key 可能有多个 value（比如 Accept、SetCookie头部）。那么这个看起比较特殊的字典是怎么实现的呢？来看代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Headers</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="string">"""An object that stores some headers.  It has a dict-like interface</span></div><div class="line">    but is ordered and can store the same keys multiple times.</div><div class="line">    """</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, defaults=None)</span>:</span></div><div class="line">        self._list = []</div><div class="line">        <span class="keyword">if</span> defaults <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">if</span> isinstance(defaults, (list, Headers)):</div><div class="line">                self._list.extend(defaults)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                self.extend(defaults)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, key, _get_mode=False)</span>:</span></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> _get_mode:</div><div class="line">            <span class="keyword">if</span> isinstance(key, integer_types):</div><div class="line">                <span class="keyword">return</span> self._list[key]</div><div class="line">            <span class="keyword">elif</span> isinstance(key, slice):</div><div class="line">                <span class="keyword">return</span> self.__class__(self._list[key])</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> isinstance(key, string_types):</div><div class="line">            <span class="keyword">raise</span> exceptions.BadRequestKeyError(key)</div><div class="line">        ikey = key.lower()</div><div class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> self._list:</div><div class="line">            <span class="keyword">if</span> k.lower() == ikey:</div><div class="line">                <span class="keyword">return</span> v</div><div class="line">        <span class="keyword">if</span> _get_mode:</div><div class="line">            <span class="keyword">raise</span> KeyError()</div><div class="line">        <span class="keyword">raise</span> exceptions.BadRequestKeyError(key)</div></pre></td></tr></table></figure>
+<p>可以看到，头部信息在内部存储为二元组构成的列表，这样就能同时保证它的有序性和重复性。一个核心的方法是 <code>__getitem__</code>，它定义了如何获取头部中的信息：</p>
+<ul>
+<li>通过下标 <code>header[3]</code>，直接返回对应未知存储的键值对元组</li>
+<li>通过 key，返回 value <code>header[&#39;Accept&#39;]</code>，返回匹配的第一个 value 值</li>
+<li>通过 slice <code>header[3:7]</code>，返回另外一个 <code>Headers</code> 对象，保存了 slice 中所有的数据</li>
+</ul>
+<p>然后实现 <code>keys()</code>、<code>items()</code>、<code>pop()</code>、<code>setdefault()</code> 等方法让它表现出来字典的特性，除此之外还有 <code>add()</code>、<code>extend()</code>、<code>add_header()</code> 等和字典无关的方法方便操作。</p>
+<h2 id="自定义-response"><a href="#自定义-response" class="headerlink" title="自定义 response"></a>自定义 response</h2><p>如果需要扩展 flask Response 的功能，或者干脆把它替换掉，只要修改 flask app 的 <code>response_class</code> 属性就可以了，比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, Response</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyResponse</span><span class="params">(Response)</span>:</span></div><div class="line">    <span class="keyword">pass</span></div><div class="line"></div><div class="line">app = Flask(__name__)</div><div class="line">app.response_class = MyResponse</div></pre></td></tr></table></figure>
+<p>更多可能的用法，可以参考文章末尾的参考资料。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://blog.miguelgrinberg.com/post/customizing-the-flask-response-class" target="_blank" rel="external">customizing the flask response class</a></li>
+</ul>
+<p><em>本文转自<a href="http://cizixs.com/2017/01/22/flask-insight-response" target="_blank" rel="external">Cizixs Writes Here</a></em></p>
+
+        
+        </div>
+    </div>
+    <!--
+    <div class="ad-banner">
+        <div class="flip">
+            <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
+            <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
+        </div>
+    </div>
+    -->
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/03/13/flask-request/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">flask 源码解析：请求</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+    
+    <section id="comments">
+    
+        
+    <div id="uyan_frame"></div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/15/flask-response/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：响应" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/15/flask-response/" class="title">flask 源码解析：响应</a></p>
+                            <p class="item-date"><time datetime="2017-03-15T07:12:47.000Z" itemprop="datePublished">2017-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/13/flask-request/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：请求" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/13/flask-request/" class="title">flask 源码解析：请求</a></p>
+                            <p class="item-date"><time datetime="2017-03-13T05:01:01.000Z" itemprop="datePublished">2017-03-13</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/09/flask-context/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：上下文" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/09/flask-context/" class="title">flask 源码解析：上下文</a></p>
+                            <p class="item-date"><time datetime="2017-03-09T08:50:31.000Z" itemprop="datePublished">2017-03-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/08/flask-routing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：路由" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/08/flask-routing/" class="title">flask 源码解析：路由</a></p>
+                            <p class="item-date"><time datetime="2017-03-08T07:51:13.000Z" itemprop="datePublished">2017-03-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/07/flask-start-process/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：应用启动流程" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/07/flask-start-process/" class="title">flask 源码解析：应用启动流程</a></p>
+                            <p class="item-date"><time datetime="2017-03-07T09:23:44.000Z" itemprop="datePublished">2017-03-07</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Effective-Objective-C/" style="font-size: 11.67px;">Effective Objective-C</a> <a href="/tags/HTML5/" style="font-size: 11.67px;">HTML5</a> <a href="/tags/Hack/" style="font-size: 11.67px;">Hack</a> <a href="/tags/JavaScript/" style="font-size: 11.67px;">JavaScript</a> <a href="/tags/MDM/" style="font-size: 10px;">MDM</a> <a href="/tags/Mac/" style="font-size: 11.67px;">Mac</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Notes/" style="font-size: 13.33px;">Notes</a> <a href="/tags/Objective-C/" style="font-size: 16.67px;">Objective-C</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Raspberry-Pi/" style="font-size: 11.67px;">Raspberry Pi</a> <a href="/tags/Sinppets/" style="font-size: 10px;">Sinppets</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Web/" style="font-size: 11.67px;">Web</a> <a href="/tags/Xcode/" style="font-size: 11.67px;">Xcode</a> <a href="/tags/clang/" style="font-size: 10px;">clang</a> <a href="/tags/flask/" style="font-size: 18.33px;">flask</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/llvm/" style="font-size: 10px;">llvm</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/runtime/" style="font-size: 11.67px;">runtime</a> <a href="/tags/只读经典/" style="font-size: 15px;">只读经典</a> <a href="/tags/正则表达式/" style="font-size: 10px;">正则表达式</a>
+        </div>
+    </div>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 TracyYih 
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>.
+        </div>
+        
+            <div class="cnzz">
+                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                </script>
+            </div>
+        
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1784645"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
