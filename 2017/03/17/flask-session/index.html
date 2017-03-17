@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>flask 源码解析：session | Esoft Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="session 简介在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。
+在 flask 中使用 session 也很简单，只要使用 from f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask 源码解析：session">
+<meta property="og:url" content="http://esoftmobile.com/2017/03/17/flask-session/index.html">
+<meta property="og:site_name" content="Esoft Mobile">
+<meta property="og:description" content="session 简介在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。
+在 flask 中使用 session 也很简单，只要使用 from f">
+<meta property="og:image" content="http://esoftmobile.com/image/flask.png">
+<meta property="og:updated_time" content="2017-03-17T05:05:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flask 源码解析：session">
+<meta name="twitter:description" content="session 简介在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。
+在 flask 中使用 session 也很简单，只要使用 from f">
+<meta name="twitter:image" content="http://esoftmobile.com/image/flask.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Esoft Mobile" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Esoft Mobile</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
+            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-flask-session" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<img src="/image/flask.png" class="article-banner" />
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            flask 源码解析：session
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/17/flask-session/">
+            <label>TracyYih 发表于 </label><time datetime="2017-03-17T04:48:55.000Z" itemprop="datePublished">2017-03-17 12:48</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/flask/">flask</a>, <a class="tag-link" href="/tags/python/">python</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="session-简介"><a href="#session-简介" class="headerlink" title="session 简介"></a>session 简介</h2><p>在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。</p>
+<p>在 flask 中使用 session 也很简单，只要使用 <code>from flask import session</code> 导入这个变量，在代码中就能直接通过读写它和 session 交互。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, session, escape, request</div><div class="line"></div><div class="line">app = Flask(__name__)</div><div class="line">app.secret_key = <span class="string">'please-generate-a-random-secret_key'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">@app.route("/")</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">if</span> <span class="string">'username'</span> <span class="keyword">in</span> session:</div><div class="line">        <span class="keyword">return</span> <span class="string">'hello, &#123;&#125;\n'</span>.format(escape(session[<span class="string">'username'</span>]))</div><div class="line">    <span class="keyword">return</span> <span class="string">'hello, stranger\n'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">@app.route("/login", methods=['POST'])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">login</span><span class="params">()</span>:</span></div><div class="line">    session[<span class="string">'username'</span>] = request.form[<span class="string">'username'</span>]</div><div class="line">    <span class="keyword">return</span> <span class="string">'login success'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">5000</span>, debug=<span class="keyword">True</span>)</div></pre></td></tr></table></figure>
+<p>上面这段代码模拟了一个非常简单的登陆逻辑，用户访问 <code>POST /login</code> 来登陆，后面访问页面的时候 <code>GET /</code>，会返回该用户的名字。我们看一下具体的操作实例（下面的操作都是用 httpie 来执行的，使用 curl 命令也能达到相同的效果）：</p>
+<p>直接访问的话，我们可以看到返回 <code>hello stranger</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">➜  ~ http -v http://127.0.0.1:5000/</div><div class="line">GET / HTTP/1.1</div><div class="line">Accept: */*</div><div class="line">Accept-Encoding: gzip, deflate</div><div class="line">Host: 127.0.0.1:5000</div><div class="line">User-Agent: HTTPie/0.8.0</div><div class="line"></div><div class="line"></div><div class="line">HTTP/1.0 200 OK</div><div class="line">Content-Length: 14</div><div class="line">Content-Type: text/html; charset=utf-8</div><div class="line">Date: Wed, 01 Mar 2017 04:22:18 GMT</div><div class="line">Server: Werkzeug/0.11.2 Python/2.7.10</div><div class="line"></div><div class="line">hello stranger</div></pre></td></tr></table></figure>
+<p>然后我们模拟登陆请求，<code>-v</code> 是打印出请求，<code>-f</code> 是告诉服务器这是表单数据，<code>--session=mysession</code> 是把请求的 <code>cookie</code> 等信息保存到这个变量中，后面可以通过变量来指定 <code>session</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">➜  ~ http -v -f --session=mysession POST http://127.0.0.1:5000/login username=cizixs</div><div class="line">POST /login HTTP/1.1</div><div class="line">Accept: */*</div><div class="line">Accept-Encoding: gzip, deflate</div><div class="line">Content-Length: 15</div><div class="line">Content-Type: application/x-www-form-urlencoded; charset=utf-8</div><div class="line">Host: 127.0.0.1:5000</div><div class="line">User-Agent: HTTPie/0.8.0</div><div class="line"></div><div class="line">username=cizixs</div><div class="line"></div><div class="line">HTTP/1.0 200 OK</div><div class="line">Content-Length: 13</div><div class="line">Content-Type: text/html; charset=utf-8</div><div class="line">Date: Wed, 01 Mar 2017 04:20:54 GMT</div><div class="line">Server: Werkzeug/0.11.2 Python/2.7.10</div><div class="line">Set-Cookie: session=eyJ1c2VybmFtZSI6ImNpeml4cyJ9.C5fdpg.fqm3FTv0kYE2TuOyGF1mx2RuYQ4; HttpOnly; Path=/</div><div class="line"></div><div class="line">login success</div></pre></td></tr></table></figure>
+<p>最重要的是我们看到 response 中有 <code>Set-Cookie</code> 的头部，<code>cookie</code> 的键是 <code>session</code>，值是一堆看起来随机的字符串。</p>
+<p>继续，这个时候我们用 <code>--session=mysession</code> 参数把这次的请求带上保存在 <code>mysession</code> 中的信息，登陆后访问，可以看到登陆的用户名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">➜  ~ http -v --session=mysession http://127.0.0.1:5000/</div><div class="line">GET / HTTP/1.1</div><div class="line">Accept: */*</div><div class="line">Accept-Encoding: gzip, deflate</div><div class="line">Cookie: session=eyJ1c2VybmFtZSI6ImNpeml4cyJ9.C5fevg.LE03yEZDWTUMQW-nNkTr1zBEhKk</div><div class="line">Host: 127.0.0.1:5000</div><div class="line">User-Agent: HTTPie/0.8.0</div><div class="line"></div><div class="line"></div><div class="line">HTTP/1.0 200 OK</div><div class="line">Content-Length: 11</div><div class="line">Content-Type: text/html; charset=utf-8</div><div class="line">Date: Wed, 01 Mar 2017 04:25:46 GMT</div><div class="line">Server: Werkzeug/0.11.2 Python/2.7.10</div><div class="line">Set-Cookie: session=eyJ1c2VybmFtZSI6ImNpeml4cyJ9.C5feyg.sfFCDIqfef4i8cvxUClUUGQNcHA; HttpOnly; Path=/</div><div class="line"></div><div class="line">hellocizixs</div></pre></td></tr></table></figure>
+<p>这次注意在发送的请求中，客户端带了 <code>Cookie</code> 头部，上面的值保存了前一个请求的 response 给我们设置的值。</p>
+<p>总结一下：session 是通过在客户端设置 cookie 实现的，每次客户端发送请求的时候会附带着所有的 cookie，而里面保存着一些重要的信息（比如这里的用户信息），这样服务器端就能知道客户端的信息，然后根据这些数据做出对应的判断，就好像不同请求之间是有记忆的。</p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>我们知道 session 是怎么回事了，这部分就分析一下 flask 是怎么实现它的。</p>
+<h3 id="请求过程"><a href="#请求过程" class="headerlink" title="请求过程"></a>请求过程</h3><p>不难想象，session 的大致解析过程是这样的：</p>
+<ul>
+<li>请求过来的时候，flask 会根据 cookie 信息创建出 session 变量（如果 cookie 不存在，这个变量有可能为空），保存在该请求的上下文中</li>
+<li>视图函数可以获取 session 中的信息，实现自己的逻辑处理</li>
+<li>flask 会在发送 response 的时候，根据 session 的值，把它写回到 cookie 中</li>
+</ul>
+<p><em>注意：session 和 cookie 的转化过程中，应该考虑到安全性，不然直接使用伪造的 cookie 会是个很大的安全隐患。</em></p>
+<p>在 flask 上下文那篇文章中，我们知道，每次请求过来的时候，我们访问的 <code>request</code> 和 <code>session</code> 变量都是 <code>RequestContext</code> 实例的变量。在 <code>RequestContext.Push()</code> 方法的最后有这么一段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">self.session = self.app.open_session(self.request)</div><div class="line"><span class="keyword">if</span> self.session <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">    self.session = self.app.make_null_session()</div></pre></td></tr></table></figure>
+<p>它初始化了 <code>session</code> 变量，保存在 <code>RequestContext</code> 上，这样后面就能直接通过 <code>from flask import session</code> 来使用它。如果没有设置 <code>secret_key</code> 变量， <code>open_session</code> 就会返回 <code>None</code>，这个时候会调用 <code>make_null_session</code> 来生成一个空的 <code>session</code>，这个特殊的 <code>session</code> 不能进行任何读写操作，不然会报异常给用户。</p>
+<p>我们来看看 <code>open_session</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">open_session</span><span class="params">(self, request)</span>:</span></div><div class="line">    <span class="keyword">return</span> self.session_interface.open_session(self, request)</div></pre></td></tr></table></figure>
+<p>在 Flask 中，所有和 session 有关的调用，都是转发到 <code>self.session_interface</code><br>的方法调用上（这样用户就能用自定义的 <code>session_interface</code> 来控制 <code>session</code> 的使用）。而默认的 <code>session_inerface</code> 有默认值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">session_interface = SecureCookieSessionInterface()</div></pre></td></tr></table></figure>
+<p>后面遇到 session 有关方法解释，我们会直接讲解 <code>SecureCookieSessionInterface</code> 的代码实现，跳过中间的这个转发说明。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">null_session_class = NullSession</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_null_session</span><span class="params">(self, app)</span>:</span></div><div class="line">    <span class="keyword">return</span> self.null_session_class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">open_session</span><span class="params">(self, app, request)</span>:</span></div><div class="line">    <span class="comment"># 获取 session 签名的算法</span></div><div class="line">    s = self.get_signing_serializer(app)</div><div class="line">    <span class="keyword">if</span> s <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        <span class="keyword">return</span> <span class="keyword">None</span></div><div class="line"></div><div class="line">    <span class="comment"># 从 cookie 中获取 session 变量的值</span></div><div class="line">    val = request.cookies.get(app.session_cookie_name)</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> val:</div><div class="line">        <span class="keyword">return</span> self.session_class()</div><div class="line"></div><div class="line">    <span class="comment"># 因为 cookie 的数据需要验证是否有篡改，所以需要签名算法来读取里面的值</span></div><div class="line">    max_age = total_seconds(app.permanent_session_lifetime)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        data = s.loads(val, max_age=max_age)</div><div class="line">        <span class="keyword">return</span> self.session_class(data)</div><div class="line">    <span class="keyword">except</span> BadSignature:</div><div class="line">        <span class="keyword">return</span> self.session_class()</div></pre></td></tr></table></figure>
+<p><code>open_session</code> 根据请求中的 cookie 来获取对应的 session 对象。之所以有 app 参数，是因为根据 app 中的安全设置（比如签名算法、secret_key）对 cookie 进行验证。</p>
+<p>这里有两点需要特殊说明的：签名算法是怎么工作的？session 对象到底是怎么定义的？</p>
+<h3 id="session-对象"><a href="#session-对象" class="headerlink" title="session 对象"></a>session 对象</h3><p>默认的 session 对象是 <code>SecureCookieSession</code>，这个类就是一个基本的字典，外加一些特殊的属性，比如 <code>permanent</code>（flask 插件会用到这个变量）、<code>modified</code>（表明实例是否被更新过，如果更新过就要重新计算并设置 cookie，因为计算过程比较贵，所以如果对象没有被修改，就直接跳过）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SessionMixin</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_permanent</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self.get(<span class="string">'_permanent'</span>, <span class="keyword">False</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_set_permanent</span><span class="params">(self, value)</span>:</span></div><div class="line">        self[<span class="string">'_permanent'</span>] = bool(value)</div><div class="line"></div><div class="line">    <span class="comment">#: this reflects the ``'_permanent'`` key in the dict.</span></div><div class="line">    permanent = property(_get_permanent, _set_permanent)</div><div class="line">    <span class="keyword">del</span> _get_permanent, _set_permanent</div><div class="line"></div><div class="line">    modified = <span class="keyword">True</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SecureCookieSession</span><span class="params">(CallbackDict, SessionMixin)</span>:</span></div><div class="line">    <span class="string">"""Base class for sessions based on signed cookies."""</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, initial=None)</span>:</span></div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">on_update</span><span class="params">(self)</span>:</span></div><div class="line">            self.modified = <span class="keyword">True</span></div><div class="line">        CallbackDict.__init__(self, initial, on_update)</div><div class="line">        self.modified = <span class="keyword">False</span></div></pre></td></tr></table></figure>
+<p>怎么知道实例的数据被更新过呢？ <code>SecureCookieSession</code> 是基于 <code>werkzeug/datastructures:CallbackDict</code> 实现的，这个类可以指定一个函数作为 <code>on_update</code> 参数，每次有字典操作的时候（<code>__setitem__</code>、<code>__delitem__</code>、<code>clear</code>、<code>popitem</code>、<code>update</code>、<code>pop</code>、<code>setdefault</code>）会调用这个函数。</p>
+<p><em>NOTE：<code>CallbackDict</code> 的实现很巧妙，但是并不复杂，感兴趣的可以自己参考代码。主要思路就是重载字典的一些更新操作，让它们在做原来事情的同时，额外调用一下实现保存的某个函数。</em></p>
+<p>对于开发者来说，可以把 session 简单地看成字典，所有的操作都是和字典一致的。</p>
+<h3 id="签名算法"><a href="#签名算法" class="headerlink" title="签名算法"></a>签名算法</h3><p>都获取 cookie 数据的过程中，最核心的几句话是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">s = self.get_signing_serializer(app)</div><div class="line">val = request.cookies.get(app.session_cookie_name)</div><div class="line">data = s.loads(val, max_age=max_age)</div><div class="line"></div><div class="line"><span class="keyword">return</span> self.session_class(data)</div></pre></td></tr></table></figure>
+<p>其中两句都和 <code>s</code> 有关，<code>signing_serializer</code> 保证了 cookie 和 session 的转换过程中的安全问题。如果 flask 发现请求的 cookie 被篡改了，它会直接放弃使用。</p>
+<p>我们继续看 <code>get_signing_serializer</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_signing_serializer</span><span class="params">(self, app)</span>:</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> app.secret_key:</div><div class="line">        <span class="keyword">return</span> <span class="keyword">None</span></div><div class="line">    signer_kwargs = dict(</div><div class="line">        key_derivation=self.key_derivation,</div><div class="line">        digest_method=self.digest_method</div><div class="line">    )</div><div class="line">    <span class="keyword">return</span> URLSafeTimedSerializer(app.secret_key,</div><div class="line">        salt=self.salt,</div><div class="line">        serializer=self.serializer,</div><div class="line">        signer_kwargs=signer_kwargs)</div></pre></td></tr></table></figure>
+<p>我们看到这里需要用到很多参数：</p>
+<ul>
+<li><code>secret_key</code>：密钥。这个是必须的，如果没有配置 <code>secret_key</code> 就直接使用 <code>session</code> 会报错</li>
+<li><code>salt</code>：为了增强安全性而设置一个 <code>salt</code> 字符串（可以自行搜索“安全加盐”了解对应的原理）</li>
+<li><code>serializer</code>：序列算法</li>
+<li><code>signer_kwargs</code>：其他参数，包括摘要/hash算法（默认是 <code>sha1</code>）和 签名算法（默认是 <code>hmac</code>）</li>
+</ul>
+<p><code>URLSafeTimedSerializer</code> 是 <code>itsdangerous</code> 库的类，主要用来进行数据验证，增加网络中数据的安全性。<code>itsdangerours</code> 提供了多种 <code>Serializer</code>，可以方便地进行类似 json 处理的数据序列化和反序列的操作。至于具体的实现，因为篇幅限制，就不解释了。</p>
+<h3 id="应答过程"><a href="#应答过程" class="headerlink" title="应答过程"></a>应答过程</h3><p>flask 会在请求过来的时候自动解析 cookie 的值，把它变成 session 变量。开发在视图函数中可以使用它的值，也可以对它进行更新。最后再返回的 response 中，flask 也会自动把 session 写回到 cookie。我们来看看这部分是怎么实现的！</p>
+<p>之前的文章讲解了应答的过程，其中 <code>finalize_response</code> 方法在根据视图函数的返回生成 response 对象之后，会调用 <code>process_response</code> 方法进行处理。<code>process_response</code> 方法的最后有这样两句话：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self, response)</span>:</span></div><div class="line">    ...</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.session_interface.is_null_session(ctx.session):</div><div class="line">        self.save_session(ctx.session, response)</div><div class="line">    <span class="keyword">return</span> response</div></pre></td></tr></table></figure>
+<p>这里就是 session 在应答中出现的地方，思路也很简单，如果需要就调用 <code>save_sessoin</code>，把当前上下文中的 session 对象保存到 response 。</p>
+<p><code>save_session</code> 的代码和 <code>open_session</code> 对应：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">save_session</span><span class="params">(self, app, session, response)</span>:</span></div><div class="line">        domain = self.get_cookie_domain(app)</div><div class="line">        path = self.get_cookie_path(app)</div><div class="line"></div><div class="line">        <span class="comment"># 如果 session 变成了空字典，flask 会直接删除对应的 cookie</span></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> session:</div><div class="line">            <span class="keyword">if</span> session.modified:</div><div class="line">                response.delete_cookie(app.session_cookie_name,</div><div class="line">                                       domain=domain, path=path)</div><div class="line">            <span class="keyword">return</span></div><div class="line"></div><div class="line">        <span class="comment"># 是否需要设置 cookie。如果 session 发生了变化，就一定要更新 cookie，否则用户可以 `SESSION_REFRESH_EACH_REQUEST` 变量控制是否要设置 cookie</span></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.should_set_cookie(app, session):</div><div class="line">            <span class="keyword">return</span></div><div class="line"></div><div class="line">        httponly = self.get_cookie_httponly(app)</div><div class="line">        secure = self.get_cookie_secure(app)</div><div class="line">        expires = self.get_expiration_time(app, session)</div><div class="line">        val = self.get_signing_serializer(app).dumps(dict(session))</div><div class="line">        response.set_cookie(app.session_cookie_name, val,</div><div class="line">                            expires=expires,</div><div class="line">                            httponly=httponly,</div><div class="line">                            domain=domain, path=path, secure=secure)</div></pre></td></tr></table></figure>
+<p>这段代码也很容易理解，就是从 <code>app</code> 和 <code>session</code> 变量中获取所有需要的信息，然后调用 <code>response.set_cookie</code> 设置最后的 <code>cookie</code>。这样客户端就能在 <code>cookie</code> 中保存 session 有关的信息，以后访问的时候再次发送给服务器端，以此来实现有状态的交互。</p>
+<h2 id="解密-session"><a href="#解密-session" class="headerlink" title="解密 session"></a>解密 session</h2><p>有时候在开发或者调试的过程中，需要了解 cookie 中保存的到底是什么值，可以通过手动解析它的值。session 在 cookie 中的值，是一个字符串，由句号分割成三个部分。第一部分是 <code>base64</code> 加密的数据，第二部分是时间戳，第三部分是校验信息。</p>
+<p>前面两部分的内容可以通过下面的方式获取，代码也可直观，就不给出解释了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">In [1]: from itsdangerous import *</div><div class="line"></div><div class="line">In [2]: s = &apos;eyJ1c2VybmFtZSI6ImNpeml4cyJ9.C5fdpg.fqm3FTv0kYE2TuOyGF1mx2RuYQ4&apos;</div><div class="line"></div><div class="line">In [3]: data, timstamp, secret = s.split(&apos;.&apos;)</div><div class="line"></div><div class="line">In [4]: base64_decode(data)</div><div class="line">Out[4]: &apos;&#123;&quot;username&quot;:&quot;cizixs&quot;&#125;&apos;</div><div class="line"></div><div class="line">In [5]: bytes_to_int(base64_decode(timstamp))</div><div class="line">Out[5]: 194502054</div><div class="line"></div><div class="line">In [7]: time.strftime(&apos;%Y-%m-%d %H:%I%S&apos;, time.localtime(194502054+EPOCH))</div><div class="line">Out[7]: &apos;2017-03-01 12:1254&apos;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>flask 默认提供的 session 功能还是很简单的，满足了基本的功能。但是我们看到 flask 把 session 的数据都保存在客户端的 cookie 中，这里只有用户名还好，如果有一些私密的数据（比如密码，账户余额等等），就会造成严重的安全问题。可以考虑使用 <code>flask-session</code> 这个三方的库，它把数据保存在服务器端（本地文件、redis、memcached），客户端只拿到一个 sessionid。</p>
+<p>session 主要是用来在不同的请求之间保存信息，最常见的应用就是登陆功能。虽然直接通过 session 自己也可以写出来不错的登陆功能，但是在实际的项目中可以考虑 <code>flask-login</code> 这个三方的插件，方便我们的开发</p>
+<p>参考资料</p>
+<ul>
+<li><a href="https://github.com/fengsp/flask-session" target="_blank" rel="external">flask-session github page</a></li>
+<li><a href="http://blog.csdn.net/yueguanghaidao/article/details/40016235" target="_blank" rel="external">Flask 源码阅读笔记</a></li>
+</ul>
+<p><em>本文转自<a href="http://cizixs.com/2017/03/08/flask-insight-session" target="_blank" rel="external">Cizixs Writes Here</a></em></p>
+
+        
+        </div>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/03/15/flask-response/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">flask 源码解析：响应</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+<!--
+<div class="ad-banner">
+    <div class="flip">
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
+    </div>
+</div>
+-->
+
+    
+    <section id="comments">
+    
+        
+    <div id="uyan_frame"></div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/17/flask-session/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：session" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/17/flask-session/" class="title">flask 源码解析：session</a></p>
+                            <p class="item-date"><time datetime="2017-03-17T04:48:55.000Z" itemprop="datePublished">2017-03-17</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/15/flask-response/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：响应" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/15/flask-response/" class="title">flask 源码解析：响应</a></p>
+                            <p class="item-date"><time datetime="2017-03-15T07:12:47.000Z" itemprop="datePublished">2017-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/13/flask-request/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：请求" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/13/flask-request/" class="title">flask 源码解析：请求</a></p>
+                            <p class="item-date"><time datetime="2017-03-13T05:01:01.000Z" itemprop="datePublished">2017-03-13</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/09/flask-context/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：上下文" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/09/flask-context/" class="title">flask 源码解析：上下文</a></p>
+                            <p class="item-date"><time datetime="2017-03-09T08:50:31.000Z" itemprop="datePublished">2017-03-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/03/08/flask-routing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/image/flask.png)" alt="flask 源码解析：路由" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/03/08/flask-routing/" class="title">flask 源码解析：路由</a></p>
+                            <p class="item-date"><time datetime="2017-03-08T07:51:13.000Z" itemprop="datePublished">2017-03-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Effective-Objective-C/" style="font-size: 11.67px;">Effective Objective-C</a> <a href="/tags/HTML5/" style="font-size: 11.67px;">HTML5</a> <a href="/tags/Hack/" style="font-size: 11.67px;">Hack</a> <a href="/tags/JavaScript/" style="font-size: 11.67px;">JavaScript</a> <a href="/tags/MDM/" style="font-size: 10px;">MDM</a> <a href="/tags/Mac/" style="font-size: 11.67px;">Mac</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Notes/" style="font-size: 13.33px;">Notes</a> <a href="/tags/Objective-C/" style="font-size: 16.67px;">Objective-C</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Raspberry-Pi/" style="font-size: 11.67px;">Raspberry Pi</a> <a href="/tags/Sinppets/" style="font-size: 10px;">Sinppets</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Web/" style="font-size: 11.67px;">Web</a> <a href="/tags/Xcode/" style="font-size: 11.67px;">Xcode</a> <a href="/tags/clang/" style="font-size: 10px;">clang</a> <a href="/tags/flask/" style="font-size: 18.33px;">flask</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/llvm/" style="font-size: 10px;">llvm</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/runtime/" style="font-size: 11.67px;">runtime</a> <a href="/tags/只读经典/" style="font-size: 15px;">只读经典</a> <a href="/tags/正则表达式/" style="font-size: 10px;">正则表达式</a>
+        </div>
+    </div>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 TracyYih 
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>.
+        </div>
+        
+            <div class="cnzz">
+                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                </script>
+            </div>
+        
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1784645"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
