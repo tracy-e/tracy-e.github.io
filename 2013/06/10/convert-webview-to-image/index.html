@@ -8,12 +8,12 @@
     <meta name="description" content="今天开发Evermark时要用到将UIWebView中显示的内容转为图片，方便转发到各个社交网络（Twitter,Facebook,Weibo），这样内容就不受长度限制，类似于长微博。 之前关于视图转图片我知道可以通过QuartzCore里截图的形式，但是截图只能截取当前屏幕所显示的区域(UIGraphicsGetCurrentContext())，而UIWebView的内容可能比屏幕长得多，在网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="将UIWebView显示的内容转为图片和PDF">
-<meta property="og:url" content="http://esoftmobile.com/2013/06/10/将uiwebview显示内容转为图片和pdf/index.html">
+<meta property="og:url" content="http://esoftmobile.com/2013/06/10/convert-webview-to-image/index.html">
 <meta property="og:site_name" content="Esoft Mobile">
 <meta property="og:description" content="今天开发Evermark时要用到将UIWebView中显示的内容转为图片，方便转发到各个社交网络（Twitter,Facebook,Weibo），这样内容就不受长度限制，类似于长微博。 之前关于视图转图片我知道可以通过QuartzCore里截图的形式，但是截图只能截取当前屏幕所显示的区域(UIGraphicsGetCurrentContext())，而UIWebView的内容可能比屏幕长得多，在网">
 <meta property="og:image" content="http://esoftmobile.com/image/UIWebViewToFile_01.png">
 <meta property="og:image" content="http://esoftmobile.com/image/UIWebViewToFile_02.png">
-<meta property="og:updated_time" content="2014-05-03T04:29:38.000Z">
+<meta property="og:updated_time" content="2017-03-20T05:58:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="将UIWebView显示的内容转为图片和PDF">
 <meta name="twitter:description" content="今天开发Evermark时要用到将UIWebView中显示的内容转为图片，方便转发到各个社交网络（Twitter,Facebook,Weibo），这样内容就不受长度限制，类似于长微博。 之前关于视图转图片我知道可以通过QuartzCore里截图的形式，但是截图只能截取当前屏幕所显示的区域(UIGraphicsGetCurrentContext())，而UIWebView的内容可能比屏幕长得多，在网">
@@ -63,17 +63,6 @@
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -134,19 +123,118 @@
 </header>
 
         <div class="outer">
-            
+            <section id="main"><article id="post-convert-webview-to-image" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
+    
+        <h1 class="article-title" itemprop="name">
+            将UIWebView显示的内容转为图片和PDF
+        </h1>
+    
 
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2013/06/10/convert-webview-to-image/">
+            <label>TracyYih 发表于 </label><time datetime="2013-06-10T11:15:04.000Z" itemprop="datePublished">2013-06-10 19:15</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/iOS/">iOS</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>今天开发<a href="http://esoftmobile.com/evermark">Evermark</a>时要用到将UIWebView中显示的内容转为图片，方便转发到各个社交网络（Twitter,Facebook,Weibo），这样内容就不受长度限制，类似于<a href="http://www.changweibo.com" target="_blank" rel="external">长微博</a>。 之前关于视图转图片我知道可以通过QuartzCore里截图的形式，但是截图只能截取当前屏幕所显示的区域(<code>UIGraphicsGetCurrentContext()</code>)，而UIWebView的内容可能比屏幕长得多，在网上搜了一下，没有找到更好的方法，所有只有将UIWebView分屏截取，然后将截取的图片拼接成一张图片。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">- (<span class="built_in">UIImage</span> *)imageRepresentation&#123;</div><div class="line">    <span class="built_in">CGSize</span> boundsSize = <span class="keyword">self</span>.bounds.size;</div><div class="line">    <span class="built_in">CGFloat</span> boundsWidth = <span class="keyword">self</span>.bounds.size.width;</div><div class="line">    <span class="built_in">CGFloat</span> boundsHeight = <span class="keyword">self</span>.bounds.size.height;</div><div class="line">    </div><div class="line">    <span class="built_in">CGPoint</span> offset = <span class="keyword">self</span>.scrollView.contentOffset;</div><div class="line">    [<span class="keyword">self</span>.scrollView setContentOffset:<span class="built_in">CGPointMake</span>(<span class="number">0</span>, <span class="number">0</span>)];</div><div class="line">    </div><div class="line">    <span class="built_in">CGFloat</span> contentHeight = <span class="keyword">self</span>.scrollView.contentSize.height;</div><div class="line">    <span class="built_in">NSMutableArray</span> *images = [<span class="built_in">NSMutableArray</span> array];</div><div class="line">    <span class="keyword">while</span> (contentHeight &gt; <span class="number">0</span>) &#123;</div><div class="line">        <span class="built_in">UIGraphicsBeginImageContext</span>(boundsSize);</div><div class="line">        [<span class="keyword">self</span>.layer renderInContext:<span class="built_in">UIGraphicsGetCurrentContext</span>()];</div><div class="line">        <span class="built_in">UIImage</span> *image = <span class="built_in">UIGraphicsGetImageFromCurrentImageContext</span>();</div><div class="line">        <span class="built_in">UIGraphicsEndImageContext</span>();</div><div class="line">        [images addObject:image];</div><div class="line">        </div><div class="line">        <span class="built_in">CGFloat</span> offsetY = <span class="keyword">self</span>.scrollView.contentOffset.y;</div><div class="line">        [<span class="keyword">self</span>.scrollView setContentOffset:<span class="built_in">CGPointMake</span>(<span class="number">0</span>, offsetY + boundsHeight)];</div><div class="line">        contentHeight -= boundsHeight;</div><div class="line">    &#125;</div><div class="line">    [<span class="keyword">self</span>.scrollView setContentOffset:offset];</div><div class="line">    </div><div class="line">    <span class="built_in">UIGraphicsBeginImageContext</span>(<span class="keyword">self</span>.scrollView.contentSize);</div><div class="line">    [images enumerateObjectsUsingBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSUInteger</span> idx, <span class="built_in">BOOL</span> *stop) &#123;</div><div class="line">        [image drawInRect:<span class="built_in">CGRectMake</span>(<span class="number">0</span>, boundsHeight * idx, boundsWidth, boundsHeight)];</div><div class="line">    &#125;];</div><div class="line">    <span class="built_in">UIImage</span> *fullImage = <span class="built_in">UIGraphicsGetImageFromCurrentImageContext</span>();</div><div class="line">    <span class="built_in">UIGraphicsEndImageContext</span>();</div><div class="line">    <span class="keyword">return</span> fullImage;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>将UIWebView从头，<code>contentOffset = (0, 0)</code>，开始截取<code>webView.bounds.size.height</code>高度的图片，然后将_webView可见区域下移继续截屏，这样将所有截取的图片按照顺序拼接，就能得到整个UIWebView显示内容的完整图片。（不知道有没有更好的方法）</p>
+<hr>
+<p>本以为用同样的方法就能生成PDF文件</p>
+<p><img src="/image/UIWebViewToFile_01.png" alt="image"></p>
+<p>但是通过<code>UIGraphics</code>生成的PDF其实就是图片，文字都没法选中，而且质量也不高，所以继续查找其他方法。发现<code>UIPrintPageRenderer</code>可以实现渲染视图绘制的内容。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">- (<span class="built_in">NSData</span> *)PDFData&#123;</div><div class="line">    <span class="built_in">UIViewPrintFormatter</span> *fmt = [<span class="keyword">self</span> viewPrintFormatter];</div><div class="line">    <span class="built_in">UIPrintPageRenderer</span> *render = [[<span class="built_in">UIPrintPageRenderer</span> alloc] init];</div><div class="line">    [render addPrintFormatter:fmt startingAtPageAtIndex:<span class="number">0</span>];</div><div class="line">    <span class="built_in">CGRect</span> page;</div><div class="line">    page.origin.x=<span class="number">0</span>;</div><div class="line">    page.origin.y=<span class="number">0</span>;</div><div class="line">    page.size.width=<span class="number">600</span>;</div><div class="line">    page.size.height=<span class="number">768</span>;</div><div class="line">    </div><div class="line">    <span class="built_in">CGRect</span> printable=<span class="built_in">CGRectInset</span>( page, <span class="number">50</span>, <span class="number">50</span> );</div><div class="line">    [render setValue:[<span class="built_in">NSValue</span> valueWithCGRect:page] forKey:<span class="string">@"paperRect"</span>];</div><div class="line">    [render setValue:[<span class="built_in">NSValue</span> valueWithCGRect:printable] forKey:<span class="string">@"printableRect"</span>];</div><div class="line">    </div><div class="line">    <span class="built_in">NSMutableData</span> * pdfData = [<span class="built_in">NSMutableData</span> data];</div><div class="line">    <span class="built_in">UIGraphicsBeginPDFContextToData</span>( pdfData, <span class="built_in">CGRectZero</span>, <span class="literal">nil</span> );</div><div class="line">    </div><div class="line">    <span class="keyword">for</span> (<span class="built_in">NSInteger</span> i=<span class="number">0</span>; i &lt; [render numberOfPages]; i++)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">UIGraphicsBeginPDFPage</span>();</div><div class="line">        <span class="built_in">CGRect</span> bounds = <span class="built_in">UIGraphicsGetPDFContextBounds</span>();</div><div class="line">        [render drawPageAtIndex:i inRect:bounds];</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    <span class="built_in">UIGraphicsEndPDFContext</span>();</div><div class="line">    <span class="keyword">return</span> pdfData;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过这种方式生成的PDF质量高，与浏览器“打印”功能显示出的内容一样</p>
+<p><img src="/image/UIWebViewToFile_02.png" alt="image1"></p>
+<hr>
+<p>代码已上传github (<a href="https://github.com/tracy-e/UIWebViewToFile" target="_blank" rel="external">https://github.com/tracy-e/UIWebViewToFile</a>)</p>
+<p>========全文完============</p>
+
+        
+        </div>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2013/06/11/ios7-redesign/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    iOS7适配之设计篇
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2013/05/22/regular-expression/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">学习正则表达式</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+<!--
+<div class="ad-banner">
+    <div class="flip">
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
+    </div>
+</div>
+-->
+
+    
+    <section id="comments">
+    
+        
+    <div id="uyan_frame"></div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
             <h2 id="name">TracyYih</h2>
             <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
         </div>
-        <div class="article-info profile-block">
+        <div class="article-info">
             <div class="article-info-block">
                 44
                 <span>文章</span>
@@ -157,7 +245,7 @@
             </div>
         </div>
         
-        <div class="profile-block social-links">
+        <div class="social-links">
             <table>
                 <tr>
                     
@@ -191,111 +279,8 @@
         </div>
         
     </div>
-</aside>
-
-            
-            <section id="main"><article id="post-将uiwebview显示内容转为图片和pdf" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 class="article-title" itemprop="name">
-            将UIWebView显示的内容转为图片和PDF
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2013/06/10/将uiwebview显示内容转为图片和pdf/">
-            <label>TracyYih 发表于 </label><time datetime="2013-06-10T11:15:04.000Z" itemprop="datePublished">2013-06-10 19:15</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/iOS/">iOS</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>今天开发<a href="http://esoftmobile.com/evermark">Evermark</a>时要用到将UIWebView中显示的内容转为图片，方便转发到各个社交网络（Twitter,Facebook,Weibo），这样内容就不受长度限制，类似于<a href="http://www.changweibo.com" target="_blank" rel="external">长微博</a>。 之前关于视图转图片我知道可以通过QuartzCore里截图的形式，但是截图只能截取当前屏幕所显示的区域(<code>UIGraphicsGetCurrentContext()</code>)，而UIWebView的内容可能比屏幕长得多，在网上搜了一下，没有找到更好的方法，所有只有将UIWebView分屏截取，然后将截取的图片拼接成一张图片。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">- (UIImage *)imageRepresentation&#123;</div><div class="line">    CGSize boundsSize = self.bounds.size;</div><div class="line">    CGFloat boundsWidth = self.bounds.size.width;</div><div class="line">    CGFloat boundsHeight = self.bounds.size.height;</div><div class="line">    </div><div class="line">    CGPoint offset = self.scrollView.contentOffset;</div><div class="line">    [self.scrollView setContentOffset:CGPointMake(0, 0)];</div><div class="line">    </div><div class="line">    CGFloat contentHeight = self.scrollView.contentSize.height;</div><div class="line">    NSMutableArray *images = [NSMutableArray array];</div><div class="line">    while (contentHeight &gt; 0) &#123;</div><div class="line">        UIGraphicsBeginImageContext(boundsSize);</div><div class="line">        [self.layer renderInContext:UIGraphicsGetCurrentContext()];</div><div class="line">        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();</div><div class="line">        UIGraphicsEndImageContext();</div><div class="line">        [images addObject:image];</div><div class="line">        </div><div class="line">        CGFloat offsetY = self.scrollView.contentOffset.y;</div><div class="line">        [self.scrollView setContentOffset:CGPointMake(0, offsetY + boundsHeight)];</div><div class="line">        contentHeight -= boundsHeight;</div><div class="line">    &#125;</div><div class="line">    [self.scrollView setContentOffset:offset];</div><div class="line">    </div><div class="line">    UIGraphicsBeginImageContext(self.scrollView.contentSize);</div><div class="line">    [images enumerateObjectsUsingBlock:^(UIImage *image, NSUInteger idx, BOOL *stop) &#123;</div><div class="line">        [image drawInRect:CGRectMake(0, boundsHeight * idx, boundsWidth, boundsHeight)];</div><div class="line">    &#125;];</div><div class="line">    UIImage *fullImage = UIGraphicsGetImageFromCurrentImageContext();</div><div class="line">    UIGraphicsEndImageContext();</div><div class="line">    return fullImage;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<a id="more"></a>
-<p>将UIWebView从头，<code>contentOffset = (0, 0)</code>，开始截取<code>webView.bounds.size.height</code>高度的图片，然后将_webView可见区域下移继续截屏，这样将所有截取的图片按照顺序拼接，就能得到整个UIWebView显示内容的完整图片。（不知道有没有更好的方法）</p>
-<hr>
-<p>本以为用同样的方法就能生成PDF文件</p>
-<p><img src="/image/UIWebViewToFile_01.png" alt="image"></p>
-<p>但是通过<code>UIGraphics</code>生成的PDF其实就是图片，文字都没法选中，而且质量也不高，所以继续查找其他方法。发现<code>UIPrintPageRenderer</code>可以实现渲染视图绘制的内容。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">- (NSData *)PDFData&#123;</div><div class="line">    UIViewPrintFormatter *fmt = [self viewPrintFormatter];</div><div class="line">    UIPrintPageRenderer *render = [[UIPrintPageRenderer alloc] init];</div><div class="line">    [render addPrintFormatter:fmt startingAtPageAtIndex:0];</div><div class="line">    CGRect page;</div><div class="line">    page.origin.x=0;</div><div class="line">    page.origin.y=0;</div><div class="line">    page.size.width=600;</div><div class="line">    page.size.height=768;</div><div class="line">    </div><div class="line">    CGRect printable=CGRectInset( page, 50, 50 );</div><div class="line">    [render setValue:[NSValue valueWithCGRect:page] forKey:@&quot;paperRect&quot;];</div><div class="line">    [render setValue:[NSValue valueWithCGRect:printable] forKey:@&quot;printableRect&quot;];</div><div class="line">    </div><div class="line">    NSMutableData * pdfData = [NSMutableData data];</div><div class="line">    UIGraphicsBeginPDFContextToData( pdfData, CGRectZero, nil );</div><div class="line">    </div><div class="line">    for (NSInteger i=0; i &lt; [render numberOfPages]; i++)</div><div class="line">    &#123;</div><div class="line">        UIGraphicsBeginPDFPage();</div><div class="line">        CGRect bounds = UIGraphicsGetPDFContextBounds();</div><div class="line">        [render drawPageAtIndex:i inRect:bounds];</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    UIGraphicsEndPDFContext();</div><div class="line">    return pdfData;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>通过这种方式生成的PDF质量高，与浏览器“打印”功能显示出的内容一样</p>
-<p><img src="/image/UIWebViewToFile_02.png" alt="image1"></p>
-<hr>
-<p>代码已上传github (<a href="https://github.com/tracy-e/UIWebViewToFile" target="_blank" rel="external">https://github.com/tracy-e/UIWebViewToFile</a>)</p>
-<p>========全文完============</p>
-
-        
-        </div>
-    </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2013/06/11/ios7适配之设计篇/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    iOS7适配之设计篇
-                
-            </div>
-        </a>
-    
-    
-        <a href="/2013/05/22/学习正则表达式/" id="article-nav-older" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">学习正则表达式</div>
-        </a>
-    
-</nav>
-
-
-    
-</article>
-<!--
-<div class="ad-banner">
-    <div class="flip">
-        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
-        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
-    </div>
 </div>
--->
-
     
-    <section id="comments">
-    
-        
-    <div id="uyan_frame"></div>
-
-    
-    </section>
-
-</section>
-            
-                <aside id="sidebar">
-   
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -403,17 +388,6 @@
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -434,7 +408,7 @@
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

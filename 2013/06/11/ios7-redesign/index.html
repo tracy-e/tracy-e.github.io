@@ -6,19 +6,19 @@
     <title>iOS7适配之设计篇 | Esoft Mobile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="（注：文章简要翻译自Apple 《iOS 7 UI Transition Guide》，由于该文档为开发者预览版，并非最终文档，所以iOS7正式上线可能有部分不同）
-##准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中">
+准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中看看">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS7适配之设计篇">
-<meta property="og:url" content="http://esoftmobile.com/2013/06/11/ios7适配之设计篇/index.html">
+<meta property="og:url" content="http://esoftmobile.com/2013/06/11/ios7-redesign/index.html">
 <meta property="og:site_name" content="Esoft Mobile">
 <meta property="og:description" content="（注：文章简要翻译自Apple 《iOS 7 UI Transition Guide》，由于该文档为开发者预览版，并非最终文档，所以iOS7正式上线可能有部分不同）
-##准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中">
+准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中看看">
 <meta property="og:image" content="http://esoftmobile.com/image/ios7_preview_ui_style.png">
-<meta property="og:updated_time" content="2013-12-24T12:40:54.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:13:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS7适配之设计篇">
 <meta name="twitter:description" content="（注：文章简要翻译自Apple 《iOS 7 UI Transition Guide》，由于该文档为开发者预览版，并非最终文档，所以iOS7正式上线可能有部分不同）
-##准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中">
+准备工作iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中看看">
 <meta name="twitter:image" content="http://esoftmobile.com/image/ios7_preview_ui_style.png">
     
 
@@ -65,17 +65,6 @@
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -136,19 +125,183 @@
 </header>
 
         <div class="outer">
-            
+            <section id="main"><article id="post-ios7-redesign" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
+    
+        <h1 class="article-title" itemprop="name">
+            iOS7适配之设计篇
+        </h1>
+    
 
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2013/06/11/ios7-redesign/">
+            <label>TracyYih 发表于 </label><time datetime="2013-06-11T04:38:16.000Z" itemprop="datePublished">2013-06-11 12:38</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/iOS/">iOS</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>（注：文章简要翻译自Apple <a href="https://developer.apple.com/library/prerelease/ios/documentation/UserExperience/Conceptual/TransitionGuide/TransitionGuide.pdf" target="_blank" rel="external">《iOS 7 UI Transition Guide》</a>，由于该文档为开发者预览版，并非最终文档，所以iOS7正式上线可能有部分不同）</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中看看iOS7的界面。</p>
+<p><img src="/image/ios7_preview_ui_style.png" alt="UIStyle"></p>
+<p>从iOS7系统应用的改变可以看出，iOS7这次改变不是小打小闹，是彻彻底底的变化。苹果认为之前的UI风格辨识度很高，但是视觉体验太不一致（comment:你们换个设计师，我们苦逼的程序员就得按照你的审美来修改、适配）。</p>
+<blockquote>
+<p>Note: 尽管iOS7所有的界面元素都看起来不一样，可能增加了新的功能，但是之前你所熟悉UIKit APIs的大多都是一样的。</p>
+</blockquote>
+<a id="more"></a>
+<p>随着你对iOS7继续的研究，你可能发现iOS7界面风格几个特点：</p>
+<ul>
+<li><strong>尊重内容</strong> 用户界面帮助用户了解内容，并与之交互，而不是为了界面而忽略了内容。（comment: 你们之前做拟物化风格时，怎么没意识到内容的重要性？）</li>
+<li><strong>清晰</strong> 文本在不同的字体大小下都是清晰可读的，图标也是能清晰的表达意思，不需要过多的修饰。<em>功能指导设计，而不是相反</em>（comment:这一点我还是比较认同的，可悲的是当前公司在这方面有点误入歧途呢）。</li>
+<li><strong>深度</strong> 视觉上的层次分明和逼真的手势操作可以加强用户愉悦和理解。</li>
+</ul>
+<p>为了将上面这些基本的原则融入到iOS的体验中，iOS7抓住了这样的机会重新定义了程序要传达给用户的核心目标和功能。虽然你可能还没有完全准备好马上利用这样的修改你的设计，但是只要你准备为iOS7升级或开发你的应用时，你就需要按照上面的指导原则来做。</p>
+<h4 id="适配讨论"><a href="#适配讨论" class="headerlink" title="适配讨论"></a>适配讨论</h4><ul>
+<li><p><strong>是否使用Auto Layout来设计App</strong></p>
+<p>如果你的程序现在使用了Auto Layout，那么你的适配工作就相对简单一些。因为iOS7与之前版本在界面元素上有很多属性设置都不一样，而且iOS7所有应用程序内的字体大小都是随着系统字体可调整的，所以如果使用了Auto Layout就会比较方便一些。</p>
+<p>如果你还没有用Auto Layot，建议你现在就开始使用，特别是如果你需要同时支持不同的系统版本。如果你完全使用代码布局，你就必须在字体大小改变时做相应的处理。</p>
+<p>(comment: 晕，从最开始的XIB，到Auto Layout和Storyboard，我都没用过，你看看Github上有多少代码使用了。相信广大程序员都更喜欢纯代码布局，首先纯代码比较清晰，不用对照这布局文件和源文件看，其次纯代码复用和修改方便，相信我还会将纯代码进行到底的。)</p>
+</li>
+<li><p><strong>是否需要支持iOS6</strong></p>
+<p>iOS用户通常都会很快的就会将手中的设备升级到最新的系统，他们希望看到他们喜爱的应用能够很好适配。</p>
+<p>如果出于商业原因，你的应用必须支持iOS6，那你也最好能够同时升级支持iOS7。</p>
+<p>（comment: 公司才在iPhone5推出后不得不放弃4.3以下的设备，以前都是支持3.0的有木有？ 现在你就讨论iOS6要不要支持，有本事你又弄个版本不兼容，要么支持iOS7，要么支持以下版本啊。我估计只要技术允许，我们都必须支持到最大的范围）</p>
+</li>
+</ul>
+<p>通常你的应用可以分为几类：</p>
+<ul>
+<li><p><strong>标准</strong> 应用完全只使用UIKit提供的控件，没有自己定制。（comment: 这种应该应该只有系统自带的“设置”吧，哈哈）</p>
+</li>
+<li><p><strong>自定义</strong> 应用完全使用自定义的UI，没有使用UIKit中的元素。（comment: 这种应用应该也不多吧，除非哪个牛逼的公司能够完整的开发出一套自己的UI组建）</p>
+</li>
+<li><p><strong>混合</strong> 应用中使用了UIKit中的控件，也依赖UIKit自定义了自己的控件。（comment: 我相信几乎所有的应用应属于这一类）</p>
+</li>
+</ul>
+<p>第一种和第二种，如果不是设计风格上与iOS7的指导原则不一致，基本代码就能够不用修改在iOS7上运行。第三种，呵呵，自己看着办吧（估计广大iOS程序员又得熬几个通宵去适配了）。</p>
+<h2 id="适配Checklists"><a href="#适配Checklists" class="headerlink" title="适配Checklists"></a>适配Checklists</h2><h4 id="Must-Do"><a href="#Must-Do" class="headerlink" title="Must Do"></a>Must Do</h4><ul>
+<li><p>更新程序图标(Icon)，iOS7中程序icon是 120 x 120像素。（comment: 不明白又没有出新分辨率的设备，只是升级系统，icon的像素为什么要变？）</p>
+</li>
+<li><p>更新程序启动画面(Launch image),程序启动图片必须包含状态条。（comment: 这个我们一直就带着状态条的，之前高出的20像素现在能露脸了，哈）</p>
+</li>
+<li><p>支持高清屏（Retina display）和iPhone5。（comment: 怎么现在看到Retina屏我会笑而不语呢，在Android满大街都是1920 x 1080的现在，你那点分辨率也还叫高清屏？）</p>
+</li>
+</ul>
+<h4 id="Should-Do"><a href="#Should-Do" class="headerlink" title="Should Do"></a>Should Do</h4><ul>
+<li><p>确保程序内容在半透明的UI控件下能够很好的显示——如工具条和键盘或半透明的状态条。</p>
+</li>
+<li><p>重新设计工具条上按钮的图标。</p>
+</li>
+<li><p>开始使用没有边框和圆角的按钮，移除之前设置的按钮背景图片。</p>
+</li>
+<li><p>检查程序内硬编码设置的UI属性值，如大小和位置。替换成系统提供的可能动态修改的值，推荐使用Auto Layout来布局。</p>
+</li>
+<li><p>检查程序中UI控件修改可能引起的布局或显示问题，如UISwitch更宽了，grouped UITableView没有边距了，UIProgressView更细了。</p>
+</li>
+<li><p>适配动态属性，在iOS7中，用户能够自己调整字体大小，你的程序必须做出调整。</p>
+</li>
+<li><p>检查一下你的程序内所使用的手势，确保别和iOS7中新增的控制中心所用的手势冲突，还有NavigationController滑动返回的手势。 （comment: 应该很多程序会躺枪）</p>
+</li>
+<li><p>去掉程序中用到的阴影、渐变、不规则形状吧，iOS7的设计美学强调扁平化和分层。</p>
+</li>
+<li><p>确保程序中没有使用被iOS7废弃调的API。</p>
+</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>附上官方推荐的用于版本判断的代码供参考</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"> <span class="built_in">NSUInteger</span> DeviceSystemMajorVersion();</div><div class="line">  <span class="built_in">NSUInteger</span> DeviceSystemMajorVersion() &#123;</div><div class="line">     <span class="keyword">static</span> <span class="built_in">NSUInteger</span> _deviceSystemMajorVersion = <span class="number">-1</span>;</div><div class="line">         <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</div><div class="line">     <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</div><div class="line">         _deviceSystemMajorVersion = [[[[[<span class="built_in">UIDevice</span> currentDevice] systemVersion]</div><div class="line">  componentsSeparatedByString:<span class="string">@"."</span>] objectAtIndex:<span class="number">0</span>] intValue];</div><div class="line">&#125;);</div><div class="line">     <span class="keyword">return</span> _deviceSystemMajorVersion;</div><div class="line">  &#125;</div><div class="line">  <span class="meta">#define MY_MACRO_NAME (DeviceSystemMajorVersion() <span class="meta-string">&lt; 7)</span></span></div><div class="line">￼￼</div></pre></td></tr></table></figure>
+<h2 id="UI变化举例"><a href="#UI变化举例" class="headerlink" title="UI变化举例"></a>UI变化举例</h2><p><strong>UIViewController</strong></p>
+<p><code>wantsFullScreenLayout</code>被废弃，新增<code>edgesForExtendedLayout</code>,<code>extendedLayoutIncludesOpaqueBars</code>,<code>automaticallyAdjustsScrollViewInsets</code>等属性来控制视图控制器的布局。</p>
+<p><strong>UIView</strong></p>
+<p>新增<code>tintColor</code>属性，默认继承自父视图， 原来工具条（Bar）的tintColor属性改成了<code>barTintColor</code>。</p>
+<p><strong>字体</strong></p>
+<p>通过UIFont中的<code>preferredFontForTextStyle</code>属性回去当前系统的字体，确保内容在不同字体下都能很好显示。</p>
+<p><strong>Bars 和 Bar Buttons</strong></p>
+<p>status bar默认是透明的，其他bar都是半透明的，一个通用原则：确保内容填充Bar下面的区域。</p>
+<p>navigationBar在<code>UIBarPositionTopAttached</code>模式下会与status bar融合的，所以如果使用图片需要用128px（(20 + 44) x 2）。</p>
+<p><strong>UITableView</strong></p>
+<p>Grouped table没有边距了，TableView上的图标（如：Checkmark，Disclosure indicator，Delete button等）都变了。</p>
+<p>（comment: 就举这么多吧，反正这次是侧头侧尾的改变，每一个控件都需要研究， 没有完全安装原文翻译，可能会有地方翻译得恰当，请赐教！）</p>
+
+        
+        </div>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2013/06/18/pragmatic-thinking-and-learning/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    程序员的思维修炼
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2013/06/10/convert-webview-to-image/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">将UIWebView显示的内容转为图片和PDF</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+<!--
+<div class="ad-banner">
+    <div class="flip">
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
+        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
+    </div>
+</div>
+-->
+
+    
+    <section id="comments">
+    
+        
+    <div id="uyan_frame"></div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
             <h2 id="name">TracyYih</h2>
             <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
         </div>
-        <div class="article-info profile-block">
+        <div class="article-info">
             <div class="article-info-block">
                 44
                 <span>文章</span>
@@ -159,7 +312,7 @@
             </div>
         </div>
         
-        <div class="profile-block social-links">
+        <div class="social-links">
             <table>
                 <tr>
                     
@@ -193,182 +346,8 @@
         </div>
         
     </div>
-</aside>
-
-            
-            <section id="main"><article id="post-ios7适配之设计篇" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 class="article-title" itemprop="name">
-            iOS7适配之设计篇
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2013/06/11/ios7适配之设计篇/">
-            <label>TracyYih 发表于 </label><time datetime="2013-06-11T04:38:16.000Z" itemprop="datePublished">2013-06-11 12:38</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/iOS/">iOS</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>（注：文章简要翻译自Apple <a href="https://developer.apple.com/library/prerelease/ios/documentation/UserExperience/Conceptual/TransitionGuide/TransitionGuide.pdf" target="_blank" rel="external">《iOS 7 UI Transition Guide》</a>，由于该文档为开发者预览版，并非最终文档，所以iOS7正式上线可能有部分不同）</p>
-<p>##准备工作<br>iOS7带来了很多界面上的改变，如：没有边框（圆角）的按钮，半透明的工具条（UINavigationBar, UIToolBar等），视图控制器的全屏布局等。使用Xcode5，你就可以创建iOS7工程，并在iOS7模拟器中看看iOS7的界面。</p>
-<p><img src="/image/ios7_preview_ui_style.png" alt="UIStyle"></p>
-<p>从iOS7系统应用的改变可以看出，iOS7这次改变不是小打小闹，是彻彻底底的变化。苹果认为之前的UI风格辨识度很高，但是视觉体验太不一致（comment:你们换个设计师，我们苦逼的程序员就得按照你的审美来修改、适配）。</p>
-<blockquote>
-<p>Note: 尽管iOS7所有的界面元素都看起来不一样，可能增加了新的功能，但是之前你所熟悉UIKit APIs的大多都是一样的。</p>
-</blockquote>
-<a id="more"></a>
-<p>随着你对iOS7继续的研究，你可能发现iOS7界面风格几个特点：</p>
-<ul>
-<li><strong>尊重内容</strong> 用户界面帮助用户了解内容，并与之交互，而不是为了界面而忽略了内容。（comment: 你们之前做拟物化风格时，怎么没意识到内容的重要性？）</li>
-<li><strong>清晰</strong> 文本在不同的字体大小下都是清晰可读的，图标也是能清晰的表达意思，不需要过多的修饰。<em>功能指导设计，而不是相反</em>（comment:这一点我还是比较认同的，可悲的是当前公司在这方面有点误入歧途呢）。</li>
-<li><strong>深度</strong> 视觉上的层次分明和逼真的手势操作可以加强用户愉悦和理解。</li>
-</ul>
-<p>为了将上面这些基本的原则融入到iOS的体验中，iOS7抓住了这样的机会重新定义了程序要传达给用户的核心目标和功能。虽然你可能还没有完全准备好马上利用这样的修改你的设计，但是只要你准备为iOS7升级或开发你的应用时，你就需要按照上面的指导原则来做。</p>
-<p>####适配讨论</p>
-<ul>
-<li><p><strong>是否使用Auto Layout来设计App</strong></p>
-<p>如果你的程序现在使用了Auto Layout，那么你的适配工作就相对简单一些。因为iOS7与之前版本在界面元素上有很多属性设置都不一样，而且iOS7所有应用程序内的字体大小都是随着系统字体可调整的，所以如果使用了Auto Layout就会比较方便一些。</p>
-<p>如果你还没有用Auto Layot，建议你现在就开始使用，特别是如果你需要同时支持不同的系统版本。如果你完全使用代码布局，你就必须在字体大小改变时做相应的处理。</p>
-<p>(comment: 晕，从最开始的XIB，到Auto Layout和Storyboard，我都没用过，你看看Github上有多少代码使用了。相信广大程序员都更喜欢纯代码布局，首先纯代码比较清晰，不用对照这布局文件和源文件看，其次纯代码复用和修改方便，相信我还会将纯代码进行到底的。)</p>
-</li>
-<li><p><strong>是否需要支持iOS6</strong></p>
-<p>iOS用户通常都会很快的就会将手中的设备升级到最新的系统，他们希望看到他们喜爱的应用能够很好适配。</p>
-<p>如果出于商业原因，你的应用必须支持iOS6，那你也最好能够同时升级支持iOS7。</p>
-<p>（comment: 公司才在iPhone5推出后不得不放弃4.3以下的设备，以前都是支持3.0的有木有？ 现在你就讨论iOS6要不要支持，有本事你又弄个版本不兼容，要么支持iOS7，要么支持以下版本啊。我估计只要技术允许，我们都必须支持到最大的范围）</p>
-</li>
-</ul>
-<p>通常你的应用可以分为几类：</p>
-<ul>
-<li><p><strong>标准</strong> 应用完全只使用UIKit提供的控件，没有自己定制。（comment: 这种应该应该只有系统自带的“设置”吧，哈哈）</p>
-</li>
-<li><p><strong>自定义</strong> 应用完全使用自定义的UI，没有使用UIKit中的元素。（comment: 这种应用应该也不多吧，除非哪个牛逼的公司能够完整的开发出一套自己的UI组建）</p>
-</li>
-<li><p><strong>混合</strong> 应用中使用了UIKit中的控件，也依赖UIKit自定义了自己的控件。（comment: 我相信几乎所有的应用应属于这一类）</p>
-</li>
-</ul>
-<p>第一种和第二种，如果不是设计风格上与iOS7的指导原则不一致，基本代码就能够不用修改在iOS7上运行。第三种，呵呵，自己看着办吧（估计广大iOS程序员又得熬几个通宵去适配了）。</p>
-<p>##适配Checklists</p>
-<p>####Must Do</p>
-<ul>
-<li><p>更新程序图标(Icon)，iOS7中程序icon是 120 x 120像素。（comment: 不明白又没有出新分辨率的设备，只是升级系统，icon的像素为什么要变？）</p>
-</li>
-<li><p>更新程序启动画面(Launch image),程序启动图片必须包含状态条。（comment: 这个我们一直就带着状态条的，之前高出的20像素现在能露脸了，哈）</p>
-</li>
-<li><p>支持高清屏（Retina display）和iPhone5。（comment: 怎么现在看到Retina屏我会笑而不语呢，在Android满大街都是1920 x 1080的现在，你那点分辨率也还叫高清屏？）</p>
-</li>
-</ul>
-<p>####Should Do</p>
-<ul>
-<li><p>确保程序内容在半透明的UI控件下能够很好的显示——如工具条和键盘或半透明的状态条。</p>
-</li>
-<li><p>重新设计工具条上按钮的图标。</p>
-</li>
-<li><p>开始使用没有边框和圆角的按钮，移除之前设置的按钮背景图片。</p>
-</li>
-<li><p>检查程序内硬编码设置的UI属性值，如大小和位置。替换成系统提供的可能动态修改的值，推荐使用Auto Layout来布局。</p>
-</li>
-<li><p>检查程序中UI控件修改可能引起的布局或显示问题，如UISwitch更宽了，grouped UITableView没有边距了，UIProgressView更细了。</p>
-</li>
-<li><p>适配动态属性，在iOS7中，用户能够自己调整字体大小，你的程序必须做出调整。</p>
-</li>
-<li><p>检查一下你的程序内所使用的手势，确保别和iOS7中新增的控制中心所用的手势冲突，还有NavigationController滑动返回的手势。 （comment: 应该很多程序会躺枪）</p>
-</li>
-<li><p>去掉程序中用到的阴影、渐变、不规则形状吧，iOS7的设计美学强调扁平化和分层。</p>
-</li>
-<li><p>确保程序中没有使用被iOS7废弃调的API。</p>
-</li>
-</ul>
-<p>####其他</p>
-<p>附上官方推荐的用于版本判断的代码供参考</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"> NSUInteger DeviceSystemMajorVersion();  NSUInteger DeviceSystemMajorVersion() &#123;     static NSUInteger _deviceSystemMajorVersion = -1;         static dispatch_once_t onceToken;     dispatch_once(&amp;onceToken, ^&#123;         _deviceSystemMajorVersion = [[[[[UIDevice currentDevice] systemVersion]  componentsSeparatedByString:@&quot;.&quot;] objectAtIndex:0] intValue];&#125;);     return _deviceSystemMajorVersion;  &#125;  #define MY_MACRO_NAME (DeviceSystemMajorVersion() &lt; 7)￼￼</div></pre></td></tr></table></figure>
-<p>##UI变化举例</p>
-<p><strong>UIViewController</strong></p>
-<p><code>wantsFullScreenLayout</code>被废弃，新增<code>edgesForExtendedLayout</code>,<code>extendedLayoutIncludesOpaqueBars</code>,<code>automaticallyAdjustsScrollViewInsets</code>等属性来控制视图控制器的布局。</p>
-<p><strong>UIView</strong></p>
-<p>新增<code>tintColor</code>属性，默认继承自父视图， 原来工具条（Bar）的tintColor属性改成了<code>barTintColor</code>。</p>
-<p><strong>字体</strong></p>
-<p>通过UIFont中的<code>preferredFontForTextStyle</code>属性回去当前系统的字体，确保内容在不同字体下都能很好显示。</p>
-<p><strong>Bars 和 Bar Buttons</strong></p>
-<p>status bar默认是透明的，其他bar都是半透明的，一个通用原则：确保内容填充Bar下面的区域。</p>
-<p>navigationBar在<code>UIBarPositionTopAttached</code>模式下会与status bar融合的，所以如果使用图片需要用128px（(20 + 44) x 2）。</p>
-<p><strong>UITableView</strong></p>
-<p>Grouped table没有边距了，TableView上的图标（如：Checkmark，Disclosure indicator，Delete button等）都变了。</p>
-<p>（comment: 就举这么多吧，反正这次是侧头侧尾的改变，每一个控件都需要研究， 没有完全安装原文翻译，可能会有地方翻译得恰当，请赐教！）</p>
-
-        
-        </div>
-    </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2013/06/18/程序员的思维修炼/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    程序员的思维修炼
-                
-            </div>
-        </a>
-    
-    
-        <a href="/2013/06/10/将uiwebview显示内容转为图片和pdf/" id="article-nav-older" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">将UIWebView显示的内容转为图片和PDF</div>
-        </a>
-    
-</nav>
-
-
-    
-</article>
-<!--
-<div class="ad-banner">
-    <div class="flip">
-        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="front"><img src="/image/ad/logo.jpg" alt="纸牌正面" /></a>
-        <a href="https://item.taobao.com/item.htm?id=546113129111&sourceType=item&suid=C0D6EB72-6F9D-43BF-BA5F-A402A50A69AD" class="back"><img src="/image/ad/ad_banner_back.png" alt="纸牌背面" /></a>
-    </div>
 </div>
--->
-
     
-    <section id="comments">
-    
-        
-    <div id="uyan_frame"></div>
-
-    
-    </section>
-
-</section>
-            
-                <aside id="sidebar">
-   
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -476,17 +455,6 @@
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -507,7 +475,7 @@
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

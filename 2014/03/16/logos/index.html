@@ -15,7 +15,7 @@ Logos是随着Theos发布的，你能够在用Theos">
 <meta property="og:description" content="Logos作为Theos开发组件的一部分，通过一组特殊的预处理指令，可以让编写函数钩子（hook）代码变得非常简单和清晰。
 Logos提供的语法大大的简化了MobileSubstrate拓展程序（tweaks，能够hook系统中其他方法）的开发，这里所说的“Method hooking”是指通过替换或修改的方式改变其他应用中某些类的某些方法。
 Logos是随着Theos发布的，你能够在用Theos">
-<meta property="og:updated_time" content="2014-03-18T04:58:50.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:13:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Logos">
 <meta name="twitter:description" content="Logos作为Theos开发组件的一部分，通过一组特殊的预处理指令，可以让编写函数钩子（hook）代码变得非常简单和清晰。
@@ -66,17 +66,6 @@ Logos是随着Theos发布的，你能够在用Theos">
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -137,66 +126,6 @@ Logos是随着Theos发布的，你能够在用Theos">
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
             <section id="main"><article id="post-logos" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -239,40 +168,29 @@ Logos是随着Theos发布的，你能够在用Theos">
 <p>Logos提供的语法大大的简化了<a href="http://iphonedevwiki.net/index.php/MobileSubstrate" target="_blank" rel="external">MobileSubstrate</a>拓展程序（tweaks，能够hook系统中其他方法）的开发，这里所说的“Method hooking”是指通过替换或修改的方式改变其他应用中某些类的某些方法。</p>
 <p>Logos是随着Theos发布的，你能够在用Theos创建的项目中直接使用Logos的语法。更多关于Theos的信息，请查看<a href="http://iphonedevwiki.net/index.php/Theos" target="_blank" rel="external">这里</a>。</p>
 <a id="more"></a>
-<p>##使用Logos</p>
-<p>###例子</p>
-<p>下面是由logify.pl（/theos/bin/logify.pl）生成的一个非常简单的Logos tweak的例子</p>
+<h2 id="使用Logos"><a href="#使用Logos" class="headerlink" title="使用Logos"></a>使用Logos</h2><h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>下面是由logify.pl（/theos/bin/logify.pl）生成的一个非常简单的Logos tweak的例子</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">%hook AFHTTPRequestOperation</div><div class="line">- (NSHTTPURLResponse *)response &#123; %log; NSHTTPURLResponse * r = %orig; NSLog(@&quot; = %@&quot;, r); return r; &#125;</div><div class="line">- (void)setResponseSerializer:(AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; * )responseSerializer &#123; %log; %orig; &#125;</div><div class="line">- (AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; * )responseSerializer &#123; %log; AFHTTPResponseSerializer &lt;AFURLResponseSerialization&gt; *  r = %orig; NSLog(@&quot; = 0x%x&quot;, (unsigned int)r); return r; &#125;</div><div class="line">- (id )responseObject &#123; %log; id  r = %orig; NSLog(@&quot; = %@&quot;, r); return r; &#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>你可以使用logify.pl来创建一个头文件的Logos源文件，用来打印该头文件中所有函数：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export THEOS=/opt/theos</div><div class="line">$THEOS/bin/logify.pl ./AFHTTPRequestOperation.h</div></pre></td></tr></table></figure>
-<p>###Logos指令表</p>
-<p>####%init</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">%init</div><div class="line">%init([&lt;class&gt;=&lt;expr&gt;, …])</div><div class="line">%init(Group[, [+|-]&lt;class&gt;=&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
+<h3 id="Logos指令表"><a href="#Logos指令表" class="headerlink" title="Logos指令表"></a>Logos指令表</h3><h4 id="init"><a href="#init" class="headerlink" title="%init"></a>%init</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">%init</div><div class="line">%init([&lt;class&gt;=&lt;expr&gt;, …])</div><div class="line">%init(Group[, [+|-]&lt;class&gt;=&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
 <p>用来初始化一个分组（group）或默认分组，如果不传参数会初始化“_ungrouped”分组，传 <code>class=expr</code> 参数会在指定类初始化的时候替换给定的表达式，<code>+</code>号（作为Objective-C中类方法）在对应的类名中能够优先处理来替换元类的表达式，如果没有特别指定，默认标记是<code>-</code>，只是替换当前类。</p>
-<p>####%hook</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%hook ClassName</div></pre></td></tr></table></figure>
+<h4 id="hook"><a href="#hook" class="headerlink" title="%hook"></a>%hook</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%hook ClassName</div></pre></td></tr></table></figure>
 <p>指定要hook的类，以%end结束。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">%hook SBApplicationController</div><div class="line">-(void)uninstallApplication:(SBApplication *)application &#123;</div><div class="line">    NSLog(@&quot;Hey, we&apos;re hooking uninstallApplication:!&quot;);</div><div class="line">    %orig; // Call the original implementation of this method</div><div class="line">    return;</div><div class="line">&#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
-<p>####%subclass</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">%subclass Classname: Superclass &lt;Protocol, Protocol&gt;</div><div class="line"></div><div class="line">%new</div><div class="line">- (void)someNewAddedMethod</div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
+<h4 id="subclass"><a href="#subclass" class="headerlink" title="%subclass"></a>%subclass</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">%subclass Classname: Superclass &lt;Protocol, Protocol&gt;</div><div class="line"></div><div class="line">%new</div><div class="line">- (void)someNewAddedMethod</div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div><div class="line"></div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>用于申明在运行时创建的类，支持方法，但暂时不支持成员变量。如果增加父类中不存在的方法，需要给这些方法指定%new标识。对象实例化时，你需要用到%c标识。</p>
-<p>####%group</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%group GroupName</div><div class="line">%end</div></pre></td></tr></table></figure>
+<h4 id="group"><a href="#group" class="headerlink" title="%group"></a>%group</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%group GroupName</div><div class="line">%end</div></pre></td></tr></table></figure>
 <p>开始一个hook分组，通常用于条件执行或代码组织。所有没有特别指定的%hook都被归为“_grouped”分组。</p>
-<p>####%new</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%new</div><div class="line">%new(signature)</div></pre></td></tr></table></figure>
+<h4 id="new"><a href="#new" class="headerlink" title="%new"></a>%new</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%new</div><div class="line">%new(signature)</div></pre></td></tr></table></figure>
 <p>为被hook的类或子类增加新的方法，功能与<code>class_addMethod()</code>相同，<code>signature</code>是新方法的类型编码（Objective-C type encoding），如果不指定，会自动生成一个。</p>
-<p>####%ctor</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">%ctor </div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="ctor"><a href="#ctor" class="headerlink" title="%ctor"></a>%ctor</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">%ctor </div><div class="line">&#123;</div><div class="line">	//...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>生成一个匿名构造函数(默认的优先级)。如果不指定，Theos会隐式定义：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%ctor &#123; %init(_ungrouped); &#125;</div></pre></td></tr></table></figure>
 <p>作为tweak程序的入口，可以用于做一些其他初始化处理，如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">%ctor </div><div class="line">&#123;</div><div class="line">	%init;</div><div class="line">	if (kCFCoreFoundationVersionNumber &gt;= kCFCoreFoundationVersionNumber_iOS_7_0) &#123;</div><div class="line">		%init(HookGroupForIOS7);</div><div class="line">	&#125; else &#123;</div><div class="line">		%init(HookGroupForIOS6);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>####%end</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%end</div></pre></td></tr></table></figure>
+<h4 id="end"><a href="#end" class="headerlink" title="%end"></a>%end</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%end</div></pre></td></tr></table></figure>
 <p>结束%hook、 %subclass、 %group块。</p>
-<p>####%config</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%config(X=Y);</div></pre></td></tr></table></figure>
+<h4 id="config"><a href="#config" class="headerlink" title="%config"></a>%config</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%config(X=Y);</div></pre></td></tr></table></figure>
 <p>设置一个logos配置标记。</p>
 <p>配置标记：</p>
 <ul>
@@ -293,20 +211,15 @@ Logos是随着Theos发布的，你能够在用Theos">
 </ul>
 </li>
 </ul>
-<p>####%c</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%c([+|-]Class)</div></pre></td></tr></table></figure>
+<h4 id="c"><a href="#c" class="headerlink" title="%c"></a>%c</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%c([+|-]Class)</div></pre></td></tr></table></figure>
 <p>在运行时获取一个类的定义，作用等同于<code>objc_getClass()</code>，<code>+</code>号获取元类，默认为<code>-</code>号，获取当前类。</p>
-<p>####%orig</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%orig</div><div class="line">%orig(arg1,arg2,arg3)</div></pre></td></tr></table></figure>
+<h4 id="orig"><a href="#orig" class="headerlink" title="%orig"></a>%orig</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%orig</div><div class="line">%orig(arg1,arg2,arg3)</div></pre></td></tr></table></figure>
 <p>执行被hook函数的原始代码，不要在使用%new申明的方法中使用。奇怪的是能够在subclass中使用，因为MobileSubstrate在hook时会生成一个父调用闭包（supercall closure），如果所hook的函数在当前的类中不存在，就会调用父类的实现。参数会被传递给原始的函数，不用加<code>self</code>和<code>_cmd</code>，Logos已经帮你加了。</p>
-<p>####%log</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%log</div><div class="line">%log([(&lt;type&gt;)&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
+<h4 id="log"><a href="#log" class="headerlink" title="%log"></a>%log</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%log</div><div class="line">%log([(&lt;type&gt;)&lt;expr&gt;, …])</div></pre></td></tr></table></figure>
 <p>默认将类名、函数名、参数等信息写入syslog，也可以追加其他信息。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">%hook SpringBoard</div><div class="line">- (void)menuButtonDown:(id)down</div><div class="line">&#123;</div><div class="line">	%log((NSString *)@&quot;hello&quot;, (NSString *)@&quot;MobileSubstrate&quot;);</div><div class="line">	%orig;	//调用原方法</div><div class="line">&#125;</div><div class="line">%end</div></pre></td></tr></table></figure>
-<p>##Logos代码跨文件访问</p>
-<p>默认情况下，Logos的预处理器在Build时只会处理一个 .xm 文件。然而，也可以实现将Logos hook代码分割到多个文件中。首先，主文件（通常为Tweak.xm）需要改为 .xmi 格式；然后可以在它里面使用<code>#include</code>引入其他 .xm 文件。Logos的预处理器会在开始处理之前就将其他文件加到主文件，.xmi 会被优先处理。</p>
-<p>##Logos拓展名</p>
-<table>
+<h2 id="Logos代码跨文件访问"><a href="#Logos代码跨文件访问" class="headerlink" title="Logos代码跨文件访问"></a>Logos代码跨文件访问</h2><p>默认情况下，Logos的预处理器在Build时只会处理一个 .xm 文件。然而，也可以实现将Logos hook代码分割到多个文件中。首先，主文件（通常为Tweak.xm）需要改为 .xmi 格式；然后可以在它里面使用<code>#include</code>引入其他 .xm 文件。Logos的预处理器会在开始处理之前就将其他文件加到主文件，.xmi 会被优先处理。</p>
+<h2 id="Logos拓展名"><a href="#Logos拓展名" class="headerlink" title="Logos拓展名"></a>Logos拓展名</h2><table>
 <thead>
 <tr>
 <th>Extension</th>
@@ -389,6 +302,62 @@ Logos是随着Theos发布的，你能够在用Theos">
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -496,17 +465,6 @@ Logos是随着Theos发布的，你能够在用Theos">
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -527,7 +485,7 @@ Logos是随着Theos发布的，你能够在用Theos">
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

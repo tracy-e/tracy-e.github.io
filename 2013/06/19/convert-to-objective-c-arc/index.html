@@ -18,7 +18,7 @@
 <meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step1.png">
 <meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step3.png">
 <meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step4.png">
-<meta property="og:updated_time" content="2013-07-29T02:35:22.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:03:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Convert to Objective-C ARC">
 <meta name="twitter:description" content="今天在进行代码走查时，竟然发现了下面这段代码：
@@ -70,17 +70,6 @@
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -141,66 +130,6 @@
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
             <section id="main"><article id="post-convert-to-objective-c-arc" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -245,8 +174,7 @@
 <p>该项目是某行手机银行客户端，iOS开发这块除了我，其他的所有7个开发人员都是项目组临时招聘的，技术参差不齐，毕竟公司招聘标准就是：便宜 + 能干事。我的职责就是负责客户端架构，公共机制的设计与实现，公共组件的封装，开发过程中的解疑。其他开发人员每人负责一两个模块的交易开发，其实无非就剩下请求数据绘界面的事了。</p>
 <p>其实项目开始时就打算尝试用ARC的，但是项目组内其他人员之前都没接触过ARC，迫于项目进度压力也没有时间做培训，就使用大家比较熟悉的MRR，还是太信任他们了。</p>
 <a id="more"></a>
-<p>##Convertion Steps##</p>
-<p>1.<strong>将不要转成ARC的代码标注一下</strong></p>
+<h2 id="Convertion-Steps"><a href="#Convertion-Steps" class="headerlink" title="Convertion Steps"></a>Convertion Steps</h2><p>1.<strong>将不要转成ARC的代码标注一下</strong></p>
 <p>如开源代码AFNetworking(因为项目需要支持4.3，所以用的AFNetworking是支持4.3的非ARC版本)、GDataXML、RegexKitLite、Reachability等，其实这些也能转，但是感觉没有必要，将这些源文件在Build Phases / Complie Sources中标注为<code>-fno-objc-arc</code>，如果之前用到了使用ARC的代码，现在可以将<code>-fobjc-arc</code>标记去掉了。</p>
 <p><img src="/image/convert_to_objective-c_arc_step1.png" alt="setp1"></p>
 <p>2.<strong>工程检查</strong></p>
@@ -277,7 +205,7 @@
         
 <nav id="article-nav">
     
-        <a href="/2013/06/19/integrating-javascript-into-native-applications/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2013/06/19/javascriptcore-framework/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
@@ -287,7 +215,7 @@
         </a>
     
     
-        <a href="/2013/06/18/程序员的思维修炼/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2013/06/18/pragmatic-thinking-and-learning/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
             <div class="article-nav-title">程序员的思维修炼</div>
         </a>
@@ -319,6 +247,62 @@
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -426,17 +410,6 @@
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -457,7 +430,7 @@
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

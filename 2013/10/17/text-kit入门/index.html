@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://esoftmobile.com/image/text_kit.png">
 <meta property="og:image" content="http://esoftmobile.com/image/text_kit_exclusion_paths.png">
 <meta property="og:image" content="http://esoftmobile.com/image/text_kit_architecture.png">
-<meta property="og:updated_time" content="2013-10-18T04:56:28.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:19:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Text Kit入门">
 <meta name="twitter:description" content="更详细的内容可以参考官方文档 《Text Programming Guide for iOS》。
@@ -76,17 +76,6 @@
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -147,66 +136,6 @@
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
             <section id="main"><article id="post-text-kit入门" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -253,14 +182,14 @@
 <p><img src="/image/text_kit.png" alt="Text Kit"></p>
 <a id="more"></a>
 <p>Text Kit是基于Core Text构建的快速、先进的文本排版和渲染引擎，并且与<code>UIKit</code>很好的集合。<code>UITextView</code>，<code>UITextField</code>、<code>UILabel</code>都已经基于Text Kit重新构建，所以它们都支持分页文本、文本包装、富文本编辑、交互式文本着色、文本折叠和自定义截取等特性。所有这些UI控件现在都以同样的方式构建，在它们后面，一个<code>NSTextStorage</code>对象保存着文本的主要信息，它本身是<code>NSMutableAttributedString</code>的子类，支持分批编辑。这就意味着你可以改变一个范围内的字符的样式而不用整体替换文本内容。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[self.textView.textStorage beginEditing];</div><div class="line">[self markWord:@&quot;Alice&quot; inTextStorage:self.textView.textStorage];</div><div class="line">[self.textView.textStorage endEditing];</div></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[<span class="keyword">self</span>.textView.textStorage beginEditing];</div><div class="line">[<span class="keyword">self</span> markWord:<span class="string">@"Alice"</span> inTextStorage:<span class="keyword">self</span>.textView.textStorage];</div><div class="line">[<span class="keyword">self</span>.textView.textStorage endEditing];</div></pre></td></tr></table></figure>
 <p>Text storage管理者一系列的<code>NSLayoutManager</code>对象，当它的字符或者属性改变时会通知到自己所管理的layout Manager对象以便它们作出相应的反应。在layout manager上面是一个<code>NSTextContainer</code>对象，用于为layout manager定义坐标系和一些几何特性。例如，如果你想<code>UITextView</code>中的文本环绕在一张图片四周，你可以给text container设定一个排除路径(exclusion path)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">UIBezierPath *exclusion = ButterflyBezierPath;</div><div class="line">self.textView.textContainer.exclusionPaths = @[exclusion];</div></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">UIBezierPath</span> *exclusion = ButterflyBezierPath;</div><div class="line"><span class="keyword">self</span>.textView.textContainer.exclusionPaths = @[exclusion];</div></pre></td></tr></table></figure>
 <p><img src="/image/text_kit_exclusion_paths.png" alt="Exclusion Path"></p>
 <p>Text container能够处理击中测试(hit tests)，所以可以定位到点击的字符在文本中的位置。此外它还提供一些代理方法让开发者能够自己定义链接点击后的处理事件。</p>
 <p><img src="/image/text_kit_architecture.png" alt="TextKit"></p>
 <p>通过基于Text Kit重新构建<code>UILabel</code>、<code>UITextField</code>和<code>UITextView</code>，苹果给开发者更大的灵活性和能力来设计富文本视图，同时简化了这些控件的使用，因为它们是以同样的方式设计的，所有这些好处都是站在巨人(Core Text)的肩上。通常更强大的功能和灵活性也就意味着需要更多的设置和管理，但是，如果你只是想显示一段简单的文本，你还是可以像以前一样使用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.textLabel.text = @&quot;Hello Text Kit&quot;;</div></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">self</span>.textLabel.text = <span class="string">@"Hello Text Kit"</span>;</div></pre></td></tr></table></figure>
 <p>本文翻译自<a href="http://www.doubleencore.com/2013/09/text-kit-ios-7/" target="_blank" rel="external">《iOS 7: Text Kit》</a></p>
 
         
@@ -312,6 +241,62 @@
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -419,17 +404,6 @@
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -450,7 +424,7 @@
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

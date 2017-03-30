@@ -9,11 +9,11 @@
 express在正式介绍这两">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于Node.js的APNS和Passbook服务">
-<meta property="og:url" content="http://esoftmobile.com/2013/05/20/基于node.js的apns和passbook服务/index.html">
+<meta property="og:url" content="http://esoftmobile.com/2013/05/20/node-apns/index.html">
 <meta property="og:site_name" content="Esoft Mobile">
 <meta property="og:description" content="本文介绍iOS开发中常用到的两个服务APNS和Passbook基于Node.js实现的工具，虽然大部分公司可能目前不会选择Node.js开发后台，但对于广大iOS开发人员来说能够不依赖后台开发人员，自己写后台配合联调APNS或Passbook程序还是方便的多，甚至你可以在了解了一系列处理流程后指导一下后台开发人员完成开发，毕竟他们对苹果的服务不一定有你了解的多^_^。
 express在正式介绍这两">
-<meta property="og:updated_time" content="2013-12-24T12:41:19.000Z">
+<meta property="og:updated_time" content="2017-03-20T05:57:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于Node.js的APNS和Passbook服务">
 <meta name="twitter:description" content="本文介绍iOS开发中常用到的两个服务APNS和Passbook基于Node.js实现的工具，虽然大部分公司可能目前不会选择Node.js开发后台，但对于广大iOS开发人员来说能够不依赖后台开发人员，自己写后台配合联调APNS或Passbook程序还是方便的多，甚至你可以在了解了一系列处理流程后指导一下后台开发人员完成开发，毕竟他们对苹果的服务不一定有你了解的多^_^。
@@ -63,17 +63,6 @@ express在正式介绍这两">
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -134,67 +123,7 @@ express在正式介绍这两">
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
-            <section id="main"><article id="post-基于node.js的apns和passbook服务" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-node-apns" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -211,7 +140,7 @@ express在正式介绍这两">
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2013/05/20/基于node.js的apns和passbook服务/">
+        <a href="/2013/05/20/node-apns/">
             <label>TracyYih 发表于 </label><time datetime="2013-05-20T08:01:45.000Z" itemprop="datePublished">2013-05-20 16:01</time>
         </a>
     </div>
@@ -237,10 +166,13 @@ express在正式介绍这两">
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"name"</span>: <span class="string">"application-name"</span>,</div><div class="line">  <span class="attr">"version"</span>: <span class="string">"0.0.1"</span>,</div><div class="line">  <span class="attr">"private"</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">"scripts"</span>: &#123;</div><div class="line">    <span class="attr">"start"</span>: <span class="string">"node app"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"dependencies"</span>: &#123;</div><div class="line">    <span class="attr">"express"</span>: <span class="string">"3.1.0"</span>,</div><div class="line">    <span class="attr">"mongodb"</span>: <span class="string">"1.2.14"</span>,</div><div class="line">    <span class="attr">"ejs"</span>: <span class="string">"*"</span>,</div><div class="line">    <span class="attr">"apns"</span>: <span class="string">"0.1.0"</span>,</div><div class="line">    <span class="attr">"passbook"</span>: <span class="string">"*"</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>安装依赖包<code>cd MyService</code> &amp; <code>npm install</code>, 安装完成后使用<code>node app.js</code>启动服务（默认服务地址：(<a href="http://localhost:3000" target="_blank" rel="external">http://localhost:3000</a>），浏览器中输入该地址后出现Express页面说明服务创建成功。 </p>
-<h2 id="APNS"><a href="#APNS" class="headerlink" title="APNS"></a>APNS</h2><p>首先介绍的是一款apns工具（<a href="https://github.com/neoziro/node-apns" target="_blank" rel="external">https://github.com/neoziro/node-apns</a>）,可直接通过<code>npm install apns</code>安装。因为上面我们创建express应用时已经将apns作为了依赖包安装，所以此时你的服务中已经包含了apns模块。<br>大家知道APNS服务需要Apple开发证书，申请APNS证书步骤这里就不介绍。通过从iOS Dev Center下载的证书是.cer格式，本机导出来的密钥是.p12格式，而apns包只支持.pem的文件，所以需要进行格式转换：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">openssl x509 -inform der -in push.cer -out cer.pem</div><div class="line">openssl pkcs12 -in key.p12 -out key.pem -nodes</div></pre></td></tr></table></figure></p>
+<h2 id="APNS"><a href="#APNS" class="headerlink" title="APNS"></a>APNS</h2><p>首先介绍的是一款apns工具（<a href="https://github.com/neoziro/node-apns" target="_blank" rel="external">https://github.com/neoziro/node-apns</a>）,可直接通过<code>npm install apns</code>安装。因为上面我们创建express应用时已经将apns作为了依赖包安装，所以此时你的服务中已经包含了apns模块。<br>大家知道APNS服务需要Apple开发证书，申请APNS证书步骤这里就不介绍。通过从iOS Dev Center下载的证书是.cer格式，本机导出来的密钥是.p12格式，而apns包只支持.pem的文件，所以需要进行格式转换：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">openssl x509 -inform der -in push.cer -out cer.pem</div><div class="line">openssl pkcs12 -in key.p12 -out key.pem -nodes</div></pre></td></tr></table></figure>
 <p>转换完后，将<code>cer.pem</code> <code>key.pen</code>放在<em>./public/push/</em> 目录下。</p>
-<p>创建两个服务uploadToken.do和sendMessage.do，在app.js中添加对应的路由：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//apns</span></div><div class="line">app.get(<span class="string">'/uploadToken.do'</span>, routes.uploadToken);</div><div class="line">app.post(<span class="string">'/uploadToken.do'</span>, routes.uploadToken);</div><div class="line">app.get(<span class="string">'/sendMessage.do'</span>, routes.sendMessage);</div><div class="line">app.post(<span class="string">'/sendMessage.do'</span>, routes.sendMessage);</div></pre></td></tr></table></figure></p>
-<p>然后在<em>./MyService/routes/index.js</em>文件中添加对应的服务：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//保存上送的apns deviceToken。</span></div><div class="line">exports.uploadToken = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"> <span class="keyword">var</span> token = req.param[<span class="string">'deviceToken'</span>];</div><div class="line"> <span class="keyword">if</span> (!token) &#123;</div><div class="line">  token = req.body[<span class="string">'deviceToken'</span>];</div><div class="line"> &#125;</div><div class="line"> <span class="comment">/**可将deviceToken保存到数据库</span></div><div class="line">  * 当然处理deviceToken外还可上传其他参数，如城市等，</div><div class="line">  * 推送消息时可以根据这些参数选择性推送。</div><div class="line">  */</div><div class="line"> <span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建两个服务uploadToken.do和sendMessage.do，在app.js中添加对应的路由：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//apns</span></div><div class="line">app.get(<span class="string">'/uploadToken.do'</span>, routes.uploadToken);</div><div class="line">app.post(<span class="string">'/uploadToken.do'</span>, routes.uploadToken);</div><div class="line">app.get(<span class="string">'/sendMessage.do'</span>, routes.sendMessage);</div><div class="line">app.post(<span class="string">'/sendMessage.do'</span>, routes.sendMessage);</div></pre></td></tr></table></figure>
+<p>然后在<em>./MyService/routes/index.js</em>文件中添加对应的服务：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//保存上送的apns deviceToken。</span></div><div class="line">exports.uploadToken = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"> <span class="keyword">var</span> token = req.param[<span class="string">'deviceToken'</span>];</div><div class="line"> <span class="keyword">if</span> (!token) &#123;</div><div class="line">  token = req.body[<span class="string">'deviceToken'</span>];</div><div class="line"> &#125;</div><div class="line"> <span class="comment">/**可将deviceToken保存到数据库</span></div><div class="line">  * 当然处理deviceToken外还可上传其他参数，如城市等，</div><div class="line">  * 推送消息时可以根据这些参数选择性推送。</div><div class="line">  */</div><div class="line"> <span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//根据条件给设备推送消息</span></div><div class="line">exports.sendMessage = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"> <span class="keyword">var</span> apns = <span class="built_in">require</span>(<span class="string">'apns'</span>), options, connection;</div><div class="line">	</div><div class="line"> options = &#123;</div><div class="line">  <span class="attr">certFile</span>: <span class="string">"./public/push/cer.pem"</span>,</div><div class="line">  <span class="attr">keyFile</span>: <span class="string">"./public/push/key.pem"</span>,</div><div class="line">  <span class="attr">gateway</span> : <span class="string">"gateway.sandbox.push.apple.com"</span>,</div><div class="line">  <span class="attr">port</span> : <span class="number">2195</span>,</div><div class="line">  <span class="attr">debug</span> : <span class="literal">true</span></div><div class="line">&#125;;</div><div class="line">	</div><div class="line">	<span class="comment">//找出符合推送条件的Token.</span></div><div class="line"> <span class="keyword">var</span> tokens = getTokens(req);</div><div class="line"> <span class="keyword">var</span> message = nil;	<span class="comment">//message to send.</span></div><div class="line">	</div><div class="line"> <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; tokens.length; i++) &#123;</div><div class="line">  <span class="keyword">var</span> notification = <span class="keyword">new</span> apns.Notification();</div><div class="line">  notification.device = <span class="keyword">new</span> apns.Device(token[i]);</div><div class="line">  notification.badge = <span class="number">1</span>;</div><div class="line">  notification.payload = &#123;<span class="string">"description"</span> : <span class="string">"node-apns test"</span>&#125;;</div><div class="line">  notification.alert = message;</div><div class="line">  notification.sound = <span class="string">"dong.aiff"</span>;</div><div class="line">  connection.sendNotification(notification);</div><div class="line"> &#125;	</div><div class="line"> <span class="comment">//set response...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>以上只是介绍基本用法，主要是了解一下API，感兴趣可以进一步研究或优化。</p>
 <h2 id="Passbook"><a href="#Passbook" class="headerlink" title="Passbook"></a>Passbook</h2><p>Passbook是苹果在iOS 6.0+ 的iPhone, iPod Touch推出的一项应用，可以将各个应用的电子票据保存到Passbook应用中。本文中使用passbook工具见(<a href="https://github.com/assaf/node-passbook" target="_blank" rel="external">https://github.com/assaf/node-passbook</a>)，可通过<code>npm install passbook</code>安装。因为上面我们创建express应用时已经将passbook作为了依赖包安装，所以此时你的服务中已经包含了passbook模块。在使用Passbook之前也需要到iOS Dev Center请求相应的证书，主要是获取pass Type ID标识。服务器中需要使用的是<strong>Apple Worldwide Developer Relations Certification证书</strong>，密钥是Pass Type ID:pass.com.xxx.passbook对用的密钥，也都需要转换成.pem格式。</p>
@@ -248,9 +180,11 @@ express在正式介绍这两">
 <p>转换完后将wwdr.pem和key.pem文件保存到<em>./public/passbook</em>目录（注：passbook工具中固定了key和cer名字必须为key.pem、wwdr.pem，当然你可以修改passbook包变成可配置的）。</p>
 <p>创建服务getPass.do和passbook.do，在app.js中添加对用的路由：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.get(<span class="string">'/getPass.do'</span>, routes.getPass);</div><div class="line">app.post(<span class="string">'/getPass.do'</span>, routes.getPass);</div><div class="line">app.get(<span class="string">'/passbook.do/*'</span>, routes.passbook);</div><div class="line">app.post(<span class="string">'/passbook.do/*'</span>, routes.passbook);</div><div class="line">app.delete(<span class="string">'/passbook.do/*'</span>, routes.passbook);</div></pre></td></tr></table></figure>
-<p>然后在/MyService/routes/index.js文件中添加对应的服务：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">exports.getPass = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"></div><div class="line"> <span class="keyword">var</span> passIdentifier = nil; <span class="comment">//服务器生产pass唯一标识</span></div><div class="line"> <span class="keyword">var</span> providerName = nil; <span class="comment">//服务提供商</span></div><div class="line"></div><div class="line"> <span class="keyword">var</span> createTemplate = <span class="built_in">require</span>(<span class="string">"passbook"</span>);</div><div class="line"> <span class="keyword">var</span> template = createTemplate(<span class="string">'eventTicket'</span>, &#123;</div><div class="line">  <span class="attr">passTypeIdentifier</span>: <span class="string">"pass.com.esoftmobile.passbook"</span>,        <span class="comment">//后台配置，由客户端开发人员提供</span></div><div class="line">  teamIdentifier:     <span class="string">"ES13NBDEV1"</span>,                           <span class="comment">//后台配置，由客户端开发人员提供</span></div><div class="line">  serialNumber: passIdentifier,                   				    <span class="comment">//pass唯一标识号，服务器生产</span></div><div class="line">  organizationName: <span class="string">"Esoft Mobile"</span>,                           <span class="comment">//后台配置或客户端根据商户服务上送</span></div><div class="line">  description: <span class="string">"node passbook test"</span>,                          <span class="comment">//服务器配置</span></div><div class="line">  backgroundColor: <span class="string">"rgb(206, 140, 53)"</span>,                       <span class="comment">//服务器配置</span></div><div class="line">  foregroundColor: <span class="string">"rgb(255, 255, 255)"</span>,                      <span class="comment">//服务器配置</span></div><div class="line">  formatVersion: <span class="number">1</span>,</div><div class="line">  <span class="attr">authenticationToken</span>: <span class="string">"vxwxd7J8AlNNFPS8k0a0FfUFtq0ewzFdc"</span>,   <span class="comment">//服务器生成，用于pass校验</span></div><div class="line">  webServiceURL: <span class="string">"http://localhost:3000/passbook.do"</span>          <span class="comment">//服务器配置，最为pass与服务器之间关联的唯一接口</span></div><div class="line">  &#125;);</div><div class="line">        </div><div class="line"> template.keys(<span class="string">"./public/key/pass"</span>, <span class="string">"secret"</span>);                   <span class="comment">//pass生成证书和密钥，由客户端开发人员提供</span></div><div class="line"> template.loadImagesFrom(<span class="string">"./public/images/pass"</span>);                <span class="comment">//生成pass的图片素材，由服务器配置</span></div><div class="line"> </div><div class="line"> <span class="comment">//所有value值都可以通过客户端上送或服务器配置</span></div><div class="line"> <span class="comment">//地理，时间、二维码信息</span></div><div class="line"> <span class="keyword">var</span> pass = template.createPass(&#123;</div><div class="line">  <span class="attr">locations</span>:[&#123;  <span class="string">"longitude"</span> : <span class="number">-122.3748889</span>,<span class="string">"latitude"</span> : <span class="number">37.6189722</span>&#125;, </div><div class="line">  &#123;   <span class="string">"altitude"</span> : <span class="number">10.0</span>, <span class="string">"longitude"</span> : <span class="number">-122.029</span>, <span class="string">"latitude"</span> : <span class="number">37.331</span>, <span class="attr">relevantText</span> : <span class="string">"距离机场10公里"</span>&#125;],</div><div class="line">        </div><div class="line">  <span class="attr">relevantDate</span>: <span class="string">"2013-04-20T20:30-08:00"</span>,</div><div class="line">        </div><div class="line">  <span class="attr">barcode</span> : &#123;</div><div class="line">   <span class="string">"message"</span> : <span class="string">"hello passbook"</span>,</div><div class="line">   <span class="string">"format"</span> : <span class="string">"PKBarcodeFormatQR"</span>,</div><div class="line">   <span class="string">"messageEncoding"</span> : <span class="string">"utf-8"</span></div><div class="line">   &#125;</div><div class="line">  &#125;);</div><div class="line">    </div><div class="line">  pass.headerFields.add(<span class="string">'type'</span>, <span class="string">'奖卷'</span>, <span class="string">'1'</span>);</div><div class="line">  pass.primaryFields.add(<span class="string">'provider'</span>, <span class="string">''</span>, providerName);</div><div class="line">  pass.secondaryFields.add(<span class="string">'expires'</span>, <span class="string">'有效期'</span>, <span class="string">'2013年4月23日~2013年5月4日'</span>);</div><div class="line">    </div><div class="line">  <span class="keyword">var</span> File = <span class="built_in">require</span>(<span class="string">'fs'</span>); </div><div class="line">  <span class="keyword">var</span> file = File.createWriteStream(<span class="string">'./public/tmp/pass.pkpass'</span>);</div><div class="line">  pass.pipe(file);</div><div class="line">  pass.on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;        </div><div class="line">   res.header(<span class="string">'Content-Type'</span>,<span class="string">'application/vnd.apple.pkpass'</span>);</div><div class="line">   res.download(<span class="string">'./public/tmp/pass.pkpass'</span>);</div><div class="line">  &#125;);</div><div class="line">  pass.on(<span class="string">'error'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">error</span>)</span>&#123;</div><div class="line">   <span class="keyword">if</span>(error)&#123;</div><div class="line">      <span class="built_in">console</span>.log(error);</div><div class="line">   &#125;</div><div class="line">   res.render(<span class="string">'index'</span>, &#123; <span class="attr">title</span>: <span class="string">'MyService | pass create error!'</span> &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>（注：如果要生成boardingPass类型的pass，必须设置transitType，而transitType只能通过 <code>pass.fields.boardingPass.transitType = &quot;PKTransitTypeAir&quot;;</code>方式设置）<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//pass中webServiceURL配置的服务地址，为pass安装后与服务器唯一的连接。</span></div><div class="line">exports.passbook = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"> <span class="keyword">var</span> method = req.method;</div><div class="line">  <span class="keyword">switch</span>(method)&#123;</div><div class="line">   <span class="keyword">case</span> <span class="string">'DELETE'</span>: &#123;</div><div class="line">    <span class="comment">//pass删除时会以DELETE方式通知服务器，服务器可以删除相关记录。</span></div><div class="line">    <span class="comment">//...</span></div><div class="line">    <span class="keyword">break</span>;		</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">case</span> <span class="string">'POST'</span> : &#123;</div><div class="line">    <span class="comment">//pass安装成功后，会以POST方式通知服务器，并且参数pushToken为该pass对应推送Token。</span></div><div class="line">    <span class="comment">//服务器可保存该pass对应的设备信息。</span></div><div class="line">    <span class="keyword">var</span> pushToken = req.body[<span class="string">'pushToken'</span>];</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">case</span> <span class="string">'GET'</span> : &#123;</div><div class="line">    <span class="comment">//pass检查更新时以GET方式，服务器根据参数判断是由有更新，有更新可直接返回新生成的pass,没有更新可返回304。</span></div><div class="line">    <span class="keyword">break</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">default</span> : &#123;</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>##结束##<br>本文所有例子和代码都未在生产环境使用过，所以可靠性和效率等方面还有待验证，有兴趣的朋友可以进一步研究。</p>
+<p>然后在/MyService/routes/index.js文件中添加对应的服务：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">exports.getPass = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"></div><div class="line"> <span class="keyword">var</span> passIdentifier = nil; <span class="comment">//服务器生产pass唯一标识</span></div><div class="line"> <span class="keyword">var</span> providerName = nil; <span class="comment">//服务提供商</span></div><div class="line"></div><div class="line"> <span class="keyword">var</span> createTemplate = <span class="built_in">require</span>(<span class="string">"passbook"</span>);</div><div class="line"> <span class="keyword">var</span> template = createTemplate(<span class="string">'eventTicket'</span>, &#123;</div><div class="line">  <span class="attr">passTypeIdentifier</span>: <span class="string">"pass.com.esoftmobile.passbook"</span>,        <span class="comment">//后台配置，由客户端开发人员提供</span></div><div class="line">  teamIdentifier:     <span class="string">"ES13NBDEV1"</span>,                           <span class="comment">//后台配置，由客户端开发人员提供</span></div><div class="line">  serialNumber: passIdentifier,                   				    <span class="comment">//pass唯一标识号，服务器生产</span></div><div class="line">  organizationName: <span class="string">"Esoft Mobile"</span>,                           <span class="comment">//后台配置或客户端根据商户服务上送</span></div><div class="line">  description: <span class="string">"node passbook test"</span>,                          <span class="comment">//服务器配置</span></div><div class="line">  backgroundColor: <span class="string">"rgb(206, 140, 53)"</span>,                       <span class="comment">//服务器配置</span></div><div class="line">  foregroundColor: <span class="string">"rgb(255, 255, 255)"</span>,                      <span class="comment">//服务器配置</span></div><div class="line">  formatVersion: <span class="number">1</span>,</div><div class="line">  <span class="attr">authenticationToken</span>: <span class="string">"vxwxd7J8AlNNFPS8k0a0FfUFtq0ewzFdc"</span>,   <span class="comment">//服务器生成，用于pass校验</span></div><div class="line">  webServiceURL: <span class="string">"http://localhost:3000/passbook.do"</span>          <span class="comment">//服务器配置，最为pass与服务器之间关联的唯一接口</span></div><div class="line">  &#125;);</div><div class="line">        </div><div class="line"> template.keys(<span class="string">"./public/key/pass"</span>, <span class="string">"secret"</span>);                   <span class="comment">//pass生成证书和密钥，由客户端开发人员提供</span></div><div class="line"> template.loadImagesFrom(<span class="string">"./public/images/pass"</span>);                <span class="comment">//生成pass的图片素材，由服务器配置</span></div><div class="line"> </div><div class="line"> <span class="comment">//所有value值都可以通过客户端上送或服务器配置</span></div><div class="line"> <span class="comment">//地理，时间、二维码信息</span></div><div class="line"> <span class="keyword">var</span> pass = template.createPass(&#123;</div><div class="line">  <span class="attr">locations</span>:[&#123;  <span class="string">"longitude"</span> : <span class="number">-122.3748889</span>,<span class="string">"latitude"</span> : <span class="number">37.6189722</span>&#125;, </div><div class="line">  &#123;   <span class="string">"altitude"</span> : <span class="number">10.0</span>, <span class="string">"longitude"</span> : <span class="number">-122.029</span>, <span class="string">"latitude"</span> : <span class="number">37.331</span>, <span class="attr">relevantText</span> : <span class="string">"距离机场10公里"</span>&#125;],</div><div class="line">        </div><div class="line">  <span class="attr">relevantDate</span>: <span class="string">"2013-04-20T20:30-08:00"</span>,</div><div class="line">        </div><div class="line">  <span class="attr">barcode</span> : &#123;</div><div class="line">   <span class="string">"message"</span> : <span class="string">"hello passbook"</span>,</div><div class="line">   <span class="string">"format"</span> : <span class="string">"PKBarcodeFormatQR"</span>,</div><div class="line">   <span class="string">"messageEncoding"</span> : <span class="string">"utf-8"</span></div><div class="line">   &#125;</div><div class="line">  &#125;);</div><div class="line">    </div><div class="line">  pass.headerFields.add(<span class="string">'type'</span>, <span class="string">'奖卷'</span>, <span class="string">'1'</span>);</div><div class="line">  pass.primaryFields.add(<span class="string">'provider'</span>, <span class="string">''</span>, providerName);</div><div class="line">  pass.secondaryFields.add(<span class="string">'expires'</span>, <span class="string">'有效期'</span>, <span class="string">'2013年4月23日~2013年5月4日'</span>);</div><div class="line">    </div><div class="line">  <span class="keyword">var</span> File = <span class="built_in">require</span>(<span class="string">'fs'</span>); </div><div class="line">  <span class="keyword">var</span> file = File.createWriteStream(<span class="string">'./public/tmp/pass.pkpass'</span>);</div><div class="line">  pass.pipe(file);</div><div class="line">  pass.on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;        </div><div class="line">   res.header(<span class="string">'Content-Type'</span>,<span class="string">'application/vnd.apple.pkpass'</span>);</div><div class="line">   res.download(<span class="string">'./public/tmp/pass.pkpass'</span>);</div><div class="line">  &#125;);</div><div class="line">  pass.on(<span class="string">'error'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">error</span>)</span>&#123;</div><div class="line">   <span class="keyword">if</span>(error)&#123;</div><div class="line">      <span class="built_in">console</span>.log(error);</div><div class="line">   &#125;</div><div class="line">   res.render(<span class="string">'index'</span>, &#123; <span class="attr">title</span>: <span class="string">'MyService | pass create error!'</span> &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>（注：如果要生成boardingPass类型的pass，必须设置transitType，而transitType只能通过 <code>pass.fields.boardingPass.transitType = &quot;PKTransitTypeAir&quot;;</code>方式设置）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//pass中webServiceURL配置的服务地址，为pass安装后与服务器唯一的连接。</span></div><div class="line">exports.passbook = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</div><div class="line"> <span class="keyword">var</span> method = req.method;</div><div class="line">  <span class="keyword">switch</span>(method)&#123;</div><div class="line">   <span class="keyword">case</span> <span class="string">'DELETE'</span>: &#123;</div><div class="line">    <span class="comment">//pass删除时会以DELETE方式通知服务器，服务器可以删除相关记录。</span></div><div class="line">    <span class="comment">//...</span></div><div class="line">    <span class="keyword">break</span>;		</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">case</span> <span class="string">'POST'</span> : &#123;</div><div class="line">    <span class="comment">//pass安装成功后，会以POST方式通知服务器，并且参数pushToken为该pass对应推送Token。</span></div><div class="line">    <span class="comment">//服务器可保存该pass对应的设备信息。</span></div><div class="line">    <span class="keyword">var</span> pushToken = req.body[<span class="string">'pushToken'</span>];</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">case</span> <span class="string">'GET'</span> : &#123;</div><div class="line">    <span class="comment">//pass检查更新时以GET方式，服务器根据参数判断是由有更新，有更新可直接返回新生成的pass,没有更新可返回304。</span></div><div class="line">    <span class="keyword">break</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">default</span> : &#123;</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p>本文所有例子和代码都未在生产环境使用过，所以可靠性和效率等方面还有待验证，有兴趣的朋友可以进一步研究。</p>
 
         
         </div>
@@ -301,6 +235,62 @@ express在正式介绍这两">
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -408,17 +398,6 @@ express在正式介绍这两">
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -439,7 +418,7 @@ express在正式介绍这两">
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

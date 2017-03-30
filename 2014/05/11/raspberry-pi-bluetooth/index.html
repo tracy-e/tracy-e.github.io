@@ -5,21 +5,18 @@
     
     <title>Raspberry Pi蓝牙应用及iBeacon基站搭建 | Esoft Mobile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="##一、基础应用
-安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
+    <meta name="description" content="一、基础应用安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
 查看蓝牙适配器">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Raspberry Pi蓝牙应用及iBeacon基站搭建">
 <meta property="og:url" content="http://esoftmobile.com/2014/05/11/raspberry-pi-bluetooth/index.html">
 <meta property="og:site_name" content="Esoft Mobile">
-<meta property="og:description" content="##一、基础应用
-安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
+<meta property="og:description" content="一、基础应用安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
 查看蓝牙适配器">
-<meta property="og:updated_time" content="2014-05-14T16:35:15.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:16:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raspberry Pi蓝牙应用及iBeacon基站搭建">
-<meta name="twitter:description" content="##一、基础应用
-安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
+<meta name="twitter:description" content="一、基础应用安装蓝牙驱动1sudo apt-get install bluetooth bluez-utils blueman
 查看蓝牙适配器">
     
 
@@ -66,17 +63,6 @@
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -137,66 +123,6 @@
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
             <section id="main"><article id="post-raspberry-pi-bluetooth" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -235,8 +161,7 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>##一、基础应用</p>
-<h3 id="安装蓝牙驱动"><a href="#安装蓝牙驱动" class="headerlink" title="安装蓝牙驱动"></a>安装蓝牙驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install bluetooth bluez-utils blueman</div></pre></td></tr></table></figure>
+            <h2 id="一、基础应用"><a href="#一、基础应用" class="headerlink" title="一、基础应用"></a>一、基础应用</h2><h3 id="安装蓝牙驱动"><a href="#安装蓝牙驱动" class="headerlink" title="安装蓝牙驱动"></a>安装蓝牙驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install bluetooth bluez-utils blueman</div></pre></td></tr></table></figure>
 <h3 id="查看蓝牙适配器"><a href="#查看蓝牙适配器" class="headerlink" title="查看蓝牙适配器"></a>查看蓝牙适配器</h3><a id="more"></a>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ lsusb</div><div class="line">Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp.</div><div class="line">Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub</div><div class="line">Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp.</div><div class="line">Bus 001 Device 004: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)</div><div class="line">Bus 001 Device 005: ID 148f:5370 Ralink Technology, Corp. RT5370 Wireless Adapter</div></pre></td></tr></table></figure>
 <p>其中 </p>
@@ -250,66 +175,24 @@
 <blockquote>
 <p>这时手机上会出现一个配对请求，暂时配对不上，后续再研究。</p>
 </blockquote>
-<p>##二、搭建iBeacon基站</p>
-<blockquote>
+<h2 id="二、搭建iBeacon基站"><a href="#二、搭建iBeacon基站" class="headerlink" title="二、搭建iBeacon基站"></a>二、搭建iBeacon基站</h2><blockquote>
 <p>注：Raspberry Pi本身不带蓝牙模块，需另外购买USB蓝牙4.0适配器。</p>
 </blockquote>
 <h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev</div></pre></td></tr></table></figure>
-<h3 id="下载bluez"><a href="#下载bluez" class="headerlink" title="下载bluez"></a>下载bluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo mkdir bluezcd bluezsudo wget www.kernel.org/pub/linux/bluetooth/bluez-5.18.tar.gz</div></pre></td></tr></table></figure>
-<h3 id="解压bluez"><a href="#解压bluez" class="headerlink" title="解压bluez"></a>解压bluez</h3><pre><code>sudo gunzip bluez-5.18.tar.gz
-sudo tar xvf bluez-5.18.tar
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 安装bluez</div></pre></td></tr></table></figure>
-
-cd bluez-5.18
-sudo ./configure --disable-systemd
-sudo make
-sudo make install
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 查看蓝牙配置</div></pre></td></tr></table></figure>
-
-hciconfig
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 开启蓝牙</div></pre></td></tr></table></figure>
-
-sudo hciconfig hci0 up
-sudo hciconfig hci0 leadv
-sudo hciconfig hci0 noscan
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 设置beacon广播信息</div></pre></td></tr></table></figure>
-
-#!/bin/bash
-uuid=&quot;38 69 43 AC E6 3D 45 D7 BD 77 4C A6 76 D3 2A 5F&quot;
-major=&quot;00 00&quot;
-minor=&quot;00 00&quot;
-power=&quot;C5&quot;
-sudo hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 $uuid $major $minor $power 00
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">##三、python程序控制</div><div class="line"></div><div class="line">### 安装pybluez</div></pre></td></tr></table></figure>
-
-sudo apt-get install libbluetooth-dev     # 依赖 libbluetooth-dev
-sudo apt-get install python-dev         # 依赖 python-dev
-sudo pip install pybluez
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果没安装pip可以用下面命令安装：</div></pre></td></tr></table></figure>
-
-sudo apt-get install python-pip
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 查找附近的设备</div><div class="line"></div><div class="line">pybluez官方示例`inquiry.py`：</div></pre></td></tr></table></figure>
-
-# file: inquiry.py
-# auth: Albert Huang &lt;albert@csail.mit.edu&gt;
-# desc: performs a simple device inquiry followed by a remote name request of
-#       each discovered device
-# $Id: inquiry.py 401 2006-05-05 19:07:48Z albert $
-#
-
-import bluetooth
-print(&quot;performing inquiry...&quot;)
-nearby_devices = bluetooth.discover_devices(lookup_names = True)
-print(&quot;found %d devices&quot; % len(nearby_devices))
-for addr, name in nearby_devices:
-    print(&quot;  %s - %s&quot; % (addr, name))
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">运行</div></pre></td></tr></table></figure>
-
-$ python inquiry.py
-performing inquiry...
-found 1 devices
-  28:E1:4C:B0:67:9D - TracyYih的 iPhone
-</code></pre><hr>
+<h3 id="下载bluez"><a href="#下载bluez" class="headerlink" title="下载bluez"></a>下载bluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo mkdir bluez</div><div class="line">cd bluez</div><div class="line">sudo wget www.kernel.org/pub/linux/bluetooth/bluez-5.18.tar.gz</div></pre></td></tr></table></figure>
+<h3 id="解压bluez"><a href="#解压bluez" class="headerlink" title="解压bluez"></a>解压bluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo gunzip bluez-5.18.tar.gz</div><div class="line">sudo tar xvf bluez-5.18.tar</div></pre></td></tr></table></figure>
+<h3 id="安装bluez"><a href="#安装bluez" class="headerlink" title="安装bluez"></a>安装bluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd bluez-5.18</div><div class="line">sudo ./configure --disable-systemd</div><div class="line">sudo make</div><div class="line">sudo make install</div></pre></td></tr></table></figure>
+<h3 id="查看蓝牙配置"><a href="#查看蓝牙配置" class="headerlink" title="查看蓝牙配置"></a>查看蓝牙配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hciconfig</div></pre></td></tr></table></figure>
+<h3 id="开启蓝牙"><a href="#开启蓝牙" class="headerlink" title="开启蓝牙"></a>开启蓝牙</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo hciconfig hci0 up</div><div class="line">sudo hciconfig hci0 leadv</div><div class="line">sudo hciconfig hci0 noscan</div></pre></td></tr></table></figure>
+<h3 id="设置beacon广播信息"><a href="#设置beacon广播信息" class="headerlink" title="设置beacon广播信息"></a>设置beacon广播信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">uuid=&quot;38 69 43 AC E6 3D 45 D7 BD 77 4C A6 76 D3 2A 5F&quot;</div><div class="line">major=&quot;00 00&quot;</div><div class="line">minor=&quot;00 00&quot;</div><div class="line">power=&quot;C5&quot;</div><div class="line">sudo hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 $uuid $major $minor $power 00</div></pre></td></tr></table></figure>
+<h2 id="三、python程序控制"><a href="#三、python程序控制" class="headerlink" title="三、python程序控制"></a>三、python程序控制</h2><h3 id="安装pybluez"><a href="#安装pybluez" class="headerlink" title="安装pybluez"></a>安装pybluez</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libbluetooth-dev 	# 依赖 libbluetooth-dev</div><div class="line">sudo apt-get install python-dev 		# 依赖 python-dev</div><div class="line">sudo pip install pybluez</div></pre></td></tr></table></figure>
+<p>如果没安装pip可以用下面命令安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python-pip</div></pre></td></tr></table></figure>
+<h3 id="查找附近的设备"><a href="#查找附近的设备" class="headerlink" title="查找附近的设备"></a>查找附近的设备</h3><p>pybluez官方示例<code>inquiry.py</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># file: inquiry.py</div><div class="line"># auth: Albert Huang &lt;albert@csail.mit.edu&gt;</div><div class="line"># desc: performs a simple device inquiry followed by a remote name request of</div><div class="line">#       each discovered device</div><div class="line"># $Id: inquiry.py 401 2006-05-05 19:07:48Z albert $</div><div class="line">#</div><div class="line"></div><div class="line">import bluetooth</div><div class="line">print(&quot;performing inquiry...&quot;)</div><div class="line">nearby_devices = bluetooth.discover_devices(lookup_names = True)</div><div class="line">print(&quot;found %d devices&quot; % len(nearby_devices))</div><div class="line">for addr, name in nearby_devices:</div><div class="line">    print(&quot;  %s - %s&quot; % (addr, name))</div></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ python inquiry.py</div><div class="line">performing inquiry...</div><div class="line">found 1 devices</div><div class="line">  28:E1:4C:B0:67:9D - TracyYih的 iPhone</div></pre></td></tr></table></figure>
+<hr>
 <p>link:  </p>
 <ol>
 <li><a href="http://www.phodal.com/blog/raspberry-pi-pcduino-bluetooth-configure" target="_blank" rel="external">raspberry pi 蓝牙,pcduino蓝牙</a>  </li>
@@ -366,6 +249,62 @@ found 1 devices
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -473,17 +412,6 @@ found 1 devices
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -504,7 +432,7 @@ found 1 devices
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         

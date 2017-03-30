@@ -17,7 +17,7 @@ Objective-C中提供了两种内存管理方式：
 Objective-C中提供了两种内存管理方式：
 
 手动内存管理（MRR），也就是你需要精确的管理好自己所拥有的对象，这是用过引用计数系统来实现的，而引用计数的实现则是依赖NSO">
-<meta property="og:updated_time" content="2014-05-03T04:23:22.000Z">
+<meta property="og:updated_time" content="2017-03-20T06:14:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS & OS X 内存管理">
 <meta name="twitter:description" content="内存管理其实就是在需要的时候分配内存、使用、使用完后释放的过程。一个好的程序会尽可能的使用更少的内存资源。在Objective-C中对内存管理的原则是管理好对象的生命周期，在不再需要的时候释放，确保内存中没有多余的对象。
@@ -69,17 +69,6 @@ Objective-C中提供了两种内存管理方式：
                     <a class="main-nav-link" href="/archives">Archives</a>
                 
             </nav>
-            
-                
-                <nav id="sub-nav">
-                    <div class="profile" id="profile-nav">
-                        <a id="profile-anchor" href="javascript:;">
-                            <img class="avatar" src="/css/images/avatar.png" />
-                            <i class="fa fa-caret-down"></i>
-                        </a>
-                    </div>
-                </nav>
-            
             <div id="search-form-wrap">
 
     <form class="search-form">
@@ -140,66 +129,6 @@ Objective-C中提供了两种内存管理方式：
 </header>
 
         <div class="outer">
-            
-                
-
-<aside id="profile">
-    <div class="inner profile-inner">
-        <div class="base-info profile-block">
-            <img id="avatar" src="/css/images/avatar.png" />
-            <h2 id="name">TracyYih</h2>
-            <h3 id="title">Developer</h3>
-            <span id="location"><i class="fa fa-map-marker"></i>Wuhan, China</span>
-            <a id="follow" target="_blank" href="https://weibo.com/534072785">关注我</a>
-        </div>
-        <div class="article-info profile-block">
-            <div class="article-info-block">
-                44
-                <span>文章</span>
-            </div>
-            <div class="article-info-block">
-                23
-                <span>标签</span>
-            </div>
-        </div>
-        
-        <div class="profile-block social-links">
-            <table>
-                <tr>
-                    
-                    
-                    <td>
-                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
-                            <i class="fa fa-github"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
-                            <i class="fa fa-weibo"></i>
-                        </a>
-                    </td>
-                    
-                    <td>
-                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
-                            <i class="fa fa-rss"></i>
-                        </a>
-                    </td>
-                    
-                </tr>
-            </table>
-        </div>
-        
-    </div>
-</aside>
-
-            
             <section id="main"><article id="post-memory-managment" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -279,7 +208,7 @@ Objective-C中提供了两种内存管理方式：
 <p>NSRunLoop每次循环开始时NSAutoreleasePool会自动生成，一个循环结束时NSAutoreleasePool对象被废弃。</p>
 </blockquote>
 <p>只要所在的NSAutoreleasePool对象不被废弃，autorelease对象就不能被释放，所以有时候会出现内存不足的情况，如读取大量图片并进行相应处理的时候，将图片读到NSData对象，再生成UIImage对象，过程中会产生大量的autorelease对象，这时候有必要缩短NSAutorelasePool的周期，让每个循环就生成并废弃一个NSAutoreleasePool:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">for (int i = 0; i &lt; 图片数; i++) &#123;</div><div class="line">	NSAutoreleasePool = [[NSAutoreleasePool alloc] init];</div><div class="line">	/*</div><div class="line">	 * 产生autorelease对象</div><div class="line">	 */</div><div class="line">	[pool drain];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; 图片数; i++) &#123;</div><div class="line">	<span class="built_in">NSAutoreleasePool</span> = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</div><div class="line">	<span class="comment">/*</span></div><div class="line">	 * 产生autorelease对象</div><div class="line">	 */</div><div class="line">	[pool drain];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>NSObject的autorelease方法的实现本质上是将当前的对象加入到最近一级的NSAutoreleasePool对象中。</p>
 <p>另外Cocoa框架中也有很多方法返回autorelease对象，比如很多对象的构造器方法：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSMutableArray *array = [NSMutableArray arrayWithCapacity:1];</div></pre></td></tr></table></figure>
@@ -291,7 +220,7 @@ Objective-C中提供了两种内存管理方式：
 <li>objc_autoreleasePoolPop(void *);</li>
 <li>objc_autorelease(id obj);</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];</div><div class="line">// 等同于调用 objc_autoreleasePoolPush()</div><div class="line"></div><div class="line">id obj = [[NSObject alloc] init];</div><div class="line"></div><div class="line">[obj autorelease];</div><div class="line">// 等同于调用 objc_autorelease(obj)</div><div class="line"></div><div class="line">[pool drain];</div><div class="line">// 等同于 objc_autoreleasePoolPop(pool)</div></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</div><div class="line"><span class="comment">// 等同于调用 objc_autoreleasePoolPush()</span></div><div class="line"></div><div class="line"><span class="keyword">id</span> obj = [[<span class="built_in">NSObject</span> alloc] init];</div><div class="line"></div><div class="line">[obj autorelease];</div><div class="line"><span class="comment">// 等同于调用 objc_autorelease(obj)</span></div><div class="line"></div><div class="line">[pool drain];</div><div class="line"><span class="comment">// 等同于 objc_autoreleasePoolPop(pool)</span></div></pre></td></tr></table></figure>
 <h2 id="ARC的实现原理"><a href="#ARC的实现原理" class="headerlink" title="ARC的实现原理"></a>ARC的实现原理</h2><p>ARC下内存管理规则发生了一些改变：</p>
 <ul>
 <li>自己生成的对象自己持有</li>
@@ -343,7 +272,7 @@ Objective-C中提供了两种内存管理方式：
         
 <nav id="article-nav">
     
-        <a href="/2013/05/20/基于node.js的apns和passbook服务/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2013/05/20/node-apns/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
@@ -385,6 +314,62 @@ Objective-C中提供了两种内存管理方式：
             
                 <aside id="sidebar">
    
+        
+
+<div class="widget-wrap">
+    <div id="profile" class="widget">
+        <div class="base-info">
+            <a href="https://weibo.com/534072785"><img id="avatar" src="/css/images/avatar.png" /></a>
+            <h2 id="name">TracyYih</h2>
+            <h3 id="title">Developer</h3>
+        </div>
+        <div class="article-info">
+            <div class="article-info-block">
+                44
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/tracy-e" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/tracyyih" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/534072785" target="_blank" title="weibo" class=tooltip>
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</div>
+    
         
     <div class="widget-wrap">
         <h3 class="widget-title">最新文章</h3>
@@ -492,17 +477,6 @@ Objective-C中提供了两种内存管理方式：
 
     
         
-    
-        
-    <div class="widget-wrap">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">四月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">二月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">八月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">六月 2013</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">十二月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">五月 2012</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-    
-        
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
@@ -523,7 +497,7 @@ Objective-C中提供了两种内存管理方式：
         </div>
         
             <div class="cnzz">
-                <script src="http://s95.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic1" language="JavaScript">
+                <script src="http://s11.cnzz.com/stat.php?id=5349963&web_id=5349963&show=pic" language="JavaScript">
                 </script>
             </div>
         
