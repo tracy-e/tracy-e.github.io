@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://esoftmobile.com/"/>
-  <updated>2017-07-17T03:51:09.000Z</updated>
+  <updated>2017-07-17T03:52:16.000Z</updated>
   <id>http://esoftmobile.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://esoftmobile.com/2017/07/17/flask-deploy/"/>
     <id>http://esoftmobile.com/2017/07/17/flask-deploy/</id>
     <published>2017-07-17T03:29:06.000Z</published>
-    <updated>2017-07-17T03:51:09.000Z</updated>
+    <updated>2017-07-17T03:52:16.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。</p>
@@ -56,7 +56,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># /etc/mysql/my.cnf</div><div class="line">[client]</div><div class="line">default-character-set = utf8mb4</div><div class="line"></div><div class="line">[mysql]</div><div class="line">default-character-set = utf8mb4</div><div class="line"></div><div class="line">[mysqld]</div><div class="line">character-set-client-handshake = FALSE</div><div class="line">character-set-server = utf8mb4</div><div class="line">collation-server = utf8mb4_unicode_ci</div><div class="line">init_connect=&apos;SET NAMES utf8mb4&apos;</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; status</div><div class="line">mysql&gt; set character_set_server=utf8</div><div class="line">mysql&gt; set character_set_database=utf8</div></pre></td></tr></table></figure>
 <h3 id="阿里云外网访问"><a href="#阿里云外网访问" class="headerlink" title="阿里云外网访问"></a>阿里云外网访问</h3><p>阿里云默认的安全组规则只包含：ICMP访问、SSH（TCP 22）、远程桌面（UDP 3389)，并不包含 Web （HTTP(s) 80(443))访问</p>
-<h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"># /etc/nginx/</div><div class="line">server &#123;</div><div class="line">    server_name example.com;</div><div class="line"></div><div class="line">    listen 80 default_server;</div><div class="line">    listen [::]:80 default_server;</div><div class="line"></div><div class="line">	# SSL configuration</div><div class="line">    listen 443 ssl default_server;</div><div class="line">    listen [::]:443 ssl default_server;</div><div class="line">    ssl_certificate cert/cert.pem;</div><div class="line">    ssl_certificate_key cert/key.key;</div><div class="line">    ssl_session_timeout 5m;</div><div class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</div><div class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</div><div class="line">    ssl_prefer_server_ciphers on;</div><div class="line"></div><div class="line">	fastcgi_intercept_errors on;</div><div class="line">	error_page 404 /404.html;</div><div class="line"></div><div class="line">	location / &#123;</div><div class="line">	    root /var/www/html;</div><div class="line">	    index index.html;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	location ~ /(admin|api) &#123;</div><div class="line">	    proxy_pass http://127.0.0.1:8080;</div><div class="line">	    proxy_set_header Host $host;</div><div class="line">	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"># /etc/nginx/</div><div class="line">server &#123;</div><div class="line">    server_name example.com;</div><div class="line"></div><div class="line">    listen 80 default_server;</div><div class="line">    listen [::]:80 default_server;</div><div class="line"></div><div class="line">    # SSL configuration</div><div class="line">    listen 443 ssl default_server;</div><div class="line">    listen [::]:443 ssl default_server;</div><div class="line">    ssl_certificate cert/cert.pem;</div><div class="line">    ssl_certificate_key cert/key.key;</div><div class="line">    ssl_session_timeout 5m;</div><div class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</div><div class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</div><div class="line">    ssl_prefer_server_ciphers on;</div><div class="line"></div><div class="line">	fastcgi_intercept_errors on;</div><div class="line">	error_page 404 /404.html;</div><div class="line"></div><div class="line">	location / &#123;</div><div class="line">	    root /var/www/html;</div><div class="line">	    index index.html;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	location ~ /(admin|api) &#123;</div><div class="line">	    proxy_pass http://127.0.0.1:8080;</div><div class="line">	    proxy_set_header Host $host;</div><div class="line">	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>HTTP 跳转 HTTPS:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    server_name example.com;</div><div class="line">    listen 80 default_server;</div><div class="line">    listen [::]:80 default_server;</div><div class="line">    return 301 https://$host$request_uri;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 ]]></content>
@@ -164,9 +164,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -247,9 +247,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -295,9 +295,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -381,9 +381,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -444,9 +444,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -500,9 +500,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
@@ -575,9 +575,9 @@
     </summary>
     
     
-      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
-    
       <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
+    
+      <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
     
   </entry>
   
