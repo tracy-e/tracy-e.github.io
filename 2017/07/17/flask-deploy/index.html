@@ -3,28 +3,30 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Convert to Objective-C ARC | Esoft Mobile</title>
+    <title>Flask应用部署 | Esoft Mobile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="今天在进行代码走查时，竟然发现了下面这段代码：
-123for (int i = 0; i &amp;lt; someObj.retainCount; i++) &amp;#123;    [someObj release];&amp;#125;
-顿时感觉吐槽无力，虽然我反复强调内存管理问题，无非就是谁申请谁释放，利用强弱引用避免retain-cycles，但是还是会有这样那样的问题，leaks每次就是一片红。本来是计划等">
+    <meta name="description" content="本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。
+
+Linux 环境准备因为阿里云安装的 Ubuntu 系统默认带 python 环境，所以只需要安装 python 虚拟环境 virtualenv 包
+1pip install virtualenv
+然后安装 nignx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Convert to Objective-C ARC">
-<meta property="og:url" content="http://esoftmobile.com/2013/06/19/convert-to-objective-c-arc/index.html">
+<meta property="og:title" content="Flask应用部署">
+<meta property="og:url" content="http://esoftmobile.com/2017/07/17/flask-deploy/index.html">
 <meta property="og:site_name" content="Esoft Mobile">
-<meta property="og:description" content="今天在进行代码走查时，竟然发现了下面这段代码：
-123for (int i = 0; i &amp;lt; someObj.retainCount; i++) &amp;#123;    [someObj release];&amp;#125;
-顿时感觉吐槽无力，虽然我反复强调内存管理问题，无非就是谁申请谁释放，利用强弱引用避免retain-cycles，但是还是会有这样那样的问题，leaks每次就是一片红。本来是计划等">
-<meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step1.png">
-<meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step3.png">
-<meta property="og:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step4.png">
-<meta property="og:updated_time" content="2017-03-20T06:03:42.000Z">
+<meta property="og:description" content="本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。
+
+Linux 环境准备因为阿里云安装的 Ubuntu 系统默认带 python 环境，所以只需要安装 python 虚拟环境 virtualenv 包
+1pip install virtualenv
+然后安装 nignx">
+<meta property="og:updated_time" content="2017-07-17T03:51:09.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Convert to Objective-C ARC">
-<meta name="twitter:description" content="今天在进行代码走查时，竟然发现了下面这段代码：
-123for (int i = 0; i &amp;lt; someObj.retainCount; i++) &amp;#123;    [someObj release];&amp;#125;
-顿时感觉吐槽无力，虽然我反复强调内存管理问题，无非就是谁申请谁释放，利用强弱引用避免retain-cycles，但是还是会有这样那样的问题，leaks每次就是一片红。本来是计划等">
-<meta name="twitter:image" content="http://esoftmobile.com/image/convert_to_objective-c_arc_step1.png">
+<meta name="twitter:title" content="Flask应用部署">
+<meta name="twitter:description" content="本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。
+
+Linux 环境准备因为阿里云安装的 Ubuntu 系统默认带 python 环境，所以只需要安装 python 虚拟环境 virtualenv 包
+1pip install virtualenv
+然后安装 nignx">
     
 
     
@@ -130,7 +132,7 @@
 </header>
 
         <div class="outer">
-            <section id="main"><article id="post-convert-to-objective-c-arc"  class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-flask-deploy"  class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -138,7 +140,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            Convert to Objective-C ARC
+            Flask应用部署
         </h1>
     
 
@@ -147,8 +149,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2013/06/19/convert-to-objective-c-arc/">
-            <label>TracyYih 发表于 </label><time datetime="2013-06-19T03:27:04.000Z" itemprop="datePublished">2013-06-19 11:27</time>
+        <a href="/2017/07/17/flask-deploy/">
+            <label>TracyYih 发表于 </label><time datetime="2017-07-17T03:29:06.000Z" itemprop="datePublished">2017-07-17 11:29</time>
         </a>
     </div>
 
@@ -157,7 +159,7 @@
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/iOS/">iOS</a>
+        <a class="tag-link" href="/tags/flask/">flask</a>
     </div>
 
                     </div>
@@ -168,35 +170,43 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>今天在进行代码走查时，竟然发现了下面这段代码：</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; someObj.retainCount; i++) &#123;</div><div class="line">    [someObj release];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>顿时感觉吐槽无力，虽然我反复强调内存管理问题，无非就是谁申请谁释放，利用强弱引用避免retain-cycles，但是还是会有这样那样的问题，leaks每次就是一片红。本来是计划等他们交易都开发完了，进行一次集体代码走查，好好给他们上一课，集中来解决内存问题。但是由于个人原因我7月份会离开项目组，恐怕没有时间来这么做了，所以最终还是决定将工程转成ARC模式。  </p>
-<p>该项目是某行手机银行客户端，iOS开发这块除了我，其他的所有7个开发人员都是项目组临时招聘的，技术参差不齐，毕竟公司招聘标准就是：便宜 + 能干事。我的职责就是负责客户端架构，公共机制的设计与实现，公共组件的封装，开发过程中的解疑。其他开发人员每人负责一两个模块的交易开发，其实无非就剩下请求数据绘界面的事了。</p>
-<p>其实项目开始时就打算尝试用ARC的，但是项目组内其他人员之前都没接触过ARC，迫于项目进度压力也没有时间做培训，就使用大家比较熟悉的MRR，还是太信任他们了。</p>
+            <blockquote>
+<p>本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。</p>
+</blockquote>
+<h2 id="Linux-环境准备"><a href="#Linux-环境准备" class="headerlink" title="Linux 环境准备"></a>Linux 环境准备</h2><p>因为阿里云安装的 Ubuntu 系统默认带 python 环境，所以只需要安装 python 虚拟环境 virtualenv 包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install virtualenv</div></pre></td></tr></table></figure>
+<p>然后安装 nignx：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install nginx</div></pre></td></tr></table></figure>
 <a id="more"></a>
-<h2 id="Convertion-Steps"><a href="#Convertion-Steps" class="headerlink" title="Convertion Steps"></a>Convertion Steps</h2><p>1.<strong>将不要转成ARC的代码标注一下</strong></p>
-<p>如开源代码AFNetworking(因为项目需要支持4.3，所以用的AFNetworking是支持4.3的非ARC版本)、GDataXML、RegexKitLite、Reachability等，其实这些也能转，但是感觉没有必要，将这些源文件在Build Phases / Complie Sources中标注为<code>-fno-objc-arc</code>，如果之前用到了使用ARC的代码，现在可以将<code>-fobjc-arc</code>标记去掉了。</p>
-<p><img src="/image/convert_to_objective-c_arc_step1.png" alt="setp1"></p>
-<p>2.<strong>工程检查</strong></p>
-<p>我选择使用Xcode5.0_DP版本来转，之前使用Xcode4.6在转换过程中电脑经常会假死，或者Xcode4.6直接崩溃，不知道什么原因。而Xcode5.0默认就是ARC模式，我想为了能让之前的程序都转换为ARC，它的转换工具一定比之前强化了不少。</p>
-<p>Xcode -&gt; Edit -&gt; Refactor -&gt; Convert to Objective-C ARC…</p>
-<p>选择要转换的Target，工程target，如果有单元测试也会出现单元测试的target，点击“Check”。</p>
-<p>3.<strong>解决ARC不允许的问题</strong></p>
-<p><img src="/image/convert_to_objective-c_arc_step3.png" alt="setp3"></p>
-<p>转换工具会自动将代码里面的retain、release、autorelease等操作去掉，属性中的retain、copy、assign转为为对应的关键字（retain、copy -&gt; strong, assign会根据工程是否支持5.0一下版本转出weak，或unsafe_unretained）。</p>
-<p>但是如果你在宏里面定义如：</p>
-<p><code>#define MB_RELEASE_SAFELY(__POINTER) { [__POINTER release]; __POINTER = nil; }</code></p>
-<p>转换工具是不会自动处理里面的release的，需要手动将<code>[__POINTER release];</code>去掉。（我工程里面4201个问题基本上都是因为这个导致的）</p>
-<p>此外在CF对象与NS对象之间转换的需要加上关键字<code>__bridge</code>，这个也需要手动来来修改。</p>
-<p>4.<strong>开始转换</strong></p>
-<p><img src="/image/convert_to_objective-c_arc_step4.png" alt="setp4"></p>
-<p>解决完所有的冲突，再次选择“Convert to Objective-C ARC…”，你就能看到这个界面，点击“Next”后，再次经过漫长的等待， 工具会列出了将会为了转换的代码的对照列表。默认所有出现在列表里面的文件都是选中的，你可以选在不要转换的文件，去掉对勾。确认完后，点击“Save”就完成了整个工程的转换工作, Congratulations!</p>
-<p>(我在完成后编译时，发现之前被我标为<code>-fno-objc-arc</code>的文件会有报错，原来在转换过程中工具将之前的标记都去掉了，无奈再次标记了一遍。)</p>
-<p>5.<strong>其他处理</strong></p>
-<p>因为我们工程支持4.3，所以weak, __weak关键字不能用， 可以通过宏定义将5.0以下时weak关键字定义为unsafe_unretained:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">#if (!__has_feature(objc_arc)) || \</div><div class="line">(defined __IPHONE_OS_VERSION_MIN_REQUIRED &amp;&amp; \</div><div class="line">__IPHONE_OS_VERSION_MIN_REQUIRED &lt; __IPHONE_5_0) || \</div><div class="line">(defined __MAC_OS_X_VERSION_MIN_REQUIRED &amp;&amp; \</div><div class="line">__MAC_OS_X_VERSION_MIN_REQUIRED &lt; __MAC_10_7)</div><div class="line">#undef weak</div><div class="line">#define weak unsafe_unretained</div><div class="line">#undef __weak</div><div class="line">#define __weak __unsafe_unretained</div><div class="line">#endif</div></pre></td></tr></table></figure>
-<p>在ARC模式下，使用performSelector方法会有编译警告：PerformSelector may cause a leak because its selector is unknown，作为有洁癖的程序员是不能容许程序中有警告的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#progma clang diagnostic push</div><div class="line">#progma clang disgnostic ignored &quot;-Warc-performSelecotr-leaks&quot;</div><div class="line">[self performSelector:@selector(mySelector:) withObject:object];</div><div class="line">#progma clang disgnostic pop</div></pre></td></tr></table></figure>
+<p>创建项目目录，阿里云 root 用户登陆后默认当前目录为 <code>/root</code> 目录，你可以将程序放在任何目录下，推荐 <code>/var/www/</code> 下，本例中程序目录为：<code>/var/www/MyFlaskApp</code>。</p>
+<p>当然通常是实用 <code>scp</code> 命令将程序包从本机传到服务器目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp -r MyFlaskApp root@example.com:/var/www/MyFlaskApp</div></pre></td></tr></table></figure>
+<p>安装 supervisor:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install supervisor</div></pre></td></tr></table></figure>
+<h2 id="gunicorn"><a href="#gunicorn" class="headerlink" title="gunicorn"></a>gunicorn</h2><p>进入程序目录，在虚拟环境下安装 gunicorn</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(venv) $ pip install gunicorn</div></pre></td></tr></table></figure>
+<p>运行 gunicorn </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(venv) $ gunicorn -w 4 -b 127.0.0.1:8080 wsgi:app</div></pre></td></tr></table></figure>
+<p>其中 <code>-w</code> 指定工作进程数量，<code>-b</code> 指定 Flask 服务地址，wsgi:app 实为 [MODULE_NAME:VARIABLE_NAME]，通常在程序目录下单独创建一个文件（如：wsgi.py）将 Flask 实例暴露出来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line"><span class="comment">#from app import create_app</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_app</span><span class="params">()</span>:</span></div><div class="line">    <span class="comment"># 这个方法通常是在 MyFlaskApp/app/__init__.py 中导入</span></div><div class="line">    app = Flask(__name__)</div><div class="line">    <span class="keyword">return</span> app</div><div class="line"></div><div class="line">app = create_app()</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    app.run()</div></pre></td></tr></table></figure>
+<p>命令执行完后可在服务器端通过 127.0.0.1:8080 访问服务。</p>
+<h2 id="nginx-配置"><a href="#nginx-配置" class="headerlink" title="nginx 配置"></a>nginx 配置</h2><p>直接修改配置文件 <code>/etc/nginx/site-available/default</code>。（可先备份再修改）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen <span class="number">80</span> default_server;</div><div class="line">    listen [::]:<span class="number">80</span> default_server;</div><div class="line">    </div><div class="line">    server_name example.com <span class="comment"># 修改</span></div><div class="line">    </div><div class="line">    location / &#123; <span class="comment"># 修改</span></div><div class="line">        proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>;</div><div class="line">        proxy_set_header Host $host;</div><div class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>完成修改后重启 nginx： <code>sudo service nginx restart</code></p>
+<h2 id="supervisor"><a href="#supervisor" class="headerlink" title="supervisor"></a>supervisor</h2><p>supervisor 安装后，在配置目录下 <code>/etc/supervisor/conf.d/</code> 增加控制程序配置 MyFlaskApp.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[program:MyFlaskApp]</div><div class="line">command=/var/www/MyFlaskApp/venv/bin/gunicorn -w 4 -b 127.0.0.1:8080 wsgi:app</div><div class="line">directory=/var/www/MyFlaskApp/</div></pre></td></tr></table></figure>
+<p>command 启动 gunicorn 的命令，应该指向程序虚拟环境下的 gunicorn。<br>directory 为程序所在目录。</p>
+<p>重启 supervisor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">supervisorctl reload</div><div class="line">supervisorctl restart</div></pre></td></tr></table></figure>
+<p>现在就可以通过服务器外网访问 flask 服务了。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="安装-MySQL-："><a href="#安装-MySQL-：" class="headerlink" title="安装 MySQL ："></a>安装 MySQL ：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mysql-server</div><div class="line">sudo apt-get install mysql-client</div><div class="line">sudo apt-get install libmysqlclient-dev</div></pre></td></tr></table></figure>
+<p>确保 MySQL 字符编码都是 utf8 格式(如果要支持emoji表情，格式为：utf8mb4)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># /etc/mysql/my.cnf</div><div class="line">[client]</div><div class="line">default-character-set = utf8mb4</div><div class="line"></div><div class="line">[mysql]</div><div class="line">default-character-set = utf8mb4</div><div class="line"></div><div class="line">[mysqld]</div><div class="line">character-set-client-handshake = FALSE</div><div class="line">character-set-server = utf8mb4</div><div class="line">collation-server = utf8mb4_unicode_ci</div><div class="line">init_connect=&apos;SET NAMES utf8mb4&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; status</div><div class="line">mysql&gt; set character_set_server=utf8</div><div class="line">mysql&gt; set character_set_database=utf8</div></pre></td></tr></table></figure>
+<h3 id="阿里云外网访问"><a href="#阿里云外网访问" class="headerlink" title="阿里云外网访问"></a>阿里云外网访问</h3><p>阿里云默认的安全组规则只包含：ICMP访问、SSH（TCP 22）、远程桌面（UDP 3389)，并不包含 Web （HTTP(s) 80(443))访问</p>
+<h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"># /etc/nginx/</div><div class="line">server &#123;</div><div class="line">    server_name example.com;</div><div class="line"></div><div class="line">    listen 80 default_server;</div><div class="line">    listen [::]:80 default_server;</div><div class="line"></div><div class="line">	# SSL configuration</div><div class="line">    listen 443 ssl default_server;</div><div class="line">    listen [::]:443 ssl default_server;</div><div class="line">    ssl_certificate cert/cert.pem;</div><div class="line">    ssl_certificate_key cert/key.key;</div><div class="line">    ssl_session_timeout 5m;</div><div class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</div><div class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</div><div class="line">    ssl_prefer_server_ciphers on;</div><div class="line"></div><div class="line">	fastcgi_intercept_errors on;</div><div class="line">	error_page 404 /404.html;</div><div class="line"></div><div class="line">	location / &#123;</div><div class="line">	    root /var/www/html;</div><div class="line">	    index index.html;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	location ~ /(admin|api) &#123;</div><div class="line">	    proxy_pass http://127.0.0.1:8080;</div><div class="line">	    proxy_set_header Host $host;</div><div class="line">	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>HTTP 跳转 HTTPS:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    server_name example.com;</div><div class="line">    listen 80 default_server;</div><div class="line">    listen [::]:80 default_server;</div><div class="line">    return 301 https://$host$request_uri;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
         
         </div>
@@ -205,19 +215,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2013/06/19/javascriptcore-framework/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    JavaScriptCore.framework
-                
-            </div>
-        </a>
     
-    
-        <a href="/2013/06/18/pragmatic-thinking-and-learning/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/03/17/flask-session/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">程序员的思维修炼</div>
+            <div class="article-nav-title">flask 源码解析：session</div>
         </a>
     
 </nav>
