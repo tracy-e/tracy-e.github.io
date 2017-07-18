@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://esoftmobile.com/"/>
-  <updated>2017-07-17T03:52:16.000Z</updated>
+  <updated>2017-07-17T03:53:51.000Z</updated>
   <id>http://esoftmobile.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://esoftmobile.com/2017/07/17/flask-deploy/"/>
     <id>http://esoftmobile.com/2017/07/17/flask-deploy/</id>
     <published>2017-07-17T03:29:06.000Z</published>
-    <updated>2017-07-17T03:52:16.000Z</updated>
+    <updated>2017-07-17T03:53:51.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>本文记录一次 Flask 应用阿里云ECS部署实践过程，环境为 Ubuntu 16.04 ，工具集 Nginx + Gunicorn + Supervisor + Flask。</p>
@@ -164,9 +164,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -247,9 +247,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -295,9 +295,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -381,9 +381,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -444,9 +444,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -500,9 +500,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
@@ -575,9 +575,9 @@
     </summary>
     
     
-      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
-    
       <category term="python" scheme="http://esoftmobile.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://esoftmobile.com/tags/flask/"/>
     
   </entry>
   
