@@ -785,6 +785,9 @@ a.article-title:hover {
   background: #fcfcfc;
   border-left: 10px solid #eee;
 }
+.article-entry blockquote:first-child {
+  margin-top: 20px;
+}
 .article-entry blockquote p {
   margin: 0;
 }
