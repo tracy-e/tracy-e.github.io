@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     
-    <title>flask 源码解析：请求 | Esoft Mobile</title>
+    <title>flask 源码解析：请求 | </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="简介对于物理链路来说，请求只是不同电压信号，它根本不知道也不需要知道请求格式和内容到底是怎样的； 对于 TCP 层来说，请求就是传输的数据（二进制的数据流），它只要发送给对应的应用程序就行了； 对于 HTTP 层的服务器来说，请求必须是符合 HTTP 协议的内容； 对于 WSGI server 来说，请求又变成了文件流，它要读取其中的内容，把 HTTP 请求包含的各种信息保存到一个字典中，调用 W">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flask 源码解析：请求">
 <meta property="og:url" content="http://esoftmobile.com/2017/03/13/flask-request/index.html">
-<meta property="og:site_name" content="Esoft Mobile">
+<meta property="og:site_name">
 <meta property="og:description" content="简介对于物理链路来说，请求只是不同电压信号，它根本不知道也不需要知道请求格式和内容到底是怎样的； 对于 TCP 层来说，请求就是传输的数据（二进制的数据流），它只要发送给对应的应用程序就行了； 对于 HTTP 层的服务器来说，请求必须是符合 HTTP 协议的内容； 对于 WSGI server 来说，请求又变成了文件流，它要读取其中的内容，把 HTTP 请求包含的各种信息保存到一个字典中，调用 W">
 <meta property="og:image" content="http://esoftmobile.com/image/flask.png">
 <meta property="og:updated_time" content="2017-03-13T05:08:15.000Z">
@@ -20,9 +20,11 @@
     
 
     
-        <link rel="alternate" href="/atom.xml" title="Esoft Mobile" type="application/atom+xml" />
+        <link rel="alternate" href="/atom.xml" title="" type="application/atom+xml" />
     
 
+    
+        <link rel="icon" href="/css/images/favicon.ico" />
     
 
     <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
@@ -53,7 +55,7 @@
         <div class="outer">
             <a href="/" id="logo">
                 <i class="logo"></i>
-                <span class="site-title">Esoft Mobile</span>
+                <span class="site-title"></span>
             </a>
             <nav id="main-nav">
                 
@@ -421,7 +423,7 @@
         <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2017 TracyYih 
+            &copy; 2018 TracyYih 
             Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>.
         </div>
         
