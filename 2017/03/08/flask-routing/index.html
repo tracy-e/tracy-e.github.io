@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     
-    <title>flask 源码解析：路由 | </title>
+    <title>flask 源码解析：路由 | EsoftMobile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="构建路由规则一个 web 应用不同的路径会有不同的处理函数，路由就是根据请求的 URL 找到对应处理函数的过程。
 在执行查找之前，需要有一个规则列表，它存储了 url 和处理函数的对应关系。最容易想到的解决方案就是定义一个字典，key 是 url，value 是对应的处理函数。如果 url 都是静态的（url 路径都是实现确定的，没有变量和正则匹配），那么路由的过程就是从字典中通过 url 这个">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flask 源码解析：路由">
 <meta property="og:url" content="http://esoftmobile.com/2017/03/08/flask-routing/index.html">
-<meta property="og:site_name">
+<meta property="og:site_name" content="EsoftMobile">
 <meta property="og:description" content="构建路由规则一个 web 应用不同的路径会有不同的处理函数，路由就是根据请求的 URL 找到对应处理函数的过程。
 在执行查找之前，需要有一个规则列表，它存储了 url 和处理函数的对应关系。最容易想到的解决方案就是定义一个字典，key 是 url，value 是对应的处理函数。如果 url 都是静态的（url 路径都是实现确定的，没有变量和正则匹配），那么路由的过程就是从字典中通过 url 这个">
 <meta property="og:image" content="http://esoftmobile.com/image/flask.png">
@@ -23,7 +23,7 @@
     
 
     
-        <link rel="alternate" href="/atom.xml" title="" type="application/atom+xml" />
+        <link rel="alternate" href="/atom.xml" title="EsoftMobile" type="application/atom+xml" />
     
 
     
@@ -58,7 +58,7 @@
         <div class="outer">
             <a href="/" id="logo">
                 <i class="logo"></i>
-                <span class="site-title"></span>
+                <!-- <span class="site-title">EsoftMobile</span> -->
             </a>
             <nav id="main-nav">
                 

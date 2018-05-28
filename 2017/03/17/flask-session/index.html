@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     
-    <title>flask 源码解析：session | </title>
+    <title>flask 源码解析：session | EsoftMobile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="session 简介在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。
 在 flask 中使用 session 也很简单，只要使用 from f">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flask 源码解析：session">
 <meta property="og:url" content="http://esoftmobile.com/2017/03/17/flask-session/index.html">
-<meta property="og:site_name">
+<meta property="og:site_name" content="EsoftMobile">
 <meta property="og:description" content="session 简介在解析 session 的实现之前，我们先介绍一下 session 怎么使用。session 可以看做是在不同的请求之间保存数据的方法，因为 HTTP 是无状态的协议，但是在业务应用上我们希望知道不同请求是否是同一个人发起的。比如购物网站在用户点击进入购物车的时候，服务器需要知道是哪个用户执行了这个操作。
 在 flask 中使用 session 也很简单，只要使用 from f">
 <meta property="og:image" content="http://esoftmobile.com/image/flask.png">
@@ -23,7 +23,7 @@
     
 
     
-        <link rel="alternate" href="/atom.xml" title="" type="application/atom+xml" />
+        <link rel="alternate" href="/atom.xml" title="EsoftMobile" type="application/atom+xml" />
     
 
     
@@ -58,7 +58,7 @@
         <div class="outer">
             <a href="/" id="logo">
                 <i class="logo"></i>
-                <span class="site-title"></span>
+                <!-- <span class="site-title">EsoftMobile</span> -->
             </a>
             <nav id="main-nav">
                 
